@@ -20,8 +20,8 @@ public class COSC322Test extends GamePlayer{
     private GameClient gameClient = null; 
     private BaseGameGUI gamegui = null;
 	
-    private String userName = null;
-    private String passwd = null;
+    private String userName = "testRunG4";
+    private String passwd = "testG4";
  
 	
     /**
@@ -62,19 +62,17 @@ public class COSC322Test extends GamePlayer{
 
     @Override
     public void onLogin() {
+		connect();
 
-		// List<sfs2x.client.entities.Room> rooms = gameClient.getRoomList();
-		//for (sfs2x.client.entities.Room room : rooms) {
-		// System.out.println(room.toString());
-		// }
+//		List<sfs2x.client.entities.Room> rooms = gameClient.getRoomList();
+//		for (sfs2x.client.entities.Room room : rooms) {
+//		 	System.out.println(room.toString());
+//		}
+		// System.out.println(gameClient.getUserName());
+		// System.out.println("SizeTEST: " + rooms.size());
 		// gameClient.joinRoom()
 		// gameClient.leaveCurrentRoom()
 		// gameClient.logout()
-
-    	System.out.println("Congratualations!!! "
-    			+ "I am called because the server indicated that the login is successfull");
-    	System.out.println("The next step is to find a room and join it: "
-    			+ "the gameClient instance created in my constructor knows how!"); 
     }
 
     @Override
@@ -109,7 +107,7 @@ public class COSC322Test extends GamePlayer{
 	@Override
 	public void connect() {
 		// TODO Auto-generated method stub
-    	gameClient = new GameClient(userName, passwd, this);			
+    	this.gameClient = new GameClient(userName, passwd, this);
 	}
 
  
