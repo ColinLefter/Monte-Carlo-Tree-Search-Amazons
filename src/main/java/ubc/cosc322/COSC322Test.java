@@ -28,7 +28,7 @@ public class COSC322Test extends GamePlayer{
      * The main method
      * @param args for name and passwd (current, any string would work)
      */
-    public static void main(String[] args) {				 
+    public static void main(String[] args) {
     	COSC322Test player = new COSC322Test(args[0], args[1]);
     	
     	if(player.getGameGUI() == null) {
@@ -62,8 +62,17 @@ public class COSC322Test extends GamePlayer{
 
     @Override
     public void onLogin() {
+
+		// List<sfs2x.client.entities.Room> rooms = gameClient.getRoomList();
+		//for (sfs2x.client.entities.Room room : rooms) {
+		// System.out.println(room.toString());
+		// }
+		// gameClient.joinRoom()
+		// gameClient.leaveCurrentRoom()
+		// gameClient.logout()
+
     	System.out.println("Congratualations!!! "
-    			+ "I am called because the server indicated that the login is successfully");
+    			+ "I am called because the server indicated that the login is successfull");
     	System.out.println("The next step is to find a room and join it: "
     			+ "the gameClient instance created in my constructor knows how!"); 
     }
