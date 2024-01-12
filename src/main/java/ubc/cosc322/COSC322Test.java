@@ -3,6 +3,7 @@ package ubc.cosc322;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -61,19 +62,44 @@ public class COSC322Test extends GamePlayer{
 
 
     @Override
-    public void onLogin() {
-		connect();
-
-//		List<sfs2x.client.entities.Room> rooms = gameClient.getRoomList();
-//		for (sfs2x.client.entities.Room room : rooms) {
-//		 	System.out.println(room.toString());
-//		}
-		// System.out.println(gameClient.getUserName());
-		// System.out.println("SizeTEST: " + rooms.size());
-		// gameClient.joinRoom()
-		// gameClient.leaveCurrentRoom()
-		// gameClient.logout()
-    }
+	public void onLogin() {
+		System.out.println("Congratulations!!! "
+				+ "I am called because the server indicated that the login is successfully");
+		System.out.println("The next step is to find a room and join it: "
+				+ "the gameClient instance created in my constructor knows how!");
+		// Print a list of rooms
+		List<Room> roomList = gameClient.getRoomList();
+		if(roomList.isEmpty()){
+			System.out.println("There are no rooms to enter.");
+			return;
+		} else {
+			for (Room room : roomList) {
+				System.out.println(room.getName());
+			}
+		}
+		boolean roomFound = false;
+		while(!roomFound){
+			// Prompt user for desired room
+			System.out.println("Please type out the name of a room to enter.");
+			Scanner scanner = new Scanner (System.in);
+			String desiredRoom = scanner.nextLine();
+			// Iterate through rooms to find desired room
+			for(Room room : roomList){
+				if(room.getName().equals(desiredRoom)){
+					System.out.println("Room found.");
+					gameClient.joinRoom(desiredRoom);
+					System.out.println("Room joined.");
+					roomFound = true;
+					break;
+				}
+			}
+			// If iterated through all rooms and not found, user is notified then
+			// prompted again to enter the name of desired room
+			if(!roomFound){
+				System.out.println("Room not found.");
+			}
+		}
+	}
 
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
