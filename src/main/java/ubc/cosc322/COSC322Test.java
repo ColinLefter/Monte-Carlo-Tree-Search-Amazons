@@ -4,11 +4,15 @@ package ubc.cosc322;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;
+import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
+import ygraph.ai.smartfox.games.GameMessage;
+
 
 /**
  * An example illustrating how to implement a GamePlayer
@@ -108,7 +112,54 @@ public class COSC322Test extends GamePlayer{
 	
     	//For a detailed description of the message types and format, 
     	//see the method GamePlayer.handleGameMessage() in the game-client-api document. 
-    	    	
+
+		   switch(messageType) {
+			case GameMessage.GAME_STATE_BOARD:
+				Object check = msgDetails.get(AmazonsGameMessage.GAME_STATE);
+				ArrayList<Integer> gameBoardState;
+				gameBoardState = (ArrayList<Integer>)check;
+
+				// TODO: Use gameBoard from here
+
+				// Raw data
+				System.out.println("Raw data:");
+				for (int i = 0; i < gameBoardState.size(); i++) {
+					System.out.print(gameBoardState.get(i) + " ");
+				}
+
+				// Board Format
+				System.out.println("\n\nBoard:");
+				int count = 0;
+				for (int i = 12; i < gameBoardState.size(); i++) {
+					if(count == 10) {
+						System.out.println();
+						count = 0;
+						i++;
+					}
+					count++;
+					System.out.print(gameBoardState.get(i) + " ");
+				}
+				System.out.println("\n");
+				break;
+
+			case GameMessage.GAME_ACTION_START:
+				handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
+				String playerNameBlack, playerNameWhite;
+				playerNameBlack = (String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
+				playerNameWhite = (String)msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
+
+				// TODO: Store player names as necessary
+				break;
+
+			case GameMessage.GAME_ACTION_MOVE:
+					// TODO: Finish this
+				break;
+
+			default:
+				System.out.println("Unrecognized message received from server.");
+				return false;
+		   }
+
     	return true;   	
     }
     
