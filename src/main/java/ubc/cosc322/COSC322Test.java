@@ -60,48 +60,16 @@ public class COSC322Test extends GamePlayer{
     	
     	//To make a GUI-based player, create an instance of BaseGameGUI
     	//and implement the method getGameGUI() accordingly
-    	//this.gamegui = new BaseGameGUI(this);
+    	this.gamegui = new BaseGameGUI(this);
     }
  
 
 
     @Override
 	public void onLogin() {
-		System.out.println("Congratulations!!! "
-				+ "I am called because the server indicated that the login is successfully");
-		System.out.println("The next step is to find a room and join it: "
-				+ "the gameClient instance created in my constructor knows how!");
-		// Print a list of rooms
-		List<Room> roomList = gameClient.getRoomList();
-		if(roomList.isEmpty()){
-			System.out.println("There are no rooms to enter.");
-			return;
-		} else {
-			for (Room room : roomList) {
-				System.out.println(room.getName());
-			}
-		}
-		boolean roomFound = false;
-		while(!roomFound){
-			// Prompt user for desired room
-			System.out.println("Please type out the name of a room to enter.");
-			Scanner scanner = new Scanner (System.in);
-			String desiredRoom = scanner.nextLine();
-			// Iterate through rooms to find desired room
-			for(Room room : roomList){
-				if(room.getName().equals(desiredRoom)){
-					System.out.println("Room found.");
-					gameClient.joinRoom(desiredRoom);
-					System.out.println("Room joined.");
-					roomFound = true;
-					break;
-				}
-			}
-			// If iterated through all rooms and not found, user is notified then
-			// prompted again to enter the name of desired room
-			if(!roomFound){
-				System.out.println("Room not found.");
-			}
+		userName = gameClient.getUserName();
+		if(gamegui != null) {
+			gamegui.setRoomInformation(gameClient.getRoomList());
 		}
 	}
 
@@ -140,6 +108,9 @@ public class COSC322Test extends GamePlayer{
 					System.out.print(gameBoardState.get(i) + " ");
 				}
 				System.out.println("\n");
+
+				//set game state
+				gamegui.setGameState(gameBoardState);
 				break;
 
 			case GameMessage.GAME_ACTION_START:
@@ -149,10 +120,16 @@ public class COSC322Test extends GamePlayer{
 				playerNameWhite = (String)msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 
 				// TODO: Store player names as necessary
+
 				break;
 
 			case GameMessage.GAME_ACTION_MOVE:
-					// TODO: Finish this
+				// Update game state
+				gamegui.updateGameState(msgDetails);
+
+				//gameClient.sendMoveMessage();
+
+				// After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
 				break;
 
 			default:
@@ -178,7 +155,7 @@ public class COSC322Test extends GamePlayer{
 	@Override
 	public BaseGameGUI getGameGUI() {
 		// TODO Auto-generated method stub
-		return  null;
+		return  gamegui;
 	}
 
 	@Override
