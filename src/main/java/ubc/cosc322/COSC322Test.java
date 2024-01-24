@@ -62,13 +62,11 @@ public class COSC322Test extends GamePlayer{
     	//and implement the method getGameGUI() accordingly
     	this.gamegui = new BaseGameGUI(this);
     }
- 
-
 
     @Override
 	public void onLogin() {
 		userName = gameClient.getUserName();
-		if(gamegui != null) {
+		if (gamegui != null) {
 			gamegui.setRoomInformation(gameClient.getRoomList());
 		}
 	}
@@ -84,17 +82,9 @@ public class COSC322Test extends GamePlayer{
 		   switch(messageType) {
 			case GameMessage.GAME_STATE_BOARD:
 				Object check = msgDetails.get(AmazonsGameMessage.GAME_STATE);
-				ArrayList<Integer> gameBoardState;
-				gameBoardState = (ArrayList<Integer>)check;
+				ArrayList<Integer> gameBoardState = (ArrayList<Integer>) check;
 
 				// TODO: Use gameBoard from here
-
-				// Raw data
-				System.out.println("Raw data:");
-				for (int i = 0; i < gameBoardState.size(); i++) {
-					System.out.print(gameBoardState.get(i) + " ");
-				}
-
 				// Board Format
 				System.out.println("\n\nBoard:");
 				int count = 0;
@@ -116,8 +106,8 @@ public class COSC322Test extends GamePlayer{
 			case GameMessage.GAME_ACTION_START:
 				handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
 				String playerNameBlack, playerNameWhite;
-				playerNameBlack = (String)msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
-				playerNameWhite = (String)msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
+				playerNameBlack = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
+				playerNameWhite = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 
 				// TODO: Store player names as necessary
 
@@ -127,8 +117,17 @@ public class COSC322Test extends GamePlayer{
 				// Update game state
 				gamegui.updateGameState(msgDetails);
 
-				//gameClient.sendMoveMessage();
+				// Storing queen and arrow positions
+				Object currentPositionResult = msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+				Object nextPositionResult = msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+				Object arrowPositionResult = msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
+				// (row, column) pairs
+				ArrayList<Integer> currentPosition = (ArrayList<Integer>) currentPositionResult;
+				ArrayList<Integer> nextPosition = (ArrayList<Integer>) nextPositionResult;
+				ArrayList<Integer> arrowPosition = (ArrayList<Integer>) arrowPositionResult;
+
+				gameClient.sendMoveMessage(currentPosition, nextPosition, arrowPosition);
 				// After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
 				break;
 
@@ -139,8 +138,13 @@ public class COSC322Test extends GamePlayer{
 
     	return true;   	
     }
-    
-    
+
+	public void sendMoveMessage(java.util.ArrayList<java.lang.Integer> queenPosCurrent,
+								java.util.ArrayList<java.lang.Integer> queenPosNew,
+								java.util.ArrayList<java.lang.Integer> arrowPos) {
+		// TODO Compute the move and send a message to the server
+	}
+
     @Override
     public String userName() {
     	return userName;
