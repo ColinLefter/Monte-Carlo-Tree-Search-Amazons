@@ -84,21 +84,6 @@ public class COSC322Test extends GamePlayer{
 				Object check = msgDetails.get(AmazonsGameMessage.GAME_STATE);
 				ArrayList<Integer> gameBoardState = (ArrayList<Integer>) check;
 
-				// TODO: Use gameBoard from here
-				// Board Format
-				System.out.println("\n\nBoard:");
-				int count = 0;
-				for (int i = 12; i < gameBoardState.size(); i++) {
-					if(count == 10) {
-						System.out.println();
-						count = 0;
-						i++;
-					}
-					count++;
-					System.out.print(gameBoardState.get(i) + " ");
-				}
-				System.out.println("\n");
-
 				//set game state
 				gamegui.setGameState(gameBoardState);
 				break;
