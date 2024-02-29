@@ -128,6 +128,18 @@ public class COSC322Test extends GamePlayer{
 								java.util.ArrayList<java.lang.Integer> queenPosNew,
 								java.util.ArrayList<java.lang.Integer> arrowPos) {
 		// TODO Compute the move and send a message to the server
+		int newYPos = (int) (Math.random() * 10) + 1;
+		int newXPos = (int) (Math.random() * 10) + 1;
+
+		int newXArrowPos = (int) (Math.random() * 10) + 1;
+		int newYArrowPos = (int) (Math.random() * 10) + 1;
+
+		queenPosNew.set(0, newXPos);
+		queenPosNew.set(1, newYPos);
+
+		arrowPos.set(0, newXArrowPos);
+		arrowPos.set(1, newYArrowPos);
+		// we have a 30s time limit, so we must send a move by then
 	}
 
     @Override
