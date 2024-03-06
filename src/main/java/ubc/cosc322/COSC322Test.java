@@ -1,17 +1,22 @@
 
 package ubc.cosc322;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import sfs2x.client.entities.Room;
+import ygraph.ai.smartfox.games.Spectator;
+import ygraph.ai.smartfox.games.Amazon;
+import ygraph.ai.smartfox.games.BoardGameModel;
+import ygraph.ai.smartfox.games.GameModel;
+import ygraph.ai.smartfox.games.GameTimer;
+import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-import ygraph.ai.smartfox.games.GameMessage;
+import ygraph.ai.smartfox.games.amazons.AmazonsBoard;
+import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 
 /**
@@ -27,6 +32,7 @@ public class COSC322Test extends GamePlayer{
 	
     private String userName = "testRunG4";
     private String passwd = "testG4";
+	private Boolean playerIsBlack = false;
  
 	
     /**
@@ -35,7 +41,7 @@ public class COSC322Test extends GamePlayer{
      */
     public static void main(String[] args) {
     	COSC322Test player = new COSC322Test(args[0], args[1]);
-    	
+
     	if(player.getGameGUI() == null) {
     		player.Go();
     	}
@@ -73,6 +79,9 @@ public class COSC322Test extends GamePlayer{
 
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
+		System.out.println(messageType);
+		System.out.println(msgDetails);
+
     	//This method will be called by the GameClient when it receives a game-related message
     	//from the server.
 	
@@ -89,10 +98,12 @@ public class COSC322Test extends GamePlayer{
 				break;
 
 			case GameMessage.GAME_ACTION_START:
-				handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
+				//handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
 				String playerNameBlack, playerNameWhite;
 				playerNameBlack = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 				playerNameWhite = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
+
+				//Change playerIsBlack variable here
 
 				// TODO: Store player names as necessary
 
@@ -100,19 +111,42 @@ public class COSC322Test extends GamePlayer{
 
 			case GameMessage.GAME_ACTION_MOVE:
 				// Update game state
+
 				gamegui.updateGameState(msgDetails);
+				// Storing queen and arrow positions of previous move
+				ArrayList<Integer> currentPositionResult = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+				ArrayList<Integer> nextPositionResult = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+				ArrayList<Integer> arrowPositionResult = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
-				// Storing queen and arrow positions
-				Object currentPositionResult = msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-				Object nextPositionResult = msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
-				Object arrowPositionResult = msgDetails.get(AmazonsGameMessage.ARROW_POS);
+				System.out.println(playerIsBlack);
 
-				// (row, column) pairs
-				ArrayList<Integer> currentPosition = (ArrayList<Integer>) currentPositionResult;
-				ArrayList<Integer> nextPosition = (ArrayList<Integer>) nextPositionResult;
-				ArrayList<Integer> arrowPosition = (ArrayList<Integer>) arrowPositionResult;
+				//Check if player is black, and only set currentPos to one of the queens that is ours
+				if(playerIsBlack){
 
-				gameClient.sendMoveMessage(currentPosition, nextPosition, arrowPosition);
+				}else{
+
+				}
+
+				Random random = new Random();
+
+				ArrayList<Integer> currentPos = new ArrayList<>();
+				ArrayList<Integer> nextPosition = new ArrayList<>();
+				ArrayList<Integer> arrowPosition = new ArrayList<>();
+
+				currentPos.add(1);
+				currentPos.add(4);
+
+				nextPosition.add(random.nextInt(10) + 1);
+				nextPosition.add(random.nextInt(10) + 1);
+
+				arrowPosition.add(random.nextInt(10) + 1);
+				arrowPosition.add(random.nextInt(10) + 1);
+
+				System.out.println(currentPos);
+				System.out.println(nextPosition);
+				System.out.println(arrowPosition);
+
+				gameClient.sendMoveMessage(currentPos,nextPosition,arrowPosition);
 				// After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
 				break;
 
@@ -124,22 +158,22 @@ public class COSC322Test extends GamePlayer{
     	return true;   	
     }
 
-	public void sendMoveMessage(java.util.ArrayList<java.lang.Integer> queenPosCurrent,
-								java.util.ArrayList<java.lang.Integer> queenPosNew,
-								java.util.ArrayList<java.lang.Integer> arrowPos) {
-		// TODO Compute the move and send a message to the server
-		int newYPos = (int) (Math.random() * 10) + 1;
-		int newXPos = (int) (Math.random() * 10) + 1;
+	public void sendMoveMessage() {
+//		// TODO Compute the move and send a message to the server
+//		int newYPos = (int) (Math.random() * 10);
+//		int newXPos = (int) (Math.random() * 10);
+//
+//		int newXArrowPos = (int) (Math.random() * 10);
+//		int newYArrowPos = (int) (Math.random() * 10);
+//
+//		queenPosNew.set(0, newXPos);
+//		queenPosNew.set(1, newYPos);
+//
+//		arrowPos.set(0, newXArrowPos);
+//		arrowPos.set(1, newYArrowPos);
+//		// we have a 30s time limit, so we must send a move by then
 
-		int newXArrowPos = (int) (Math.random() * 10) + 1;
-		int newYArrowPos = (int) (Math.random() * 10) + 1;
 
-		queenPosNew.set(0, newXPos);
-		queenPosNew.set(1, newYPos);
-
-		arrowPos.set(0, newXArrowPos);
-		arrowPos.set(1, newYArrowPos);
-		// we have a 30s time limit, so we must send a move by then
 	}
 
     @Override
