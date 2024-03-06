@@ -71,13 +71,10 @@ public class HumanPlayerTest extends GamePlayer {
 
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-        System.out.println(messageType);
-        System.out.println(msgDetails);
-
         //This method will be called by the GameClient when it receives a game-related message
         //from the server.
 
-        //For a detailed description of the message types and format, 
+        //For a detailed description of the message types and format,
         //see the method GamePlayer.handleGameMessage() in the game-client-api document.
         switch (messageType) {
             case GameMessage.GAME_STATE_BOARD:
@@ -104,29 +101,13 @@ public class HumanPlayerTest extends GamePlayer {
             case GameMessage.GAME_ACTION_MOVE:
                 // Update game state
 
-                gamegui.updateGameState(msgDetails);
                 // Storing queen and arrow positions of previous move
                 ArrayList<Integer> currentPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
                 ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
                 ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
-//				System.out.println("Printing out positions arrays: ");
-//				System.out.println("--------------");
-//				System.out.println(currentPosition);
-//				System.out.println(nextPosition);
-//				System.out.println(ArrowPosition);
-//				System.out.println("--------------");
-                // quee_pos_next just reflects what our next move will be after currently being at queen_pos_curr
-
-                // The server handles which player needs to make a move. If we reached this case, then it is our turn to make a move.
-                Random random = new Random();
-
-                nextPosition.set(0, random.nextInt(10) + 1);
-                nextPosition.set(1, random.nextInt(10) + 1);
-
-                arrowPosition.set(0, random.nextInt(10) + 1);
-                arrowPosition.set(1, random.nextInt(10) + 1);
-
+                gamegui.updateGameState(msgDetails);
+                gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
                 gameClient.sendMoveMessage(currentPosition,nextPosition,arrowPosition);
                 // After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
                 break;
@@ -140,20 +121,6 @@ public class HumanPlayerTest extends GamePlayer {
     }
 
     public void sendMoveMessage() {
-//		// TODO Compute the move and send a message to the server
-//		int newYPos = (int) (Math.random() * 10);
-//		int newXPos = (int) (Math.random() * 10);
-//
-//		int newXArrowPos = (int) (Math.random() * 10);
-//		int newYArrowPos = (int) (Math.random() * 10);
-//
-//		queenPosNew.set(0, newXPos);
-//		queenPosNew.set(1, newYPos);
-//
-//		arrowPos.set(0, newXArrowPos);
-//		arrowPos.set(1, newYArrowPos);
-//		// we have a 30s time limit, so we must send a move by then
-
 
     }
 

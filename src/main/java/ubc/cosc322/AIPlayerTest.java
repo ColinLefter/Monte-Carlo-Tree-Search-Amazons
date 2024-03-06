@@ -70,9 +70,6 @@ public class AIPlayerTest extends GamePlayer {
 
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-        System.out.println(messageType);
-        System.out.println(msgDetails);
-
         //This method will be called by the GameClient when it receives a game-related message
         //from the server.
 
@@ -102,8 +99,6 @@ public class AIPlayerTest extends GamePlayer {
 
             case GameMessage.GAME_ACTION_MOVE:
                 // Update game state
-
-                gamegui.updateGameState(msgDetails);
                 // Storing queen and arrow positions of previous move
                 ArrayList<Integer> currentPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
                 ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
@@ -120,12 +115,20 @@ public class AIPlayerTest extends GamePlayer {
                 // The server handles which player needs to make a move. If we reached this case, then it is our turn to make a move.
                 Random random = new Random();
 
+                System.out.println("Before");
+                System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
+
                 nextPosition.set(0, random.nextInt(10) + 1);
                 nextPosition.set(1, random.nextInt(10) + 1);
 
                 arrowPosition.set(0, random.nextInt(10) + 1);
                 arrowPosition.set(1, random.nextInt(10) + 1);
 
+                System.out.println("After");
+                System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
+
+                gamegui.updateGameState(msgDetails);
+                gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
                 gameClient.sendMoveMessage(currentPosition,nextPosition,arrowPosition);
                 // After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
                 break;
