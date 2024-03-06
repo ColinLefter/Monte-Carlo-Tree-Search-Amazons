@@ -33,6 +33,8 @@ public class COSC322Test extends GamePlayer{
     private String userName = "testRunG4";
     private String passwd = "testG4";
 	private Boolean playerIsBlack = false;
+
+	private ArrayList<Integer> currentGameState = new ArrayList<>();
  
 	
     /**
