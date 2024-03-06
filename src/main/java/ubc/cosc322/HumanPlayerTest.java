@@ -1,21 +1,13 @@
 
 package ubc.cosc322;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
-import sfs2x.client.entities.Room;
-import ygraph.ai.smartfox.games.Spectator;
-import ygraph.ai.smartfox.games.Amazon;
-import ygraph.ai.smartfox.games.BoardGameModel;
-import ygraph.ai.smartfox.games.GameModel;
-import ygraph.ai.smartfox.games.GameTimer;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-import ygraph.ai.smartfox.games.amazons.AmazonsBoard;
 import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 
@@ -25,13 +17,13 @@ import ygraph.ai.smartfox.games.amazons.HumanPlayer;
  * Jan 5, 2021
  *
  */
-public class HumanPlayerTest extends GamePlayer{
+public class HumanPlayerTest extends GamePlayer {
 
     private GameClient gameClient = null;
     private BaseGameGUI gamegui = null;
 
-    private String userName = "The AI";
-    private String passwd = "AI";
+    private String userName = "The player";
+    private String passwd = "playerPass";
     private Boolean playerIsBlack = false;
 
 
