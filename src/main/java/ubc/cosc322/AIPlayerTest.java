@@ -26,6 +26,8 @@ public class AIPlayerTest extends GamePlayer {
     private String passwd = "playerPass";
     private Boolean playerIsBlack = false;
 
+    ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
+
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
@@ -104,6 +106,8 @@ public class AIPlayerTest extends GamePlayer {
                 ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
                 ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
+                gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
+
 //				System.out.println("Printing out positions arrays: ");
 //				System.out.println("--------------");
 //				System.out.println(currentPosition);
@@ -115,18 +119,17 @@ public class AIPlayerTest extends GamePlayer {
                 // The server handles which player needs to make a move. If we reached this case, then it is our turn to make a move.
                 Random random = new Random();
 
-                System.out.println("Before");
                 System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
 
-                ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
                 ArrayList<Integer> myNextPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
                 ArrayList<Integer> myNextArrowPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
 
-                System.out.println("After");
                 System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
 
-                gamegui.updateGameState(myCurrentPosition,myNextPosition,myNextArrowPosition);
                 gameClient.sendMoveMessage(myCurrentPosition,myNextPosition,myNextArrowPosition);
+                gamegui.updateGameState(myCurrentPosition,myNextPosition,myNextArrowPosition);
+                handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails);
+                myCurrentPosition = myNextPosition; // the reason this only moves once is because once we move it once, it is no longer there
                 // After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
                 break;
 
