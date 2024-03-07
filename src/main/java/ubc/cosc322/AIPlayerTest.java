@@ -118,18 +118,15 @@ public class AIPlayerTest extends GamePlayer {
                 System.out.println("Before");
                 System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
 
-                nextPosition.set(0, random.nextInt(10) + 1);
-                nextPosition.set(1, random.nextInt(10) + 1);
-
-                arrowPosition.set(0, random.nextInt(10) + 1);
-                arrowPosition.set(1, random.nextInt(10) + 1);
+                ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
+                ArrayList<Integer> myNextPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
+                ArrayList<Integer> myNextArrowPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
 
                 System.out.println("After");
                 System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
 
-                gamegui.updateGameState(msgDetails);
-                gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
-                gameClient.sendMoveMessage(currentPosition,nextPosition,arrowPosition);
+                gamegui.updateGameState(myCurrentPosition,myNextPosition,myNextArrowPosition);
+                gameClient.sendMoveMessage(myCurrentPosition,myNextPosition,myNextArrowPosition);
                 // After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
                 break;
 
