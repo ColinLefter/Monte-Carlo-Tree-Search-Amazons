@@ -34,8 +34,7 @@ public class COSC322Test extends GamePlayer{
     private String passwd = "testG4";
 	private Boolean playerIsBlack = false;
 
-	private ArrayList<Integer> currentGameState = new ArrayList<>();
- 
+	private ActionFactory a = new ActionFactory();
 	
     /**
      * The main method
@@ -97,6 +96,7 @@ public class COSC322Test extends GamePlayer{
 
 				//set game state
 				gamegui.setGameState(gameBoardState);
+				ArrayList<Action> moves = a.getActions(gameBoardState, 2);
 				break;
 
 			case GameMessage.GAME_ACTION_START:
