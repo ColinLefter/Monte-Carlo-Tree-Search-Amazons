@@ -1,9 +1,6 @@
 package ubc.cosc322;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -28,6 +25,27 @@ public class MonteCarloTreeSearch {
     4. Backpropagation:
     - Update the information in the nodes from the played-out node up to the root node based on the result of the playout
     */
+    List<List<Integer>> blackPositions = new ArrayList<>();
+    List<List<Integer>> whitePositions = new ArrayList<>();
+    final String OPPONENT = "white";
+
+    public MonteCarloTreeSearch() {
+        initializePositions();
+    }
+
+    public void initializePositions() {
+        // Initializing black positions
+        blackPositions.add(Arrays.asList(1, 7));
+        blackPositions.add(Arrays.asList(4, 10));
+        blackPositions.add(Arrays.asList(7, 10));
+        blackPositions.add(Arrays.asList(10, 7));
+
+        // Initializing white positions
+        whitePositions.add(Arrays.asList(1, 4));
+        whitePositions.add(Arrays.asList(4, 1));
+        whitePositions.add(Arrays.asList(7, 1));
+        whitePositions.add(Arrays.asList(10, 4));
+    }
     public void sendMoveMessage(java.util.ArrayList<java.lang.Integer> queenPosCurrent,
                                 java.util.ArrayList<java.lang.Integer> queenPosNew,
                                 java.util.ArrayList<java.lang.Integer> arrowPos) {
