@@ -1,5 +1,5 @@
 
-package ubc.cosc322;
+package ubc.cosc322.driverCode;
 
 import java.util.*;
 
@@ -8,7 +8,6 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 
 /**
@@ -143,19 +142,6 @@ public class AIPlayerTest extends GamePlayer {
 
     public void sendMoveMessage() {
 //		// TODO Compute the move and send a message to the server
-//		int newYPos = (int) (Math.random() * 10);
-//		int newXPos = (int) (Math.random() * 10);
-//
-//		int newXArrowPos = (int) (Math.random() * 10);
-//		int newYArrowPos = (int) (Math.random() * 10);
-//
-//		queenPosNew.set(0, newXPos);
-//		queenPosNew.set(1, newYPos);
-//
-//		arrowPos.set(0, newXArrowPos);
-//		arrowPos.set(1, newYArrowPos);
-//		// we have a 30s time limit, so we must send a move by then
-
 
     }
 

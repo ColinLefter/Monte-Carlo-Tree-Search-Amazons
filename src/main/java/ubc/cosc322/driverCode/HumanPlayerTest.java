@@ -1,5 +1,5 @@
 
-package ubc.cosc322;
+package ubc.cosc322.driverCode;
 
 import java.util.*;
 
