@@ -107,14 +107,6 @@ public class AIPlayerTest extends GamePlayer {
 
                 gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
 
-//				System.out.println("Printing out positions arrays: ");
-//				System.out.println("--------------");
-//				System.out.println(currentPosition);
-//				System.out.println(nextPosition);
-//				System.out.println(ArrowPosition);
-//				System.out.println("--------------");
-                // quee_pos_next just reflects what our next move will be after currently being at queen_pos_curr
-
                 // The server handles which player needs to make a move. If we reached this case, then it is our turn to make a move.
                 Random random = new Random();
 
