@@ -28,6 +28,9 @@ public class MonteCarloTreeSearch {
     List<List<Integer>> blackPositions = new ArrayList<>();
     List<List<Integer>> whitePositions = new ArrayList<>();
     final String OPPONENT = "white";
+    static final int WIN_SCORE = 10;
+    int level;
+    int opponent;
 
     public MonteCarloTreeSearch() {
         initializePositions();
@@ -51,4 +54,34 @@ public class MonteCarloTreeSearch {
                                 java.util.ArrayList<java.lang.Integer> arrowPos) {
 
     }
+    public Board findNextMove(Board board, int playerNo) {
+        // give 30 seconds to choose the right node
+        long end = System.currentTimeMillis() + 30000;
+
+        opponent = 3 - playerNo;
+        Tree tree = new Tree(board);
+        Node rootNode = tree.getRoot();
+        rootNode.getState().setBoard(board);
+        rootNode.getState().setPlayerNo(opponent);
+
+        while (System.currentTimeMillis() < end) {
+            Node promisingNode = selectPromisingNode(rootNode);
+            if (promisingNode.getState().getBoard().checkStatus()
+                    == Board.IN_PROGRESS) {
+                expandNode(promisingNode);
+            }
+            Node nodeToExplore = promisingNode;
+            if (!promisingNode.getChildArray().isEmpty()) {
+                nodeToExplore = promisingNode.getRandomChildNode();
+            }
+            int playoutResult = simulateRandomPlayout(nodeToExplore);
+            backPropogation(nodeToExplore, playoutResult);
+        }
+
+        Node winnerNode = rootNode.getChildWithMaxScore();
+        tree.setRoot(winnerNode);
+        return winnerNode.getState().getBoard();
+    }
+
+
 }

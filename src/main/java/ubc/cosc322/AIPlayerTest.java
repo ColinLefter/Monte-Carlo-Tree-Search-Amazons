@@ -24,7 +24,8 @@ public class AIPlayerTest extends GamePlayer {
 
     private String userName = "The player";
     private String passwd = "playerPass";
-    private Boolean playerIsBlack = false;
+    private String ourTeam = "";
+    private String theirTeam = "";
 
     ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
 
@@ -88,6 +89,17 @@ public class AIPlayerTest extends GamePlayer {
 
             case GameMessage.GAME_ACTION_START:
                 //handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
+
+                if(((String) msgDetails.get("player-white")).equals(this.userName())) {
+                    System.out.println("Game State: " + msgDetails.get("player-white"));
+                    ourTeam = "White Player: " + this.userName();
+                    theirTeam = "Black Player: " + msgDetails.get("player-black");
+                }
+                else {
+                    ourTeam = "Black Player: " + this.userName();
+                    theirTeam = "White Player: " + msgDetails.get("player-white");
+                }
+
                 // TODO: Store player names as necessary
                 String playerNameBlack = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK); // black is always the human player (or other AI)
                 String playerNameWhite = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE); // we are white
@@ -105,6 +117,14 @@ public class AIPlayerTest extends GamePlayer {
                 ArrayList<Integer> currentPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
                 ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
                 ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+                System.out.println("Below is player color");
+                System.out.println(msgDetails.get(AmazonsGameMessage.PLAYER_WHITE));
+                if(msgDetails.get(AmazonsGameMessage.PLAYER_WHITE).toString() == null){
+                    System.out.println("The Opponent is Black");
+                } else{
+                    System.out.println("The Opponent is White");
+                }
+                System.out.println("Above is player color");
 
                 gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
 
