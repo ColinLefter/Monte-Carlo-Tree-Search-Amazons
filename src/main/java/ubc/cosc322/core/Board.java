@@ -89,4 +89,17 @@ public class Board {
         }
         return emptyPositions;
     }
+
+    public Board getBoard() {
+        //TODO: get the state of the board
+        return null;
+    }
+
+    public void setBoard(Board board) {
+        //TODO: set the state of the board
+    }
+
+    public void setPlayerNo(int opponent) {
+        //TODO: set the player number
+    }
 }

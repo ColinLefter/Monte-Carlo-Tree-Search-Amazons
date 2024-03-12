@@ -3,6 +3,7 @@ package ubc.cosc322;
 import java.util.*;
 
 import sfs2x.client.entities.Room;
+import ubc.cosc322.core.Board;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;

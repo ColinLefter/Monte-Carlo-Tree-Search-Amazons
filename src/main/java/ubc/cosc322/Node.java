@@ -1,5 +1,7 @@
 package ubc.cosc322;
 
+import ubc.cosc322.core.Board;
+
 import java.util.*;
 
 public class Node {
