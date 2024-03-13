@@ -27,7 +27,7 @@ public class Node {
     }
     // Get a list of the children in an array
     public Collection<Object> getChildArray() {
-        return new ArrayList<Object>(children);
+        return new ArrayList<>(children);
     }
     // Get a random child node
     public Node getRandomChildNode() {
@@ -37,9 +37,9 @@ public class Node {
     // Return the child with the max score
     public Node getChildWithMaxScore() {
         Node maxScoreNode = null;
-        double maxScore = -9999;
+        double maxScore = Double.MIN_VALUE;
         for(Node child: children){
-            if(child.winScore>maxScore){
+            if (child.winScore>maxScore){
                 maxScore = child.winScore;
                 maxScoreNode = child;
             }
