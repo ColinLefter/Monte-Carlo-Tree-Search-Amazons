@@ -100,8 +100,12 @@ public class MonteCarloTreeSearch {
      * @return The selected promising node.
      */
     public Node selectPromisingNode(Node node) {
-        // Implementation of the selection mechanism goes here.
-        return null;
+        //node with the highest amount of playouts is returned
+        Node promisingNode = node;
+        while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
+            promisingNode = UCT.findBestNodeWithUCT(promisingNode);
+        }
+        return promisingNode;
     }
 
     /**

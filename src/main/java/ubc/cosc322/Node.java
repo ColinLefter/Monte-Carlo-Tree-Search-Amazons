@@ -16,6 +16,20 @@ public class Node {
         this.children = new ArrayList<>();
     }
 
+    // Getters and setters
+    public double getWinScore() {
+        return winScore;
+    }
+
+    public int getVisitCount() {
+        return visitCount;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+
     // Add child nodes
     public void addChild(Node child) {
         children.add(child);
@@ -26,7 +40,7 @@ public class Node {
         return state;
     }
     // Get a list of the children in an array
-    public Collection<Object> getChildArray() {
+    public Collection<Node> getChildArray() {
         return new ArrayList<>(children);
     }
     // Get a random child node

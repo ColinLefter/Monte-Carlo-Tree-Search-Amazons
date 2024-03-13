@@ -3,8 +3,8 @@ package ubc.cosc322.driverCode;
 
 import java.util.*;
 
-import ubc.cosc322.Action;
-import ubc.cosc322.core.ActionFactory;
+import ubc.cosc322.core.actionFactory.Action;
+import ubc.cosc322.core.actionFactory.ActionFactory;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
