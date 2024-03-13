@@ -60,4 +60,8 @@ public class Node {
         }
         return maxScoreNode;
     }
+    // Set the node of the parent to this node
+    public void setParent(Node node) {
+        this.parent = node;
+    }
 }

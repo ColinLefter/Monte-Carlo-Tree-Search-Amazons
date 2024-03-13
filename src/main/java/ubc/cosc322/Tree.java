@@ -21,11 +21,10 @@ public class Tree {
     public Node getRoot() {
         return root;
     }
-
+    // Method to set the root node
     public void setRoot(Node winnerNode) {
         root = winnerNode;
     }
 
-    // You might want to add methods to manipulate the tree if needed
 }
 

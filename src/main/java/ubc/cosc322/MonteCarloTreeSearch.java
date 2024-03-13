@@ -131,10 +131,17 @@ public class MonteCarloTreeSearch {
 
     /**
      * Expands the node by creating new child nodes representing possible future game states.
+     * Changed the type of list from state to board - Jared W.
      *
-     * @param promising The node to expand.
+     * @param node The node to expand.
      */
-    public void expandNode(Node promising) {
-        // Implementation of the node expansion algorithm goes here.
+    private void expandNode(Node node) {
+        List<Board> possibleStates = node.getState().getAllPossibleStates();
+        possibleStates.forEach(board -> {
+            Node newNode = new Node(board);
+            newNode.setParent(node);
+            newNode.getState().setPlayerNo(node.getState().getOpponent());
+            node.getChildArray().add(newNode);
+        });
     }
 }

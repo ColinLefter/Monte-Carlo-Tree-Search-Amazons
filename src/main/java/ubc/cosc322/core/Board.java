@@ -102,4 +102,14 @@ public class Board {
     public void setPlayerNo(int opponent) {
         //TODO: set the player number
     }
+
+    public int getOpponent() {
+        //TODO: get opponents position on board
+        return 0;
+    }
+
+    public List<Board> getAllPossibleStates() {
+        //TODO: retrieve all possible states of the board
+        return null;
+    }
 }
