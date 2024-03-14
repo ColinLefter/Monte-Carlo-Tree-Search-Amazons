@@ -126,7 +126,14 @@ public class MonteCarloTreeSearch {
      * @param playoutResult The result of the playout to be backpropagated.
      */
     public void backPropogation(Node toExplore, int playoutResult) {
-        // Implementation of the backpropagation algorithm goes here.
+        Node tempNode = toExplore;
+        while (tempNode != null) {
+            tempNode.incrementVisit();
+            if (tempNode.getPlayerNo() == playerNo) { // we need to know the player number of the current node
+                tempNode.addScore(WIN_SCORE); // we also need a way to keep track of the score
+            }
+            tempNode = tempNode.getParent();
+        }
     }
 
     /**

@@ -14,7 +14,7 @@ public class Board {
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
     public static final int DRAW = 0;
-    public static final int P1 = 1;
+    public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
 
     /**
@@ -99,7 +99,7 @@ public class Board {
         //TODO: set the state of the board
     }
 
-    public void setPlayerNo(int opponent) {
-        //TODO: set the player number
+    public int getPlayerNo(String playerName) { // the string that gets passed must be PLAYER_BLACK
+        return playerName.equals("CKJJA") ? P1 : P2;
     }
 }
