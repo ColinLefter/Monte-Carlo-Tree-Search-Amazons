@@ -160,10 +160,12 @@ public class AIPlayerTest extends GamePlayer {
         playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
 
         Board bestMove = mcts.findNextMove(board,playerNo);
+        ArrayList<Integer> moveDetails = Board.extractMoveDetails(board,bestMove);
 
-//        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
-//        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
-//        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
+
+        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
+        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
+        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
 
         gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
         gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
