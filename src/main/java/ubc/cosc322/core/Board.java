@@ -90,26 +90,94 @@ public class Board {
         return emptyPositions;
     }
 
-    public Board getBoard() {
-        //TODO: get the state of the board
-        return null;
+    /**
+     * Retrieves the current state of the board.
+     *
+     * @return The 2D array representing the board state.
+     */
+    public int[][] getBoard() {
+        return boardValues;
     }
 
-    public void setBoard(Board board) {
-        //TODO: set the state of the board
+    /**
+     * Sets the board state. Use with caution to avoid corrupting the game state.
+     *
+     * @param newBoardValues The new board state to set.
+     */
+    public void setBoard(int[][] newBoardValues) {
+        this.boardValues = newBoardValues;
     }
 
-    public int getPlayerNo(String playerName) { // the string that gets passed must be PLAYER_BLACK
-        return playerName.equals("CKJJA") ? P1 : P2;
+    /**
+     * Retrieves the player number based on the player name.
+     * The name 'CKJJA' corresponds to the AI player (our initials put together) and determines the player number based on the order of joining.
+     * We need to know two things to determine who is who: the name of the white player, and whether that name is what we named our AI
+     *
+     * @param playerName The name of the player being checked.
+     * @param isPlayerWhite A boolean indicating whether the AI is playing as white.
+     * @return The player number (1 for black, 2 for white).
+     */
+    public int getPlayerNo(String playerName, boolean isPlayerWhite) {
+        if (playerName.equals("CKJJA")) {
+            return isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
+        } else {
+            return isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
+        }
     }
 
-    public int getOpponent() {
-        //TODO: get opponents position on board
-        return 0;
+    /**
+     * @param currentPlayer The player number of the current player.
+     * @return The opponent's player number.
+     */
+    public int getOpponent(int currentPlayer) {
+        // Assuming only two players, this returns the opponent's number.
+        return (currentPlayer == P1) ? P2 : P1; // If we are player 1, then the opponent must be player 2
     }
 
-    public List<Board> getAllPossibleStates() {
-        //TODO: retrieve all possible states of the board
-        return null;
+    /**
+     * Generates all possible next states of the board from the current player's perspective.
+     *
+     * @param currentPlayer The player number (P1 or P2) for whom to generate possible states.
+     * @return A list of Board objects representing all possible next states.
+     */
+    public List<Board> getAllPossibleStates(int currentPlayer) {
+        List<Board> possibleStates = new ArrayList<>();
+
+        // Iterate over all board positions
+        for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
+            for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
+                // Check if there is a queen of the current player at this position
+                if (boardValues[x][y] == currentPlayer) {
+                    // Get all legal moves for this queen
+                    List<Position> legalMoves = getLegalMoves(x, y);
+
+                    // For each legal move, create a new board state
+                    for (Position move : legalMoves) {
+                        Board newState = new Board();
+                        copyBoardState(this.boardValues, newState.boardValues);
+
+                        // Move the queen to the new position
+                        newState.boardValues[x][y] = 0; // Remove from the old position. 0 denotes an open tile.
+                        newState.boardValues[move.getX()][move.getY()] = currentPlayer; // Place at the new position
+
+                        possibleStates.add(newState);
+                    }
+                }
+            }
+        }
+
+        return possibleStates;
+    }
+
+    /**
+     * Copies the board state from one 2D array to another.
+     *
+     * @param source The source 2D array.
+     * @param destination The destination 2D array.
+     */
+    private void copyBoardState(int[][] source, int[][] destination) {
+        for (int i = 0; i < source.length; i++) {
+            System.arraycopy(source[i], 0, destination[i], 0, source[i].length);
+        }
     }
 }

@@ -22,6 +22,7 @@ public class MonteCarloTreeSearch {
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
     int opponent; // Opponent's player number.
+    final int UPPER_TIME_LIMIT = 29000;
 
     /**
      * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.
@@ -67,31 +68,29 @@ public class MonteCarloTreeSearch {
      * @return The updated board after the best move is applied.
      */
     public Board findNextMove(Board board, int playerNo) {
-        long end = System.currentTimeMillis() + 29000;
+        long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
 
-        opponent = 3 - playerNo;
-        Tree tree = new Tree(board);
-        Node rootNode = tree.getRoot();
-        rootNode.getState().setBoard(board);
-        rootNode.getState().setPlayerNo(opponent);
+        Node rootNode = new Node(playerNo); // Create a root node with the current player number.
+        rootNode.setState(board); // Set the initial state of the game.
 
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
-            if (promisingNode.getState().getBoard().checkStatus() == Board.IN_PROGRESS) {
-                expandNode(promisingNode);
+            if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
+                // When expanding, we use the opponent of the node's player because each level alternates.
+                expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
             }
             Node nodeToExplore = promisingNode;
-            if (!promisingNode.getChildArray().isEmpty()) {
+            if (!promisingNode.getChildren().isEmpty()) {
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
             int playoutResult = simulateRandomPlayout(nodeToExplore);
-            backPropogation(nodeToExplore, playoutResult);
+            backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
         }
 
         Node winnerNode = rootNode.getChildWithMaxScore();
-        tree.setRoot(winnerNode);
-        return winnerNode.getState().getBoard();
+        return winnerNode.getState();
     }
+
 
     /**
      * Selects the most promising node to explore based on the UCT value.
@@ -122,17 +121,18 @@ public class MonteCarloTreeSearch {
     /**
      * Backpropagates the result of the simulation up the tree, updating the statistics of the nodes.
      *
-     * @param toExplore The node from which to start backpropagation.
+     * @param node The node from which to start backpropagation.
      * @param playoutResult The result of the playout to be backpropagated.
+     * @param playerNo The player number associated with each node
      */
-    public void backPropogation(Node toExplore, int playoutResult) {
-        Node tempNode = toExplore;
-        while (tempNode != null) {
-            tempNode.incrementVisit();
-            if (tempNode.getPlayerNo() == playerNo) { // we need to know the player number of the current node
-                tempNode.addScore(WIN_SCORE); // we also need a way to keep track of the score
+    public void backPropagation(Node node, int playoutResult, int playerNo) {
+        while (node != null) {
+            node.incrementVisit();
+            // Only add score if the playout result corresponds to the node's player winning
+            if (node.getPlayerNo() == playerNo && playoutResult == WIN_SCORE) {
+                node.addScore(WIN_SCORE);
             }
-            tempNode = tempNode.getParent();
+            node = node.getParent();
         }
     }
 
@@ -142,13 +142,14 @@ public class MonteCarloTreeSearch {
      *
      * @param node The node to expand.
      */
-    private void expandNode(Node node) {
-        List<Board> possibleStates = node.getState().getAllPossibleStates();
+    private void expandNode(Node node, int playerNo) {
+        int opponent = 3 - playerNo; // we need to determine the opponent first
+
+        List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);
         possibleStates.forEach(board -> {
-            Node newNode = new Node(board);
-            newNode.setParent(node);
-            newNode.getState().setPlayerNo(node.getState().getOpponent());
-            node.getChildArray().add(newNode);
+            Node newNode = new Node(opponent);  // The new node is from the perspective of the opponent.
+            newNode.setState(board);  // Set the board state for the new node.
+            node.addChild(newNode);  // Add the new node as a child of the current node.
         });
     }
 }
