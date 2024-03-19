@@ -7,18 +7,20 @@ import java.util.*;
 public class Node {
     private Node parent;
     private List<Node> children;
-    private double winScore;
+    private double score;
     private int visitCount;
     private Board state;
+    private int playerNo;
 
-    public Node(Board state) {
-        this.state = state;
+    public Node(int playerNo) { // every time we are creating a node, we are tracking all of the following
         this.children = new ArrayList<>();
+        this.score = 0;  // Initialize the score for this node
+        this.playerNo = playerNo;
     }
 
     // Getters and setters
     public double getWinScore() {
-        return winScore;
+        return score;
     }
 
     public int getVisitCount() {
@@ -53,15 +55,28 @@ public class Node {
         Node maxScoreNode = null;
         double maxScore = Double.MIN_VALUE;
         for(Node child: children){
-            if (child.winScore>maxScore){
-                maxScore = child.winScore;
+            if (child.score > maxScore) {
+                maxScore = child.score;
                 maxScoreNode = child;
             }
         }
         return maxScoreNode;
     }
+
     // Set the node of the parent to this node
     public void setParent(Node node) {
         this.parent = node;
+    }
+
+    public void addScore(int score) {
+        this.score += score;
+    }
+
+    public int getPlayerNo() { // we just need to check what number is present
+        return playerNo;
+    }
+
+    public void incrementVisit() {
+        this.visitCount++;
     }
 }
