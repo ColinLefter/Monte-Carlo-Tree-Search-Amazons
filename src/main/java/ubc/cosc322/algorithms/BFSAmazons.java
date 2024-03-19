@@ -15,7 +15,7 @@ public class BFSAmazons {
     public int totalWhiteCount = 0; // Player 2
 
     // Queue holds unsearched nodes, set holds searched nodes
-    List<BFSNode> queue;
+    LinkedList<BFSNode> queue;
     Set<BFSNode> searchedNodes;
 
     public BFSAmazons() {

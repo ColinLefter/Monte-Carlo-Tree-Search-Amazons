@@ -2,6 +2,8 @@ package ubc.cosc322.driverCode;
 
 import java.util.*;
 
+import ubc.cosc322.algorithms.MonteCarloTreeSearch;
+import ubc.cosc322.core.actionFactory.Action;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
@@ -140,14 +142,18 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
-        generateAndSendMove();
+        generateAndSendMove(msgDetails);
     }
 
     /**
      * Generates a random move for the AI and sends it to the server. This method
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
-    private void generateAndSendMove() {
+    private void generateAndSendMove(Map<String, Object> msgDetails) {
+        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
+
+        Action bestMove = mcts.findNextMove(msgDetails,this.getPlayer);
+
         Random random = new Random();
         ArrayList<Integer> myNextPosition = generateRandomPosition(random);
         ArrayList<Integer> myNextArrowPosition = generateRandomPosition(random);
