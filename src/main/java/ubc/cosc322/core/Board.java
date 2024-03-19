@@ -83,7 +83,7 @@ public class Board {
      * Updates the board state to reflect a move made by a player.
      *
      * @param player The player number (1 or 2) making the move.
-     * @param p The position to which the player is moving.
+     * @param newPos The position to which the player is moving.
      */
     public void performMove(int player, Position currentPos, Position newPos) {
         // Remove the piece from its current position.
@@ -171,9 +171,8 @@ public class Board {
      *
      * @return The 2D array representing the board state.
      */
-    public int[][] getBoard() {
-        return boardValues;
-    }
+    // Method to return the current board state
+    public int[][] getBoard() { return boardValues; }
 
     /**
      * Sets the board state. Use with caution to avoid corrupting the game state.
@@ -193,7 +192,7 @@ public class Board {
      * @param isPlayerWhite A boolean indicating whether the AI is playing as white.
      * @return The player number (1 for black, 2 for white).
      */
-    public int getPlayerNo(String playerName, boolean isPlayerWhite) {
+    public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
         if (playerName.equals("CKJJA")) {
             return isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
         } else {
@@ -288,4 +287,38 @@ public class Board {
         }
         return positions;
     }
+
+    public ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
+        ArrayList<Integer> move = new ArrayList<>();
+
+        // Loop over the board to find differences
+        for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
+            for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
+                if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
+                    // Identify the player's queen move
+                    if (currentBoard.boardValues[x][y] == currentPlayer) {
+                        move.add(x + 1); // Old queen X position
+                        move.add(y + 1); // Old queen Y position
+                    } else if (bestMoveBoard.boardValues[x][y] == currentPlayer) {
+                        move.add(x + 1); // New queen X position
+                        move.add(y + 1); // New queen Y position
+                    } else if (bestMoveBoard.boardValues[x][y] == 3) {
+                        move.add(x + 1); // Arrow X position
+                        move.add(y + 1); // Arrow Y position
+                    }
+                }
+            }
+        }
+
+        // The move should have 6 integers if a queen moved and an arrow was placed
+        if (move.size() == 6) {
+            return move; // Contains oldX, oldY, newX, newY, arrowX, arrowY
+        } else {
+            // Something went wrong - not enough information to define a move
+            throw new IllegalStateException("Failed to extract move details.");
+        }
+    }
+
 }
+
+

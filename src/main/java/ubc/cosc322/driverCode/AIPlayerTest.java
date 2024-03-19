@@ -2,7 +2,10 @@ package ubc.cosc322.driverCode;
 
 import java.util.*;
 
+import com.beust.ah.A;
 import ubc.cosc322.algorithms.MonteCarloTreeSearch;
+import ubc.cosc322.algorithms.Node;
+import ubc.cosc322.core.Board;
 import ubc.cosc322.core.actionFactory.Action;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -21,17 +24,19 @@ import ygraph.ai.smartfox.games.amazons.HumanPlayer;
  * @version Jan 5, 2021 - Refactored and documented
  */
 public class AIPlayerTest extends GamePlayer {
-
     private GameClient gameClient = null;
     private BaseGameGUI gameGui = null;
-
     private String userName = "The player";
     private String password = "playerPass";
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
+    private int playerNo;
+    private final String aiPlayerName = "CKJJA";
+    private boolean isAIPlayerWhite;
 
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
-
+    private ArrayList<Integer> myNextPosition = new ArrayList<>(Arrays.asList(0, 0));
+    private ArrayList<Integer> myNextArrowPosition = new ArrayList<>(Arrays.asList(0, 0));
     /**
      * The entry point for the AI player. Initializes the player and sets up the GUI
      * if necessary.
@@ -142,25 +147,26 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
-        generateAndSendMove(msgDetails);
+        generateAndSendMove();
     }
 
     /**
      * Generates a random move for the AI and sends it to the server. This method
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
-    private void generateAndSendMove(Map<String, Object> msgDetails) {
+    private void generateAndSendMove() {
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
+        Board board = new Board().clone();
+        playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
 
-        Action bestMove = mcts.findNextMove(msgDetails,this.getPlayer);
+        Board bestMove = mcts.findNextMove(board,playerNo);
 
-        Random random = new Random();
-        ArrayList<Integer> myNextPosition = generateRandomPosition(random);
-        ArrayList<Integer> myNextArrowPosition = generateRandomPosition(random);
+//        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
+//        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
+//        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
 
         gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
         gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        myCurrentPosition = myNextPosition;
     }
 
     /**
