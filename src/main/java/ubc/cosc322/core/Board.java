@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import ubc.cosc322.algorithms.BFSAmazons;
+
 /**
  * Represents the game board for the Game of the Amazons.
  * Provides functionality to track and update the board state,
@@ -106,7 +108,46 @@ public class Board {
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
     public int checkStatus() {
-        return IN_PROGRESS; // Placeholder implementation; should be extended to check actual game status.
+        // For each queen(of one side), check the following.
+        // 1. Can the queen move?
+        // 2. If yes, can the queen find a queen of the opposite color?
+        // 3a. If yes, the game is in progress, so return.
+        // 3b. If no, count the available squares for each colour. Use the counts to determine the results.
+        
+        BFSAmazons search = new BFSAmazons();
+
+        int queenVal = 1; // Search for black queens first
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
+            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
+
+                if (boardValues[i][j] == queenVal) {
+                    // Queen found. Increment, start searching rest of board (BFS).
+                    if (search.searchBoardPartition(boardValues, i, j, queenVal) == 0)
+                        return IN_PROGRESS;
+
+                }
+            }
+        }
+
+        // If this part is reached, the game is determined by score. Repeat with white queens.
+        queenVal = 2;
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
+            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
+
+                if (boardValues[i][j] == queenVal) {
+                    // Queen found. Increment, start searching rest of board (BFS). Don't bother checking return value.
+                    search.searchBoardPartition(boardValues, i, j, queenVal);
+                }
+            }
+        }
+        // Return result
+        if (search.totalBlackCount == search.totalBlackCount) {
+            return DRAW;
+        } else if(search.totalBlackCount > search.totalWhiteCount) {
+            return P1;
+        } else {
+            return P2;
+        }
     }
 
     /**
