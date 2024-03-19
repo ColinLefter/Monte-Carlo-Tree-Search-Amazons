@@ -1,14 +1,8 @@
-package ubc.cosc322;
+package ubc.cosc322.algorithms;
 
 import java.util.*;
 
-import sfs2x.client.entities.Room;
 import ubc.cosc322.core.Board;
-import ygraph.ai.smartfox.games.BaseGameGUI;
-import ygraph.ai.smartfox.games.GameClient;
-import ygraph.ai.smartfox.games.GamePlayer;
-import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-import ygraph.ai.smartfox.games.GameMessage;
 
 /**
  * Implements the Monte Carlo Tree Search (MCTS) algorithm for the Game of the Amazons.
@@ -21,7 +15,6 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    int opponent; // Opponent's player number.
     final int UPPER_TIME_LIMIT = 29000;
 
     /**

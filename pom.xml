@@ -8,11 +8,10 @@
     <packaging>jar</packaging>
      
 
-    <name>COSC322-Team-00</name>
-    <description>COSC 322 Game Player Project</description>
-    <inceptionYear>2021</inceptionYear>
-    
-	
+    <name>COSC-322-CKJJA-V1.0.0-EXPERIMENTAL</name>
+    <description>COSC 322 Game of the Amazons AI Agent</description>
+    <inceptionYear>2024</inceptionYear>
+
     <dependencies> 
         <dependency>	        
 	    <groupId>ubc-yong-gao</groupId>
@@ -24,6 +23,42 @@
             <groupId>smartfox.client-libs</groupId>
             <artifactId>netty</artifactId>
             <version>3.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 	
@@ -53,7 +88,13 @@
     </developers>
 
     <build>
- 
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+        </plugins>
     </build>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

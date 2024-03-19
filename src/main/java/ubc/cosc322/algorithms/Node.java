@@ -1,4 +1,4 @@
-package ubc.cosc322;
+package ubc.cosc322.algorithms;
 
 import ubc.cosc322.core.Board;
 

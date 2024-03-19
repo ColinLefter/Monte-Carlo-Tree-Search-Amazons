@@ -1,14 +1,4 @@
-package ubc.cosc322;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import ubc.cosc322.core.Board;
-import ygraph.ai.smartfox.games.GameMessage;
-import ygraph.ai.smartfox.games.BaseGameGUI;
-import ygraph.ai.smartfox.games.GameClient;
-import ygraph.ai.smartfox.games.GamePlayer;
-import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
+package ubc.cosc322.algorithms;
 
 /**
  * Represents the search tree used in the Monte Carlo Tree Search (MCTS) algorithm.

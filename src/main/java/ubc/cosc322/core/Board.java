@@ -2,6 +2,7 @@ package ubc.cosc322.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents the game board for the Game of the Amazons.
@@ -17,11 +18,32 @@ public class Board {
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
 
+    // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
+    private int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
+
+    // Lists to keep track of player positions.
+    // Excellent optimization to avoid O(n^2) runtime complexity of a solution where we scan the board each time
+    private List<Position> player1Positions = new ArrayList<>();
+    private List<Position> player2Positions = new ArrayList<>();
+
     /**
      * Initializes a new Board instance with default size.
      */
     public Board() {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
+    }
+
+    /**
+     * Clones this Board instance, creating a new instance with the same board state.
+     *
+     * @return A new Board instance with the same state as this board.
+     */
+    public Board clone() {
+        Board newBoard = new Board();
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
+            newBoard.boardValues[i] = this.boardValues[i].clone();
+        }
+        return newBoard;
     }
 
     /**
@@ -61,8 +83,21 @@ public class Board {
      * @param player The player number (1 or 2) making the move.
      * @param p The position to which the player is moving.
      */
-    public void performMove(int player, Position p) {
-        boardValues[p.getX()][p.getY()] = player;
+    public void performMove(int player, Position currentPos, Position newPos) {
+        // Remove the piece from its current position.
+        boardValues[currentPos.getX()][currentPos.getY()] = 0;
+
+        // Place the piece at the new position.
+        boardValues[newPos.getX()][newPos.getY()] = player;
+
+        // Update the position list.
+        if (player == P1) {
+            player1Positions.remove(currentPos);
+            player1Positions.add(newPos);
+        } else {
+            player2Positions.remove(currentPos);
+            player2Positions.add(newPos);
+        }
     }
 
     /**
@@ -179,5 +214,37 @@ public class Board {
         for (int i = 0; i < source.length; i++) {
             System.arraycopy(source[i], 0, destination[i], 0, source[i].length);
         }
+    }
+
+    public void togglePlayer() {
+        // Assuming currentPlayer is an int that represents the player (1 or 2).
+        currentPlayer = currentPlayer == 1 ? 2 : 1;
+    }
+
+    public void randomPlay() {
+        List<Position> playerPositions = currentPlayer == P1 ? player1Positions : player2Positions;
+        Random random = new Random();
+
+        if (!playerPositions.isEmpty()) {
+            Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
+            List<Position> legalMoves = getLegalMoves(piecePosition.getX(), piecePosition.getY());
+
+            if (!legalMoves.isEmpty()) {
+                Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
+                performMove(currentPlayer, piecePosition, selectedMove);
+            }
+        }
+    }
+
+    private List<Position> getPlayerPositions(int player) {
+        List<Position> positions = new ArrayList<>();
+        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
+            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
+                if (boardValues[i][j] == player) { // We need to know who is where
+                    positions.add(new Position(i, j));
+                }
+            }
+        }
+        return positions;
     }
 }
