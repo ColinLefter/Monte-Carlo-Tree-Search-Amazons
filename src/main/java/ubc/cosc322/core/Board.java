@@ -141,7 +141,7 @@ public class Board {
             }
         }
         // Return result
-        if (search.totalBlackCount == search.totalBlackCount) {
+        if (search.totalBlackCount == search.totalWhiteCount) {
             return DRAW;
         } else if(search.totalBlackCount > search.totalWhiteCount) {
             return P1;
