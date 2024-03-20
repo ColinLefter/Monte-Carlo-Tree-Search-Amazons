@@ -64,6 +64,32 @@ public class Board {
     }
     // Initialize the board from an ArrayList<Integer>
 
+    public List<Position> getQueenPositions(int playerNo) {
+        List<Position> queenPositions = new ArrayList<>();
+
+        if (playerNo == P1) { // IMPORTANT: We are returning copies as otherwise we would be returning the original object that can be modified
+            for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {  //row
+                for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) { //column
+                    if((boardValues[i][j]) == 1){
+                        queenPositions.add(new Position(i,j));
+                    }
+                }
+            }
+            return queenPositions;  // Returns a copy of the player 1 queen positions
+        } else if (playerNo == P2) {
+            for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {  //row
+                for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) { //column
+                    if((boardValues[i][j]) == 1){
+                        queenPositions.add(new Position(i,j));
+                    }
+                }
+            }
+            return queenPositions;  // Returns a copy of the player 2 queen positions
+        } else {
+            throw new IllegalArgumentException("Invalid player number.");
+        }
+    }
+
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
         // Check if the gameBoardState size matches the expected size of the boardValues array
         ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));

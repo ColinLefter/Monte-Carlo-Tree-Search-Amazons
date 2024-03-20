@@ -3,6 +3,7 @@ package ubc.cosc322.algorithms;
 import java.util.*;
 
 import ubc.cosc322.core.Board;
+import ubc.cosc322.core.Position;
 
 /**
  * Implements the Monte Carlo Tree Search (MCTS) algorithm for the Game of the Amazons.
@@ -220,14 +221,20 @@ public class MonteCarloTreeSearch {
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
-        //System.out.println("expand node activated");
-        int opponent = 3 - playerNo; // we need to determine the opponent first
-
         List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);
-        possibleStates.forEach(board -> {
-            Node newNode = new Node(opponent);  // The new node is from the perspective of the opponent.
-            newNode.setState(board);  // Set the board state for the new node.
-            node.addChild(newNode);  // Add the new node as a child of the current node.
-        });
+        for (Board state : possibleStates) {
+            List<Position> queenPositions = state.getQueenPositions(playerNo);
+
+            for (Position queenPos : queenPositions) {
+                List<Position> possibleArrowShots = state.getLegalMoves(queenPos.getX(), queenPos.getY());
+                for (Position arrowShot : possibleArrowShots) { // we are now considering all possible subsequent arrow shots with each expansion
+                    Board newState = state.clone();
+                    newState.shootArrow(arrowShot);
+                    Node childNode = new Node(3 - playerNo);
+                    childNode.setState(newState);
+                    node.addChild(childNode);
+                }
+            }
+        }
     }
 }
