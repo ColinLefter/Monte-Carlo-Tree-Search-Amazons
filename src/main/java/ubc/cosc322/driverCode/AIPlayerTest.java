@@ -32,7 +32,7 @@ public class AIPlayerTest extends GamePlayer {
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
     private int playerNo;
-    private final String aiPlayerName = "CKJJA";
+    private final String aiPlayerName = "CKJJA2";
     private boolean isAIPlayerWhite;
 
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));

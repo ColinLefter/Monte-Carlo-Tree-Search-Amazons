@@ -258,7 +258,7 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
+        if (playerName.equals("CKJJA2")) { // if we are the white player, we are 2
             currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
         } else {
             currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
@@ -390,29 +390,27 @@ public class Board {
     }
 
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
-        System.out.println("current board"+Arrays.deepToString(currentBoard.getBoard()));
-        System.out.println("best move board"+Arrays.deepToString(bestMoveBoard.getBoard()));
+        System.out.println("current board" + Arrays.deepToString(currentBoard.getBoard()));
+        System.out.println("best move board" + Arrays.deepToString(bestMoveBoard.getBoard()));
         ArrayList<Integer> moveDetails = new ArrayList<>();
 
-        // Variables to track the positions found
+        // Initialize variables to track the positions found.
         Integer oldQueenX = null, oldQueenY = null, newQueenX = null, newQueenY = null, arrowX = null, arrowY = null;
 
-        // Loop over the board to find differences and identify the move components
+        // Loop over the board to identify the old queen position, new queen position, and arrow position.
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
-                //System.out.println("debug: test30");
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
-                    //System.out.println("debug: test31");
-                    if (currentBoard.boardValues[x][y] == currentPlayer) {
-                        //System.out.println("debug: test32");
+                    if (currentBoard.boardValues[x][y] != 0 && bestMoveBoard.boardValues[x][y] == 0) {
+                        // The queen has moved from this position.
                         oldQueenX = x + 1;
                         oldQueenY = y + 1;
-                    } else if (bestMoveBoard.boardValues[x][y] == currentPlayer) {
-                        //System.out.println("debug: test33");
+                    } else if (currentBoard.boardValues[x][y] == 0 && bestMoveBoard.boardValues[x][y] != 0 && bestMoveBoard.boardValues[x][y] != ARROW) {
+                        // The queen has moved to this position.
                         newQueenX = x + 1;
                         newQueenY = y + 1;
                     } else if (bestMoveBoard.boardValues[x][y] == ARROW) {
-                        System.out.println("debug: test34");
+                        // The arrow has been shot to this position.
                         arrowX = x + 1;
                         arrowY = y + 1;
                     }
@@ -420,25 +418,20 @@ public class Board {
             }
         }
 
-        // Check if all components of the move have been identified
+        // Compile and return the move details if all components are identified.
         if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {
-            moveDetails.add(oldQueenX);
-            moveDetails.add(oldQueenY);
-            moveDetails.add(newQueenX);
-            moveDetails.add(newQueenY);
-            moveDetails.add(arrowX);
-            moveDetails.add(arrowY);
+            moveDetails.addAll(Arrays.asList(oldQueenX, oldQueenY, newQueenX, newQueenY, arrowX, arrowY));
             System.out.println(moveDetails);
-            System.out.println(moveDetails.size());
-            return moveDetails; // Correctly formed move
+            return moveDetails;
         } else {
-            // Log missing components for debugging
+            // Log missing components for debugging purposes.
             System.err.println("Missing move components: oldQ=(" + oldQueenX + "," + oldQueenY +
                     "), newQ=(" + newQueenX + "," + newQueenY +
                     "), arrow=(" + arrowX + "," + arrowY + ")");
             throw new IllegalStateException("Failed to extract move details. Missing components.");
         }
     }
+
 
     private static int getCurrentPlayer() {
         return currentPlayer;
