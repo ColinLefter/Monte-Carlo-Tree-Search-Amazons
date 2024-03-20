@@ -130,14 +130,19 @@ public class AIPlayerTest extends GamePlayer {
      * @param msgDetails Details of the game action start message.
      */
     private void handleGameActionStart(Map<String, Object> msgDetails) {
-        if (msgDetails.get("player-white").equals(this.userName)) {
-            this.ourTeamColor = "White";
-            this.opponentTeamColor = "Black";
+        if (msgDetails.get("player-white").equals(userName)) {
+            isAIPlayerWhite = true;
+            ourTeamColor = "White";
+            opponentTeamColor = "Black";
         } else {
-            this.ourTeamColor = "Black";
-            this.opponentTeamColor = "White";
+            isAIPlayerWhite = false;
+            ourTeamColor = "Black";
+            opponentTeamColor = "White";
         }
-        System.out.println("Our team: " + this.ourTeamColor + " | Opponent team: " + this.opponentTeamColor);
+        if (ourTeamColor.equals("Black")) {
+            generateAndSendMove(); // we make the first move
+        }
+        System.out.println("Our team: " + ourTeamColor + " | Opponent team: " + opponentTeamColor);
     }
 
     /**
@@ -164,7 +169,7 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
-        playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
+        playerNo = Board.getPlayerNo(aiPlayerName, isAIPlayerWhite);
         System.out.println("debug1: main board "+Arrays.deepToString(getMainBoard().getBoard()));
         Board bestMove = mcts.findNextMove(getMainBoard(),playerNo);
         if(bestMove != null){

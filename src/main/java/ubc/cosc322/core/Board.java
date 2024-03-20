@@ -24,6 +24,7 @@ public class Board {
     public static final int DRAW = 0;
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
+    public static final int ARROW = 3;
     private GameClient gameClient;
     private BaseGameGUI gameGui;
 
@@ -128,7 +129,7 @@ public class Board {
         mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
 
         // Place the arrow
-        mainBoardValues[arrowX][arrowY] = 3;
+        mainBoardValues[arrowX][arrowY] = ARROW;
     }
 
     public static Board getMainBoard(){
@@ -270,11 +271,13 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA")) {
-            return isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
+        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
+            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
         } else {
-            return isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
+            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
         }
+
+        return currentPlayer;
     }
 
     /**
@@ -379,7 +382,7 @@ public class Board {
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
-            boardValues[arrowPosition.getX()][arrowPosition.getY()] = 3;
+            boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
             System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");
@@ -413,15 +416,15 @@ public class Board {
                 //System.out.println("debug: test30");
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
                     //System.out.println("debug: test31");
-                    if (currentBoard.boardValues[x][y] == 2) {
+                    if (currentBoard.boardValues[x][y] == currentPlayer) {
                         //System.out.println("debug: test32");
                         oldQueenX = x + 1;
                         oldQueenY = y + 1;
-                    } else if (bestMoveBoard.boardValues[x][y] == 2) {
+                    } else if (bestMoveBoard.boardValues[x][y] == currentPlayer) {
                         //System.out.println("debug: test33");
                         newQueenX = x + 1;
                         newQueenY = y + 1;
-                    } else if (bestMoveBoard.boardValues[x][y] == 3) {
+                    } else if (bestMoveBoard.boardValues[x][y] == ARROW) {
                         System.out.println("debug: test34");
                         arrowX = x + 1;
                         arrowY = y + 1;
