@@ -40,11 +40,14 @@ public class MonteCarloTreeSearch {
     public Board findNextMove(Board board, int playerNo) { // This method now uses the Tree class
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
 
+        System.out.println("Finding next move");
+
         Node rootNode = new Node(playerNo, 0); // CRITICAL: Initialize the root node with depth 0
         rootNode.setState(board.clone());
         Tree searchTree = new Tree(rootNode); // Instantiating Tree with the rootNode.
 
         while (System.currentTimeMillis() < end) {
+            System.out.println("In the while loop");
             Node promisingNode = selectPromisingNode(searchTree.getRoot()); // Use Tree's root.
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
@@ -57,6 +60,8 @@ public class MonteCarloTreeSearch {
             int playoutResult = simulateRandomPlayout(nodeToExplore);
             backPropagation(nodeToExplore, playoutResult, playerNo);
         }
+
+        System.out.println("Excited the while loop");
 
         return searchTree.getRoot().getChildWithMaxScore().getState(); // Accessing root from Tree.
     }
