@@ -1,4 +1,3 @@
-
 package ubc.cosc322.driverCode;
 
 import java.util.*;
@@ -8,29 +7,34 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
-
+import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
- * An example illustrating how to implement a GamePlayer
- * @author Yong Gao (yong.gao@ubc.ca)
- * Jan 5, 2021
+ * A heavily documented and refactored version of AIPlayerTest which aims to
+ * improve clarity, structure, and efficiency. This class demonstrates a structured
+ * approach to handling different types of game messages and making decisions based
+ * on the game's current state.
  *
+ * @author Yong Gao
+ * @version Jan 5, 2021 - Refactored and documented
  */
 public class AIPlayerTest extends GamePlayer {
 
     private GameClient gameClient = null;
-    private BaseGameGUI gamegui = null;
+    private BaseGameGUI gameGui = null;
 
     private String userName = "The player";
-    private String passwd = "playerPass";
-    private String ourTeam = "";
-    private String theirTeam = "";
+    private String password = "playerPass";
+    private String ourTeamColor = "";
+    private String opponentTeamColor = "";
 
-    ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
+    private ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
 
     /**
-     * The main method
-     * @param args for name and passwd (current, any string would work)
+     * The entry point for the AI player. Initializes the player and sets up the GUI
+     * if necessary.
+     *
+     * @param args Command line arguments for username and password.
      */
     public static void main(String[] args) {
         AIPlayerTest aiPlayer = new AIPlayerTest(args[0], args[1]);
@@ -40,145 +44,156 @@ public class AIPlayerTest extends GamePlayer {
         }
         else {
             BaseGameGUI.sys_setup();
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    aiPlayer.Go();
-                }
-            });
+            java.awt.EventQueue.invokeLater(aiPlayer::Go);
         }
     }
 
     /**
-     * Any name and passwd 
-     * @param userName
-     * @param passwd
+     * Constructs an AIPlayerTest object with specified user credentials and initializes
+     * the game GUI.
+     *
+     * @param userName The username for the player.
+     * @param password The password for the player.
      */
-    public AIPlayerTest(String userName, String passwd) {
+    public AIPlayerTest(String userName, String password) {
         this.userName = userName;
-        this.passwd = passwd;
-
-        //To make a GUI-based player, create an instance of BaseGameGUI
-        //and implement the method getGameGUI() accordingly
-        this.gamegui = new BaseGameGUI(this);
+        this.password = password;
+        this.gameGui = new BaseGameGUI(this);
     }
 
+    /**
+     * Called upon successful login to the game server. Updates the game GUI with
+     * room information.
+     */
     @Override
     public void onLogin() {
-        userName = gameClient.getUserName();
-        if (gamegui != null) {
-            gamegui.setRoomInformation(gameClient.getRoomList());
+        this.userName = gameClient.getUserName();
+        if (gameGui != null) {
+            gameGui.setRoomInformation(gameClient.getRoomList());
         }
     }
 
+    /**
+     * Handles various game messages from the server. Depending on the message type,
+     * different actions are taken to update the game state or respond to game events.
+     *
+     * @param messageType The type of message received.
+     * @param msgDetails Details of the message.
+     * @return true if the message was handled successfully, false otherwise.
+     */
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-        //This method will be called by the GameClient when it receives a game-related message
-        //from the server.
-
-        //For a detailed description of the message types and format, 
-        //see the method GamePlayer.handleGameMessage() in the game-client-api document.
         switch (messageType) {
             case GameMessage.GAME_STATE_BOARD:
-                Object check = msgDetails.get(AmazonsGameMessage.GAME_STATE);
-                ArrayList<Integer> gameBoardState = (ArrayList<Integer>) check;
-
-                //set game state
-                gamegui.setGameState(gameBoardState);
+                handleGameStateBoard(msgDetails);
                 break;
-
             case GameMessage.GAME_ACTION_START:
-                //handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails); // Just use the last case
-
-                if(((String) msgDetails.get("player-white")).equals(this.userName())) {
-                    System.out.println("Game State: " + msgDetails.get("player-white"));
-                    ourTeam = "White Player: " + this.userName();
-                    theirTeam = "Black Player: " + msgDetails.get("player-black");
-                }
-                else {
-                    ourTeam = "Black Player: " + this.userName();
-                    theirTeam = "White Player: " + msgDetails.get("player-white");
-                }
-
-                // TODO: Store player names as necessary
-                String playerNameBlack = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK); // black is always the human player (or other AI)
-                String playerNameWhite = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE); // we are white
-
-                //Change playerIsBlack variable here
-                System.out.println("Player names: ");
-                System.out.printf("Black: %s \n", playerNameBlack);
-                System.out.printf("White: %s \n", playerNameWhite);
-                // the server automatically handles which player's turn it is, so we don't need to update the playerIsBlack variable
+                handleGameActionStart(msgDetails);
                 break;
-
             case GameMessage.GAME_ACTION_MOVE:
-                // Update game state
-                // Storing queen and arrow positions of previous move
-                ArrayList<Integer> currentPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
-                ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
-                ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-                System.out.println("Below is player color");
-                System.out.println(msgDetails.get(AmazonsGameMessage.PLAYER_WHITE));
-                if(msgDetails.get(AmazonsGameMessage.PLAYER_WHITE).toString() == null){
-                    System.out.println("The Opponent is Black");
-                } else{
-                    System.out.println("The Opponent is White");
-                }
-                System.out.println("Above is player color");
-
-                gamegui.updateGameState(currentPosition,nextPosition,arrowPosition);
-
-                // The server handles which player needs to make a move. If we reached this case, then it is our turn to make a move.
-                Random random = new Random();
-
-                System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
-
-                ArrayList<Integer> myNextPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
-                ArrayList<Integer> myNextArrowPosition = new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
-
-                System.out.println(nextPosition.get(0) + " " + nextPosition.get(1));
-
-                gameClient.sendMoveMessage(myCurrentPosition,myNextPosition,myNextArrowPosition);
-                gamegui.updateGameState(myCurrentPosition,myNextPosition,myNextArrowPosition);
-                handleGameMessage(GameMessage.GAME_STATE_BOARD, msgDetails);
-                myCurrentPosition = myNextPosition; // the reason this only moves once is because once we move it once, it is no longer there
-                // After updated game state calculate your move and send your move to the server using the method GameClient.sendMoveMessage(...)
+                handleGameActionMove(msgDetails);
                 break;
-
             default:
                 System.out.println("Unrecognized message received from server.");
                 return false;
         }
-
         return true;
     }
 
-    public void sendMoveMessage() {
-//		// TODO Compute the move and send a message to the server
+    /**
+     * Handles the game state board message. Updates the game GUI with the new game
+     * state.
+     *
+     * @param msgDetails Details of the game state board message.
+     */
+    private void handleGameStateBoard(Map<String, Object> msgDetails) {
+        ArrayList<Integer> gameBoardState = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE);
+        gameGui.setGameState(gameBoardState);
+    }
 
+    /**
+     * Handles the game action start message. Determines the player's and opponent's
+     * team colors based on the assignment in the message details.
+     *
+     * @param msgDetails Details of the game action start message.
+     */
+    private void handleGameActionStart(Map<String, Object> msgDetails) {
+        if (msgDetails.get("player-white").equals(this.userName)) {
+            this.ourTeamColor = "White";
+            this.opponentTeamColor = "Black";
+        } else {
+            this.ourTeamColor = "Black";
+            this.opponentTeamColor = "White";
+        }
+        System.out.println("Our team: " + this.ourTeamColor + " | Opponent team: " + this.opponentTeamColor);
+    }
+
+    /**
+     * Handles the game action move message. Updates the game state with the opponent's
+     * last move and calculates the AI's next move.
+     *
+     * @param msgDetails Details of the game action move message.
+     */
+    private void handleGameActionMove(Map<String, Object> msgDetails) {
+        ArrayList<Integer> currentPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+        ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+        ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+
+        gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
+        generateAndSendMove();
+    }
+
+    /**
+     * Generates a random move for the AI and sends it to the server. This method
+     * serves as a placeholder until a more sophisticated AI logic is implemented.
+     */
+    private void generateAndSendMove() {
+        Random random = new Random();
+        ArrayList<Integer> myNextPosition = generateRandomPosition(random);
+        ArrayList<Integer> myNextArrowPosition = generateRandomPosition(random);
+
+        gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        myCurrentPosition = myNextPosition;
+    }
+
+    /**
+     * Generates a random position on the board.
+     *
+     * @param random Random generator to use for position generation.
+     * @return A random board position.
+     */
+    private ArrayList<Integer> generateRandomPosition(Random random) {
+        return new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
     }
 
     @Override
     public String userName() {
-        return userName;
+        return this.userName;
     }
 
     @Override
     public GameClient getGameClient() {
-        // TODO Auto-generated method stub
         return this.gameClient;
     }
 
     @Override
     public BaseGameGUI getGameGUI() {
-        // TODO Auto-generated method stub
-        return  gamegui;
+        return this.gameGui;
     }
 
+    /**
+     * Establishes a connection to the game server using the provided user credentials.
+     */
     @Override
     public void connect() {
-        // TODO Auto-generated method stub
-        gameClient = new GameClient(userName, passwd, this);
+        this.gameClient = new GameClient(userName, password, this);
     }
 
-
-}//end of class
+    /**
+     * Initializes the game client and connects to the server.
+     */
+    private void go() {
+        connect();
+    }
+}
