@@ -15,6 +15,8 @@ public class MonteCarloTreeSearch {
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
     final int UPPER_TIME_LIMIT = 29000;
+    private final int MAX_DEPTH = 10; // NOTE: This will need to be played around with
+    private static final double PRUNE_THRESHOLD = 0.75; // 1 implies less aggressive pruning. 0 implies most aggressive.
 
     /**
      * Sends a move message to the game server with the specified queen positions and the arrow position.
@@ -38,14 +40,18 @@ public class MonteCarloTreeSearch {
     public Board findNextMove(Board board, int playerNo) { // This method now uses the Tree class
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
 
-        Node rootNode = new Node(playerNo);
+        System.out.println("Finding next move");
+
+        Node rootNode = new Node(playerNo, 0); // CRITICAL: Initialize the root node with depth 0
         rootNode.setState(board.clone());
         Tree searchTree = new Tree(rootNode); // Instantiating Tree with the rootNode.
 
         while (System.currentTimeMillis() < end) {
+            System.out.println("In the while loop");
             Node promisingNode = selectPromisingNode(searchTree.getRoot()); // Use Tree's root.
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
+                pruneChildren(promisingNode); // CRITICAL: Attempt pruning over here as we can't exhaust our memory
             }
             Node nodeToExplore = promisingNode;
             if (!nodeToExplore.getChildren().isEmpty()) {
@@ -54,6 +60,8 @@ public class MonteCarloTreeSearch {
             int playoutResult = simulateRandomPlayout(nodeToExplore);
             backPropagation(nodeToExplore, playoutResult, playerNo);
         }
+
+        System.out.println("Excited the while loop");
 
         return searchTree.getRoot().getChildWithMaxScore().getState(); // Accessing root from Tree.
     }
@@ -91,7 +99,7 @@ public class MonteCarloTreeSearch {
             return boardStatus;
         }
 
-        while (boardStatus == Board.IN_PROGRESS) {
+        while (boardStatus == Board.IN_PROGRESS && node.getDepth() < MAX_DEPTH) { // including the max depth check here as well now
             tempState.togglePlayer(); // We update who is the current player each time
             tempState.randomPlay();
             boardStatus = tempState.checkStatus();
@@ -119,6 +127,15 @@ public class MonteCarloTreeSearch {
         }
     }
 
+    private void pruneChildren(Node node) {
+        double bestScore = node.getChildren().stream()
+                .max(Comparator.comparingDouble(Node::getWinScore))
+                .get()
+                .getWinScore();
+
+        node.getChildren().removeIf(child -> UCT.uctValue(node.getVisitCount(), child.getWinScore(), child.getVisitCount()) < bestScore * PRUNE_THRESHOLD);
+    }
+
     /**
      * Expands the node by creating new child nodes representing possible future game states.
      * Changed the type of list from state to board - Jared W.
@@ -126,6 +143,10 @@ public class MonteCarloTreeSearch {
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
+        if (node.getDepth() >= MAX_DEPTH) {
+            return; // stop expansion at max depth to prevent memory exhaustion
+        }
+
         List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);
         for (Board state : possibleStates) {
             List<Position> queenPositions = state.getQueenPositions(playerNo);
@@ -135,7 +156,7 @@ public class MonteCarloTreeSearch {
                 for (Position arrowShot : possibleArrowShots) { // we are now considering all possible subsequent arrow shots with each expansion
                     Board newState = state.clone();
                     newState.shootArrow(queenPos, arrowShot);
-                    Node childNode = new Node(3 - playerNo);
+                    Node childNode = new Node(3 - playerNo, node.getDepth() + 1); // Very important: increment the depth each time
                     childNode.setState(newState);
                     node.addChild(childNode);
                 }

@@ -19,19 +19,25 @@ public class Node {
     private double drawScore;
     private static final double WIN_SCORE = 1.0; // These are thresholds
     private static final double DRAW_SCORE = 0.5;
+    private int depth;
 
     /**
      * Constructs a Node instance for the specified player.
      *
      * @param playerNo The number identifying the player.
      */
-    public Node(int playerNo) {
+    public Node(int playerNo, int depth) {
         this.children = new ArrayList<>();
         this.score = 0;
         this.winScore = 10;   // We assume a win to be the best possible condition, hence receiving 10 points.
         this.drawScore = 5;   // A draw is less valuable than a win, but still better than a loss.
         this.state = null;
         this.playerNo = playerNo;
+        this.depth = depth;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 
     /**
