@@ -223,22 +223,34 @@ public class MonteCarloTreeSearch {
     }
 
     /**
-     * Expands the node by creating new child nodes representing possible future game states.
-     * Changed the type of list from state to board - Jared W.
-     * This method now implements parallel processing by concurrently processing the list of possible states
-     * and their associated queen positions and arrow shots
+     * Expands the given node by creating new child nodes that represent all possible future game states
+     * arising from the current state. This method leverages parallel processing to concurrently evaluate
+     * different potential game states and associated moves, enhancing the computational efficiency.
+     * The expansion considers all possible movements for each queen followed by all potential arrow shots
+     * for those moves, encapsulating the breadth of possible game progressions from the current state.
      *
-     * @param node The node to expand.
+     * Note: The method synchronizes access to the node's children to safely add new child nodes in a
+     * multithreaded environment, preventing concurrent modification issues.
+     *
+     * @param node The node to be expanded, representing the current game state.
+     * @param playerNo The player number (1 or 2) for whom the expansion is being done.
      */
     private void expandNode(Node node, int playerNo) {
+        // Process each possible state in parallel to optimize performance
         node.getState().getAllPossibleStates(playerNo).parallelStream().forEach(state -> {
             List<Position> queenPositions = state.getQueenPositions(playerNo);
+
+            // Iterate over all queen positions to evaluate potential moves
             queenPositions.forEach(queenPos -> {
+                // For each queen position, consider all valid arrow shots after the move
                 state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(arrowShot -> {
-                    Board newState = state.clone();
-                    newState.shootArrow(arrowShot);
-                    Node childNode = new Node(3 - playerNo);
+                    Board newState = state.clone(); // Clone the board to apply the new move
+                    newState.shootArrow(arrowShot); // Apply the arrow shot to generate a new state
+
+                    Node childNode = new Node(3 - playerNo); // Create a new node for the resulting state
                     childNode.setState(newState);
+
+                    // Synchronize access to the parent node to safely add the new child
                     synchronized (node) {
                         node.addChild(childNode);
                     }
@@ -246,5 +258,4 @@ public class MonteCarloTreeSearch {
             });
         });
     }
-
 }
