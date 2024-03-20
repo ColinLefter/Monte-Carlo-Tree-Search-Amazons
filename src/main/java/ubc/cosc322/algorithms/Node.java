@@ -19,8 +19,8 @@ public class Node {
     private double drawScore;
     private static final double WIN_SCORE = 1.0; // These are thresholds
     private static final double DRAW_SCORE = 0.5;
-    private static final double WIN_SCORE_VALUE = 10.0;
-    private static final double DRAW_SCORE_VALUE = 5.0;
+    public static final double WIN_SCORE_VALUE = 10.0;
+    public static final double DRAW_SCORE_VALUE = 5.0;
 
     /**
      * Constructs a Node instance for the specified player.
@@ -128,9 +128,14 @@ public class Node {
      */
     public void updateScore(int result) {
         incrementVisit();
-        if (result == WIN_SCORE) {
+        if (result == playerNo) {
+            // The player associated with this node wins
             addScore(WIN_SCORE_VALUE);
-        } else if (result == DRAW_SCORE) {
+        } else if (result == 3 - playerNo) {
+            // The opponent wins
+            addScore(-WIN_SCORE_VALUE);
+        } else if (result == Board.DRAW) {
+            // The game ends in a draw
             addScore(DRAW_SCORE_VALUE);
         }
     }

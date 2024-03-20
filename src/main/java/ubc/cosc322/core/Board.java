@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Random;
 
 import ubc.cosc322.algorithms.BFSAmazons;
+import ygraph.ai.smartfox.games.BaseGameGUI;
+import ygraph.ai.smartfox.games.GameClient;
+
 
 /**
  * Represents the game board for the Game of the Amazons.
@@ -13,13 +16,15 @@ import ubc.cosc322.algorithms.BFSAmazons;
  */
 public class Board {
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
-    public static int[][] boardValues;
+    public int[][] boardValues;
     public static int[][] mainBoardValues;
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
     public static final int DRAW = 0;
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
+    private GameClient gameClient;
+    private BaseGameGUI gameGui;
 
     // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
     private static int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
@@ -36,6 +41,8 @@ public class Board {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
         initializePositions(); // We are now initializing positions in the Board class instead of in MCTS.
     }
+
+
 
     private void initializePositions() {
         // Initial positions for black queens
@@ -56,6 +63,7 @@ public class Board {
             boardValues[pos.getX()][pos.getY()] = 2;
         }
     }
+    // Initialize the board from an ArrayList<Integer>
 
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
         // Check if the gameBoardState size matches the expected size of the boardValues array
@@ -77,6 +85,31 @@ public class Board {
 
         // Update the boardValues with the new board state
         mainBoardValues = newBoardValues;
+    }
+
+    public static void updateMainBoard(ArrayList<Integer> currentPosition,
+                                       ArrayList<Integer> nextPosition,
+                                       ArrayList<Integer> arrowPosition) {
+        int currentX = currentPosition.get(0) - 1;
+        int currentY = currentPosition.get(1) - 1;
+        int nextX = nextPosition.get(0) - 1;
+        int nextY = nextPosition.get(1) - 1;
+        int arrowX = arrowPosition.get(0) - 1;
+        int arrowY = arrowPosition.get(1) - 1;
+
+        // Move piece to new position
+        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
+        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
+        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
+
+        // Place the arrow
+        mainBoardValues[arrowX][arrowY] = 3;
+    }
+
+    public static Board getMainBoard(){
+        Board board = new Board();
+        board.setBoard(mainBoardValues);
+        return board;
     }
 
     /**
@@ -157,9 +190,9 @@ public class Board {
         // 2. If yes, can the queen find a queen of the opposite color?
         // 3a. If yes, the game is in progress, so return.
         // 3b. If no, count the available squares for each colour. Use the counts to determine the results.
-
+        System.out.println("Debug: test11");
         BFSAmazons search = new BFSAmazons();
-
+        System.out.println("Debug: test12");
         int queenVal = 1; // Search for black queens first
         for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
             for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
@@ -167,29 +200,35 @@ public class Board {
                 if (boardValues[i][j] == queenVal) {
                     // Queen found. Increment, start searching rest of board (BFS).
                     if (search.searchBoardPartition(boardValues, i, j, queenVal) == 0)
+                        System.out.println("Debug: test20");
                         return IN_PROGRESS;
 
                 }
             }
         }
-
+        System.out.println("Debug: test17");
         // If this part is reached, the game is determined by score. Repeat with white queens.
         queenVal = 2;
         for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
             for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-
+                System.out.println("Debug: test18");
                 if (boardValues[i][j] == queenVal) {
                     // Queen found. Increment, start searching rest of board (BFS). Don't bother checking return value.
+                    System.out.println("Debug: search board partition");
                     search.searchBoardPartition(boardValues, i, j, queenVal);
                 }
             }
         }
         // Return result
+        System.out.println("Debug: test13");
         if (search.totalWhiteCount == search.totalBlackCount) {
+            System.out.println("Debug: test14");
             return DRAW;
         } else if(search.totalBlackCount > search.totalWhiteCount) {
+            System.out.println("Debug: test15");
             return P1;
         } else {
+            System.out.println("Debug: test16");
             return P2;
         }
     }
@@ -216,7 +255,7 @@ public class Board {
      * @return The 2D array representing the board state.
      */
     // Method to return the current board state
-    public static int[][] getBoard() { return boardValues; }
+    public int[][] getBoard() { return this.boardValues; }
 
     /**
      * Sets the board state. Use with caution to avoid corrupting the game state.
@@ -307,19 +346,44 @@ public class Board {
     }
 
     public void randomPlay() {
-        List<Position> playerPositions = currentPlayer == P1 ? player1Positions : player2Positions;
         Random random = new Random();
+        // Determine the current player's positions
+        List<Position> playerPositions = currentPlayer == P1 ? new ArrayList<>(player1Positions) : new ArrayList<>(player2Positions);
 
         if (!playerPositions.isEmpty()) {
+            // Choose a random queen from the current player's positions
             Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
+            // Find all legal moves for that queen
             List<Position> legalMoves = getLegalMoves(piecePosition.getX(), piecePosition.getY());
 
             if (!legalMoves.isEmpty()) {
+                // Select one of the legal moves at random
                 Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
                 performMove(currentPlayer, piecePosition, selectedMove);
+
+                // After moving, find all possible positions to shoot the arrow
+                List<Position> arrowShots = getLegalMoves(selectedMove.getX(), selectedMove.getY());
+                if (!arrowShots.isEmpty()) {
+                    // Select a random position for the arrow
+                    Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
+                    shootArrow(arrowPosition);
+                }
             }
         }
     }
+
+
+    public void shootArrow(Position arrowPosition) {
+        // Check if the position is within the bounds of the board
+        if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
+                arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
+            // Mark the position with a 3 to indicate an arrow
+            boardValues[arrowPosition.getX()][arrowPosition.getY()] = 3;
+        } else {
+            System.out.println("Arrow position is out of bounds.");
+        }
+    }
+
 
     private List<Position> getPlayerPositions(int player) {
         List<Position> positions = new ArrayList<>();

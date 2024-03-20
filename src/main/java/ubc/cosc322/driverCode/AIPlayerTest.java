@@ -148,6 +148,7 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
+        Board.updateMainBoard(currentPosition, nextPosition, arrowPosition);
         generateAndSendMove();
     }
 
@@ -157,17 +158,25 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
-        System.out.println(Arrays.deepToString(Board.getBoard()));
         playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
-        //Board bestMove = mcts.findNextMove(Board.getBoard(),playerNo);
-        //ArrayList<Integer> moveDetails = Board.extractMoveDetails(board,bestMove);
+        Board bestMove = mcts.findNextMove(Board.getMainBoard(),playerNo);
+        if(bestMove != null){
+            System.out.println("success");
+        } else {
+            System.out.println("fail");
+        }
+        ArrayList<Integer> moveDetails = Board.extractMoveDetails(Board.getMainBoard(),bestMove);
 
-        //myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
-        //myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
-        //myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
+        myCurrentPosition.clear();
+        myNextPosition.clear();
+        myNextArrowPosition.clear();
 
-        //gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        //gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
+        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
+        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
+
+        gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
     }
 
     /**
