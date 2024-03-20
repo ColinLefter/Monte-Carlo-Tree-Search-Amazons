@@ -61,10 +61,26 @@ public class Board {
     }
 
     public List<Position> getQueenPositions(int playerNo) {
+        List<Position> queenPositions = new ArrayList<>();
+
         if (playerNo == P1) { // IMPORTANT: We are returning copies as otherwise we would be returning the original object that can be modified
-            return new ArrayList<>(player1Positions);  // Returns a copy of the player 1 queen positions
+            for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {  //row
+                for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) { //column
+                    if((boardValues[i][j]) == 1){
+                        queenPositions.add(new Position(i,j));
+                    }
+                }
+            }
+            return queenPositions;  // Returns a copy of the player 1 queen positions
         } else if (playerNo == P2) {
-            return new ArrayList<>(player2Positions);  // Returns a copy of the player 2 queen positions
+            for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {  //row
+                for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) { //column
+                    if((boardValues[i][j]) == 1){
+                        queenPositions.add(new Position(i,j));
+                    }
+                }
+            }
+            return queenPositions;  // Returns a copy of the player 2 queen positions
         } else {
             throw new IllegalArgumentException("Invalid player number.");
         }
@@ -336,4 +352,16 @@ public class Board {
         }
         return positions;
     }
+
+//    public String toString(){
+//        String out = "";
+//        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
+//            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
+//                out +=
+//            }
+//        }
+//
+//
+//        return out;
+//    }
 }

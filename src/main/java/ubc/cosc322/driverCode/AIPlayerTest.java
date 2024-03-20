@@ -154,8 +154,8 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         Board currentBoard = convertGuiStateToBoard(gameBoardState);
-
         List<Position> queenPositions = currentBoard.getQueenPositions(currentPlayer);
+
 
         Random random = new Random();
         // Choose a random queen
@@ -188,7 +188,7 @@ public class AIPlayerTest extends GamePlayer {
     }
 
     private Board convertGuiStateToBoard(ArrayList<Integer> gameState) {
-        int size = 10; // The board is 10x10
+        int size = 11; // The board is 11x11
         int[][] boardArray = new int[size][size];
 
         System.out.println(gameState.size() + " SIZE");
@@ -197,7 +197,6 @@ public class AIPlayerTest extends GamePlayer {
             int col = i % size;  // Determine the column by taking the remainder
             boardArray[row][col] = gameState.get(i);
         }
-
         return new Board(boardArray);
     }
 
