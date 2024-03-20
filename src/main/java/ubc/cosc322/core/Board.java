@@ -39,19 +39,19 @@ public class Board {
 
     private void initializePositions() {
         // Initial positions for black queens
-        player1Positions.add(new Position(1, 7));
-        player1Positions.add(new Position(4, 10));
-        player1Positions.add(new Position(7, 10));
-        player1Positions.add(new Position(10, 7));
+        player1Positions.add(new Position(0, 6));
+        player1Positions.add(new Position(3, 9));
+        player1Positions.add(new Position(6, 9));
+        player1Positions.add(new Position(9, 6));
         for (Position pos : player1Positions) {
             boardValues[pos.getX()][pos.getY()] = 1;
         }
 
         // Initial positions for white queens
-        player2Positions.add(new Position(1, 4));
-        player2Positions.add(new Position(4, 1));
-        player2Positions.add(new Position(7, 1));
-        player2Positions.add(new Position(10, 4));
+        player2Positions.add(new Position(0, 3));
+        player2Positions.add(new Position(3, 0));
+        player2Positions.add(new Position(6, 0));
+        player2Positions.add(new Position(9, 3));
         for (Position pos : player2Positions) {
             boardValues[pos.getX()][pos.getY()] = 2;
         }
