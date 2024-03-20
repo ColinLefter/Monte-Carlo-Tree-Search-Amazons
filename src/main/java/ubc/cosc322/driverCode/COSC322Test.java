@@ -127,7 +127,7 @@ public class COSC322Test extends GamePlayer{
 				ArrayList<Integer> currentPos = new ArrayList<>();
 				ArrayList<Integer> nextPosition = new ArrayList<>();
 				ArrayList<Integer> arrowPosition = new ArrayList<>();
-
+				System.out.println("BIG ERROR");
 				currentPos.add(1);
 				currentPos.add(4);
 

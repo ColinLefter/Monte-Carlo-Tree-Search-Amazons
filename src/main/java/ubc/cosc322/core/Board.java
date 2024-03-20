@@ -28,7 +28,7 @@ public class Board {
     private BaseGameGUI gameGui;
 
     // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
-    private static int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
+    private static int currentPlayer = P2; // P1 always starts the game (black). We just need to know who is P1.
 
     // Lists to keep track of player positions.
     // Excellent optimization to avoid O(n^2) runtime complexity of a solution where we scan the board each time
@@ -42,8 +42,6 @@ public class Board {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
         initializePositions(); // We are now initializing positions in the Board class instead of in MCTS.
     }
-
-
 
     private void initializePositions() {
         // Initial positions for black queens
@@ -165,10 +163,10 @@ public class Board {
      */
     public void performMove(int player, Position currentPos, Position newPos) {
         // Remove the piece from its current position.
-        boardValues[currentPos.getX()][currentPos.getY()] = 0;
+        this.boardValues[currentPos.getX()][currentPos.getY()] = 0;
 
         // Place the piece at the new position.
-        boardValues[newPos.getX()][newPos.getY()] = player;
+        this.boardValues[newPos.getX()][newPos.getY()] = player;
 
         // Update the position list.
         if (player == P1) {
@@ -270,7 +268,7 @@ public class Board {
      */
     public List<Board> getAllPossibleStates(int currentPlayer) {
         List<Board> possibleStates = new ArrayList<>();
-        System.out.println("Debug: Getting all possible states for player " + currentPlayer);
+        //System.out.println("Debug: Getting all possible states for player " + currentPlayer);
         // Iterate over all board positions
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
@@ -287,13 +285,13 @@ public class Board {
                         // Move the queen to the new position
                         newState.boardValues[x][y] = 0; // Remove from the old position. 0 denotes an open tile.
                         newState.boardValues[move.getX()][move.getY()] = currentPlayer; // Place at the new position
-                        System.out.println("Debug: Moving queen from [" + x + ", " + y + "] to [" + move.getX() + ", " + move.getY() + "]");
+                        //System.out.println("Debug: Moving queen from [" + x + ", " + y + "] to [" + move.getX() + ", " + move.getY() + "]");
                         possibleStates.add(newState);
                     }
                 }
             }
         }
-        System.out.println("Debug: Total number of possible states generated: " + possibleStates.size());
+        //System.out.println("Debug: Total number of possible states generated: " + possibleStates.size());
 
         return possibleStates;
     }
@@ -336,8 +334,10 @@ public class Board {
                 if (!arrowShots.isEmpty()) {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
-                    System.out.println("debug arrow"+arrowPosition.toString());
+                    //System.out.println("debug arrow"+arrowPosition.toString());
+                    System.out.println(Arrays.deepToString(boardValues));
                     shootArrow(arrowPosition);
+                    System.out.println(Arrays.deepToString(boardValues));
                 }
             }
         }
@@ -381,15 +381,15 @@ public class Board {
         // Loop over the board to find differences and identify the move components
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
-                System.out.println("debug: test30");
+                //System.out.println("debug: test30");
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
-                    System.out.println("debug: test31");
+                    //System.out.println("debug: test31");
                     if (currentBoard.boardValues[x][y] == 2) {
-                        System.out.println("debug: test32");
+                        //System.out.println("debug: test32");
                         oldQueenX = x + 1;
                         oldQueenY = y + 1;
                     } else if (bestMoveBoard.boardValues[x][y] == 2) {
-                        System.out.println("debug: test33");
+                        //System.out.println("debug: test33");
                         newQueenX = x + 1;
                         newQueenY = y + 1;
                     } else if (bestMoveBoard.boardValues[x][y] == 3) {
@@ -400,8 +400,6 @@ public class Board {
                 }
             }
         }
-        arrowX = 4;
-        arrowY = 6;
 
         // Check if all components of the move have been identified
         if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {

@@ -68,21 +68,21 @@ public class MonteCarloTreeSearch {
 
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
-            System.out.println("bug test 1.3");
+            //System.out.println("bug test 1.3");
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 // When expanding, we use the opponent of the node's player because each level alternates.
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
-                System.out.println("bug test 1.6");
+                //System.out.println("bug test 1.6");
             }
             Node nodeToExplore = promisingNode;
             if (!promisingNode.getChildren().isEmpty()) {
-                System.out.println("bug test 1.7");
+                //System.out.println("bug test 1.7");
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
             int playoutResult = simulateRandomPlayout(nodeToExplore);
-            System.out.println("bug test 1.8");
+            //System.out.println("bug test 1.8");
             backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
-            System.out.println("bug test 1.9");
+            //System.out.println("bug test 1.9");
         }
         System.out.println("Number of children: " + rootNode.getChildren().size()); // Debugging line
         Node winnerNode = rootNode.getChildWithMaxScore();
@@ -103,7 +103,7 @@ public class MonteCarloTreeSearch {
      * @return The selected promising node.
      */
     public Node selectPromisingNode(Node node) {
-        System.out.println("bug test 2");
+        //System.out.println("selectpromisingnode activated");
         //node with the highest amount of playouts is returned
         Node promisingNode = node;
         while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
@@ -188,7 +188,7 @@ public class MonteCarloTreeSearch {
             // The initiating player loses
             return -WIN_SCORE;
         } else {
-            // If the game is still in progress (which shouldn't happen due to the depth limit), treat as a draw/neutral outcome
+            // If the game is still in progress
             return 0;
         }
     }
@@ -202,7 +202,7 @@ public class MonteCarloTreeSearch {
      * @param playerNo The player number associated with each node
      */
     public void backPropagation(Node node, int playoutResult, int playerNo) {
-        System.out.println("activate back propagation");
+        //System.out.println("activate back propagation");
         while (node != null) {
             node.incrementVisit();
             // Only add score if the playout result corresponds to the node's player winning
@@ -220,7 +220,7 @@ public class MonteCarloTreeSearch {
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
-        System.out.println("expand node activated");
+        //System.out.println("expand node activated");
         int opponent = 3 - playerNo; // we need to determine the opponent first
 
         List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);

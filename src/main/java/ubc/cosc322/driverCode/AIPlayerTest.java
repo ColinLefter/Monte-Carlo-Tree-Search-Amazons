@@ -26,6 +26,7 @@ import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 public class AIPlayerTest extends GamePlayer {
     private GameClient gameClient = null;
     private BaseGameGUI gameGui = null;
+    public static int[][] mainBoardValues = new int[10][10]; // Assuming a 10x10 board
     private String userName = "The player";
     private String password = "playerPass";
     private String ourTeamColor = "";
@@ -90,6 +91,7 @@ public class AIPlayerTest extends GamePlayer {
      */
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
+        System.out.println("debug messagetype" + messageType);
         switch (messageType) {
             case GameMessage.GAME_STATE_BOARD:
                 handleGameStateBoard(msgDetails);
@@ -116,7 +118,9 @@ public class AIPlayerTest extends GamePlayer {
     private void handleGameStateBoard(Map<String, Object> msgDetails) {
         ArrayList<Integer> gameBoardState = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE);
         gameGui.setGameState(gameBoardState);
-        Board.setMainBoard(gameBoardState);
+        System.out.println("gamestate debug"+Arrays.deepToString(mainBoardValues));
+        setMainBoard(gameBoardState);
+        System.out.println("gamestate debug"+Arrays.deepToString(mainBoardValues));
     }
 
     /**
@@ -148,7 +152,9 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
-        Board.updateMainBoard(currentPosition, nextPosition, arrowPosition);
+        System.out.println("actionmove debug"+Arrays.deepToString(mainBoardValues));
+        updateMainBoard(currentPosition, nextPosition, arrowPosition);
+        System.out.println("actionmove debug"+Arrays.deepToString(mainBoardValues));
         generateAndSendMove();
     }
 
@@ -159,13 +165,15 @@ public class AIPlayerTest extends GamePlayer {
     private void generateAndSendMove() {
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
         playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
-        Board bestMove = mcts.findNextMove(Board.getMainBoard(),playerNo);
+        System.out.println("debug1: main board "+Arrays.deepToString(getMainBoard().getBoard()));
+        Board bestMove = mcts.findNextMove(getMainBoard(),playerNo);
         if(bestMove != null){
             System.out.println("success");
         } else {
             System.out.println("fail");
         }
-        ArrayList<Integer> moveDetails = Board.extractMoveDetails(Board.getMainBoard(),bestMove);
+        System.out.println("debug2: main board "+Arrays.deepToString(getMainBoard().getBoard()));
+        ArrayList<Integer> moveDetails = Board.extractMoveDetails(getMainBoard(),bestMove);
 
         myCurrentPosition.clear();
         myNextPosition.clear();
@@ -184,6 +192,7 @@ public class AIPlayerTest extends GamePlayer {
 
         gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
         gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        mainBoardValues = bestMove.getBoard();
         System.out.println("moves sent to server");
     }
 
@@ -195,6 +204,54 @@ public class AIPlayerTest extends GamePlayer {
      */
     private ArrayList<Integer> generateRandomPosition(Random random) {
         return new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
+    }
+
+    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
+        // Assuming the first 12 elements are metadata and the rest is the board state
+        System.out.println("game board state: " + gameBoardState);
+        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
+        System.out.println("adjusted board state: " + adjustedBoardState);
+
+        // Initialize a new array to hold the updated board state
+        int[][] array = new int[10][10];
+        int getVariable = 0;
+        // Iterate over the adjusted board state to populate the new 2D array
+        for(int i = 1; i < 11; i++){
+            for(int j = 1; j < 11; j++){
+                array[i-1][j-1] = gameBoardState.get(11*i + j);
+            }
+        }
+
+        // Update mainBoardValues with the new 2D array
+        mainBoardValues = array;
+
+        // Print the updated mainBoardValues for verification
+        System.out.println("mainBoardValues updated: " + Arrays.deepToString(mainBoardValues));
+    }
+
+    public static void updateMainBoard(ArrayList<Integer> currentPosition,
+                                       ArrayList<Integer> nextPosition,
+                                       ArrayList<Integer> arrowPosition) {
+        int currentX = currentPosition.get(0) - 1;
+        int currentY = currentPosition.get(1) - 1;
+        int nextX = nextPosition.get(0) - 1;
+        int nextY = nextPosition.get(1) - 1;
+        int arrowX = arrowPosition.get(0) - 1;
+        int arrowY = arrowPosition.get(1) - 1;
+
+        // Move piece to new position
+        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
+        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
+        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
+
+        // Place the arrow
+        mainBoardValues[arrowX][arrowY] = 3;
+    }
+
+    public static Board getMainBoard(){
+        Board board = new Board();
+        board.setBoard(mainBoardValues);
+        return board;
     }
 
     @Override
@@ -227,3 +284,4 @@ public class AIPlayerTest extends GamePlayer {
         connect();
     }
 }
+
