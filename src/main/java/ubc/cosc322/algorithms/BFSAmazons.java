@@ -1,9 +1,6 @@
 package ubc.cosc322.algorithms;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import ubc.cosc322.core.Board;
 
@@ -15,11 +12,11 @@ public class BFSAmazons {
     public int totalWhiteCount = 0; // Player 2
 
     // Queue holds unsearched nodes, set holds searched nodes
-    List<BFSNode> queue;
+    Deque<BFSNode> queue;
     Set<BFSNode> searchedNodes;
 
     public BFSAmazons() {
-        queue = new LinkedList<>();
+        queue = new ArrayDeque<>();
         searchedNodes = new HashSet<>();
     }
 
@@ -31,7 +28,7 @@ public class BFSAmazons {
         boolean firstNode = true, adjacentQueen = false;
         int tileValue;
         int temporaryCount = 0, lastCount; // initial queen position does not count.
-        while(queue.size() != 0) { // Add to queue every time more nodes are found
+        while(!queue.isEmpty()) { // Add to queue every time more nodes are found
             currentNode = queue.removeFirst();
 
             lastCount = temporaryCount;
