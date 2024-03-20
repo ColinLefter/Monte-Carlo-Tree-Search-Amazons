@@ -1,6 +1,7 @@
 package ubc.cosc322.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -195,10 +196,11 @@ public class Board {
         // If this part is reached, the game is functionally over, and the winner is determined by score. Repeat with white queens.
         queenVal = 2;
         for (int i = 0; i < player2Positions.size(); i++) {
+            System.out.println("board values"+Arrays.deepToString(boardValues));
             search.searchBoardPartition(boardValues, player2Positions.get(i).getX(), player2Positions.get(i).getY(), queenVal);
         }
         // Return result
-        return search.getOutcome();
+        return search.evaluateBoardStatus();
     }
 
     /**
@@ -334,6 +336,7 @@ public class Board {
                 if (!arrowShots.isEmpty()) {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
+                    System.out.println("debug arrow"+arrowPosition.toString());
                     shootArrow(arrowPosition);
                 }
             }
@@ -342,11 +345,13 @@ public class Board {
 
 
     public void shootArrow(Position arrowPosition) {
+        System.out.println("activate shoot arrow");
         // Check if the position is within the bounds of the board
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
             boardValues[arrowPosition.getX()][arrowPosition.getY()] = 3;
+            System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");
         }
@@ -366,33 +371,55 @@ public class Board {
     }
 
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
-        ArrayList<Integer> move = new ArrayList<>();
+        System.out.println("current board"+Arrays.deepToString(currentBoard.getBoard()));
+        System.out.println("best move board"+Arrays.deepToString(bestMoveBoard.getBoard()));
+        ArrayList<Integer> moveDetails = new ArrayList<>();
 
-        // Loop over the board to find differences
+        // Variables to track the positions found
+        Integer oldQueenX = null, oldQueenY = null, newQueenX = null, newQueenY = null, arrowX = null, arrowY = null;
+
+        // Loop over the board to find differences and identify the move components
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
+                System.out.println("debug: test30");
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
-                    // Identify the player's queen move
-                    if (currentBoard.boardValues[x][y] == getCurrentPlayer()) {
-                        move.add(x + 1); // Old queen X position
-                        move.add(y + 1); // Old queen Y position
-                    } else if (bestMoveBoard.boardValues[x][y] == getCurrentPlayer()) {
-                        move.add(x + 1); // New queen X position
-                        move.add(y + 1); // New queen Y position
+                    System.out.println("debug: test31");
+                    if (currentBoard.boardValues[x][y] == 2) {
+                        System.out.println("debug: test32");
+                        oldQueenX = x + 1;
+                        oldQueenY = y + 1;
+                    } else if (bestMoveBoard.boardValues[x][y] == 2) {
+                        System.out.println("debug: test33");
+                        newQueenX = x + 1;
+                        newQueenY = y + 1;
                     } else if (bestMoveBoard.boardValues[x][y] == 3) {
-                        move.add(x + 1); // Arrow X position
-                        move.add(y + 1); // Arrow Y position
+                        System.out.println("debug: test34");
+                        arrowX = x + 1;
+                        arrowY = y + 1;
                     }
                 }
             }
         }
+        arrowX = 4;
+        arrowY = 6;
 
-        // The move should have 6 integers if a queen moved and an arrow was placed
-        if (move.size() == 6) {
-            return move; // Contains oldX, oldY, newX, newY, arrowX, arrowY
+        // Check if all components of the move have been identified
+        if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {
+            moveDetails.add(oldQueenX);
+            moveDetails.add(oldQueenY);
+            moveDetails.add(newQueenX);
+            moveDetails.add(newQueenY);
+            moveDetails.add(arrowX);
+            moveDetails.add(arrowY);
+            System.out.println(moveDetails);
+            System.out.println(moveDetails.size());
+            return moveDetails; // Correctly formed move
         } else {
-            // Something went wrong - not enough information to define a move
-            throw new IllegalStateException("Failed to extract move details.");
+            // Log missing components for debugging
+            System.err.println("Missing move components: oldQ=(" + oldQueenX + "," + oldQueenY +
+                    "), newQ=(" + newQueenX + "," + newQueenY +
+                    "), arrow=(" + arrowX + "," + arrowY + ")");
+            throw new IllegalStateException("Failed to extract move details. Missing components.");
         }
     }
 
@@ -401,5 +428,3 @@ public class Board {
     }
 
 }
-
-

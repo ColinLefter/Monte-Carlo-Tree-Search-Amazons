@@ -161,33 +161,36 @@ public class MonteCarloTreeSearch {
 //    }
     int simulateRandomPlayout(Node toExplore) {
         Node tempNode = new Node(toExplore.getPlayerNo());
-        tempNode.setState(toExplore.getState().clone()); // Ensure your Board class supports a deep clone method.
+        tempNode.setState(toExplore.getState().clone());
         Board tempBoard = tempNode.getState();
         int currentPlayer = toExplore.getPlayerNo();
-        System.out.println("Entering simulateRandomPlayout");
 
-        int boardStatus = tempBoard.checkStatus();
-        int iterations = 0;
-        int maxIterations = 50;
-        while (boardStatus == Board.IN_PROGRESS && iterations < maxIterations) {
-            System.out.println("Debug: test8");
-            currentPlayer = 3 - currentPlayer; // Toggle player
-            tempBoard.randomPlay(); // Make sure your Board class has this method implemented
-            System.out.println("Debug: test9");
-            boardStatus = tempBoard.checkStatus();
-            iterations ++;
+        Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
+        int maxDepth = 50; // Limit simulation depth to prevent infinite loops
+
+        for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS; depth++) {
+            if (!visitedStates.add(tempBoard.clone())) { // Ensure a deep copy of the board is used for cycle detection
+                // Cycle detected, break the simulation
+                break;
+            }
+            tempBoard.randomPlay();
+            // Switch players not needed here since randomPlay() handles it
         }
-        System.out.println("Debug: test10 - Board Status: " + boardStatus + ", Iterations: " + iterations);
-        // Update the score of the node based on the outcome
-        if (boardStatus == toExplore.getPlayerNo()) {
-            System.out.println("Debug: test11");
-            tempNode.updateScore((int) Node.WIN_SCORE_VALUE); // You need to cast because updateScore in Node accepts int.
-        } else if (boardStatus == Board.DRAW) {
-            System.out.println("Debug: test12");
-            tempNode.updateScore((int) Node.DRAW_SCORE_VALUE);
+
+        int status = tempBoard.checkStatus();
+        if (status == toExplore.getPlayerNo()) {
+            // The initiating player wins
+            return WIN_SCORE;
+        } else if (status == Board.DRAW) {
+            // The game ends in a draw
+            return 0; // Assuming a draw is considered neutral and given a score of 0
+        } else if (status == tempBoard.getOpponent(toExplore.getPlayerNo())) {
+            // The initiating player loses
+            return -WIN_SCORE;
+        } else {
+            // If the game is still in progress (which shouldn't happen due to the depth limit), treat as a draw/neutral outcome
+            return 0;
         }
-        System.out.println("Debug: test13 - Final Board Status: " + boardStatus);
-        return boardStatus; // Returning the final board status after simulation
     }
 
 
@@ -199,6 +202,7 @@ public class MonteCarloTreeSearch {
      * @param playerNo The player number associated with each node
      */
     public void backPropagation(Node node, int playoutResult, int playerNo) {
+        System.out.println("activate back propagation");
         while (node != null) {
             node.incrementVisit();
             // Only add score if the playout result corresponds to the node's player winning
@@ -216,6 +220,7 @@ public class MonteCarloTreeSearch {
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
+        System.out.println("expand node activated");
         int opponent = 3 - playerNo; // we need to determine the opponent first
 
         List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);

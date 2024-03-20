@@ -170,13 +170,21 @@ public class AIPlayerTest extends GamePlayer {
         myCurrentPosition.clear();
         myNextPosition.clear();
         myNextArrowPosition.clear();
+        System.out.println("moves successfully obtained");
+        System.out.println(moveDetails);
+        myCurrentPosition.add(moveDetails.get(0)); // X coordinate
+        myCurrentPosition.add(moveDetails.get(1)); // Y coordinate
 
-        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
-        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
-        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
+        myNextPosition.add(moveDetails.get(2)); // X coordinate
+        myNextPosition.add(moveDetails.get(3)); // Y coordinate
+
+        myNextArrowPosition.add(moveDetails.get(4)); // X coordinate
+        myNextArrowPosition.add(moveDetails.get(5)); // Y coordinate
+        System.out.println("moves added to positions");
 
         gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
         gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        System.out.println("moves sent to server");
     }
 
     /**
