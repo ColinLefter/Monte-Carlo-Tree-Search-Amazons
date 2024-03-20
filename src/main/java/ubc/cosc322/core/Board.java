@@ -335,9 +335,9 @@ public class Board {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
                     //System.out.println("debug arrow"+arrowPosition.toString());
-                    System.out.println(Arrays.deepToString(boardValues));
+                    System.out.println("before arrow shot"+Arrays.deepToString(boardValues));
                     shootArrow(arrowPosition);
-                    System.out.println(Arrays.deepToString(boardValues));
+                    System.out.println("after arrow shot"+Arrays.deepToString(boardValues));
                 }
             }
         }
