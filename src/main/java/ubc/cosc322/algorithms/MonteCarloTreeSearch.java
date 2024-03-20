@@ -88,7 +88,6 @@ public class MonteCarloTreeSearch {
         Node winnerNode = rootNode.getChildWithMaxScore();
         if (winnerNode == null) {
             System.out.println("No winner node found. Returning initial state or handling error."); // Handling case when no nodes are added
-            // Handle this scenario appropriately, e.g., return initial state or a specific error state
             return board; // Or return an appropriate error state
         }
         System.out.println("Winner node found.");
@@ -169,7 +168,7 @@ public class MonteCarloTreeSearch {
         int maxDepth = 50; // Limit simulation depth to prevent infinite loops
 
         for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS; depth++) {
-            if (!visitedStates.add(tempBoard.clone())) { // Ensure a deep copy of the board is used for cycle detection
+            if (!visitedStates.add(tempBoard.clone())) {
                 // Cycle detected, break the simulation
                 break;
             }
