@@ -191,6 +191,7 @@ public class AIPlayerTest extends GamePlayer {
         int size = 10; // The board is 10x10
         int[][] boardArray = new int[size][size];
 
+        System.out.println(gameState.size() + " SIZE");
         for (int i = 0; i < gameState.size(); i++) {
             int row = i / size;  // Determine the row by dividing by 10
             int col = i % size;  // Determine the column by taking the remainder
