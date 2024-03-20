@@ -258,7 +258,7 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA2")) { // if we are the white player, we are 2
+        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
             currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
         } else {
             currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
@@ -284,33 +284,26 @@ public class Board {
      */
     public List<Board> getAllPossibleStates(int currentPlayer) {
         List<Board> possibleStates = new ArrayList<>();
-        //System.out.println("Debug: Getting all possible states for player " + currentPlayer);
-        // Iterate over all board positions
-        for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
-                // Check if there is a queen of the current player at this position
-                if (boardValues[x][y] == currentPlayer) {
-                    // Get all legal moves for this queen
-                    List<Position> legalMoves = getLegalMoves(x, y);
-
-                    // For each legal move, create a new board state
-                    for (Position move : legalMoves) {
-                        Board newState = new Board();
-                        copyBoardState(this.boardValues, newState.boardValues);
-
-                        // Move the queen to the new position
-                        newState.boardValues[x][y] = 0; // Remove from the old position. 0 denotes an open tile.
-                        newState.boardValues[move.getX()][move.getY()] = currentPlayer; // Place at the new position
-                        //System.out.println("Debug: Moving queen from [" + x + ", " + y + "] to [" + move.getX() + ", " + move.getY() + "]");
-                        possibleStates.add(newState);
-                    }
+        // For each queen, get all legal moves.
+        for (Position queenPos : getQueenPositions(currentPlayer)) {
+            List<Position> legalMoves = getLegalMoves(queenPos.getX(), queenPos.getY());
+            // For each legal queen move, calculate legal arrow shots from the new position.
+            for (Position move : legalMoves) {
+                Board newState = this.clone();
+                newState.performMove(currentPlayer, queenPos, move);
+                // Get legal arrow shots from the new queen position.
+                List<Position> arrowShots = newState.getLegalMoves(move.getX(), move.getY());
+                // For each legal arrow shot, create a new state.
+                for (Position arrow : arrowShots) {
+                    Board newStateWithArrow = newState.clone();
+                    newStateWithArrow.shootArrow(arrow);
+                    possibleStates.add(newStateWithArrow);
                 }
             }
         }
-        //System.out.println("Debug: Total number of possible states generated: " + possibleStates.size());
-
         return possibleStates;
     }
+
 
     /**
      * Copies the board state from one 2D array to another.

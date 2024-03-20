@@ -32,12 +32,12 @@ public class AIPlayerTest extends GamePlayer {
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
     private int playerNo;
-    private final String aiPlayerName = "CKJJA2";
+    private final String aiPlayerName = "CKJJA";
     private boolean isAIPlayerWhite;
 
-    private ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
-    private ArrayList<Integer> myNextPosition = new ArrayList<>(Arrays.asList(0, 0));
-    private ArrayList<Integer> myNextArrowPosition = new ArrayList<>(Arrays.asList(0, 0));
+    private ArrayList<Integer> myCurrentPosition = new ArrayList<>();
+    private ArrayList<Integer> myNextPosition = new ArrayList<>();
+    private ArrayList<Integer> myNextArrowPosition = new ArrayList<>();
     /**
      * The entry point for the AI player. Initializes the player and sets up the GUI
      * if necessary.
