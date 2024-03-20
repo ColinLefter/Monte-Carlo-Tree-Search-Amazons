@@ -39,7 +39,7 @@ public class UCT {
         int parentVisit = node.getVisitCount();
         // Selects the child node with the maximum UCT value.
         return Collections.max(node.getChildArray(),
-                Comparator.comparing(c -> uctValue(parentVisit, c.getWinScore(), c.getVisitCount())));
+                Comparator.comparing(c -> uctValue(parentVisit, c.getScore(), c.getVisitCount())));
     }
 
     private int simulateRandomPlayout(Node node, int opponent) {

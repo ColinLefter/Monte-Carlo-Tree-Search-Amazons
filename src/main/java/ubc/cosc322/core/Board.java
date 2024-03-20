@@ -21,7 +21,7 @@ public class Board {
     public static final int P2 = 2;
 
     // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
-    private int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
+    private static int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
 
     // Lists to keep track of player positions.
     // Excellent optimization to avoid O(n^2) runtime complexity of a solution where we scan the board each time
@@ -141,7 +141,7 @@ public class Board {
             }
         }
         // Return result
-        if (search.totalBlackCount == search.totalBlackCount) {
+        if (search.totalBlackCount == search.totalWhiteCount) {
             return DRAW;
         } else if(search.totalBlackCount > search.totalWhiteCount) {
             return P1;
@@ -217,7 +217,7 @@ public class Board {
      */
     public List<Board> getAllPossibleStates(int currentPlayer) {
         List<Board> possibleStates = new ArrayList<>();
-
+        System.out.println("Debug: Getting all possible states for player " + currentPlayer);
         // Iterate over all board positions
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
@@ -234,12 +234,13 @@ public class Board {
                         // Move the queen to the new position
                         newState.boardValues[x][y] = 0; // Remove from the old position. 0 denotes an open tile.
                         newState.boardValues[move.getX()][move.getY()] = currentPlayer; // Place at the new position
-
+                        System.out.println("Debug: Moving queen from [" + x + ", " + y + "] to [" + move.getX() + ", " + move.getY() + "]");
                         possibleStates.add(newState);
                     }
                 }
             }
         }
+        System.out.println("Debug: Total number of possible states generated: " + possibleStates.size());
 
         return possibleStates;
     }
@@ -288,7 +289,7 @@ public class Board {
         return positions;
     }
 
-    public ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
+    public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
         ArrayList<Integer> move = new ArrayList<>();
 
         // Loop over the board to find differences
@@ -296,10 +297,10 @@ public class Board {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
                     // Identify the player's queen move
-                    if (currentBoard.boardValues[x][y] == currentPlayer) {
+                    if (currentBoard.boardValues[x][y] == getCurrentPlayer()) {
                         move.add(x + 1); // Old queen X position
                         move.add(y + 1); // Old queen Y position
-                    } else if (bestMoveBoard.boardValues[x][y] == currentPlayer) {
+                    } else if (bestMoveBoard.boardValues[x][y] == getCurrentPlayer()) {
                         move.add(x + 1); // New queen X position
                         move.add(y + 1); // New queen Y position
                     } else if (bestMoveBoard.boardValues[x][y] == 3) {
@@ -317,6 +318,10 @@ public class Board {
             // Something went wrong - not enough information to define a move
             throw new IllegalStateException("Failed to extract move details.");
         }
+    }
+
+    private static int getCurrentPlayer() {
+        return currentPlayer;
     }
 
 }

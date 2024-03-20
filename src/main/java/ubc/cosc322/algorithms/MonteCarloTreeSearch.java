@@ -62,22 +62,27 @@ public class MonteCarloTreeSearch {
      */
     public Board findNextMove(Board board, int playerNo) {
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
-
+        System.out.println("bug test 1");
         Node rootNode = new Node(playerNo); // Create a root node with the current player number.
         rootNode.setState(board); // Set the initial state of the game.
 
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
+            System.out.println("bug test 1.3");
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 // When expanding, we use the opponent of the node's player because each level alternates.
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
+                System.out.println("bug test 1.6");
             }
             Node nodeToExplore = promisingNode;
             if (!promisingNode.getChildren().isEmpty()) {
+                System.out.println("bug test 1.7");
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
             int playoutResult = simulateRandomPlayout(nodeToExplore);
+            System.out.println("bug test 1.8");
             backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
+            System.out.println("bug test 1.9");
         }
 
         Node winnerNode = rootNode.getChildWithMaxScore();
@@ -92,6 +97,7 @@ public class MonteCarloTreeSearch {
      * @return The selected promising node.
      */
     public Node selectPromisingNode(Node node) {
+        System.out.println("bug test 2");
         //node with the highest amount of playouts is returned
         Node promisingNode = node;
         while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
@@ -107,9 +113,39 @@ public class MonteCarloTreeSearch {
      * @return The result of the simulation indicating a win, loss, or draw.
      */
     int simulateRandomPlayout(Node toExplore) {
-        // Implementation of the random playout simulation goes here.
-        return 0;
+        System.out.println("bug test 3");
+        Node tempNode = new Node(toExplore.getPlayerNo());
+        tempNode.setState(toExplore.getState().clone()); // Assuming your Board class has a clone method that returns a deep copy of the board
+        Board tempBoard = tempNode.getState();
+        int currentPlayer = toExplore.getPlayerNo();
+        System.out.println("bug test 3.5");
+        while (tempBoard.checkStatus() == Board.IN_PROGRESS) {
+            System.out.println("bug test 4");
+            List<Board> possibleStates = tempBoard.getAllPossibleStates(currentPlayer);
+            System.out.println("bug test 5");
+            if (possibleStates.isEmpty()) {
+                break; // No possible moves, so break the simulation
+            }
+            int randomIndex = new Random().nextInt(possibleStates.size());
+            Board newState = possibleStates.get(randomIndex); // Choose a random next state
+            tempNode.setState(newState); // Update the node with the new state
+
+            // Switch players
+            currentPlayer = 3 - currentPlayer;
+        }
+
+        int status = tempBoard.checkStatus();
+        // Evaluate the terminal state and return the result based on the player who started the playout
+        if (status == toExplore.getPlayerNo()) {
+            return WIN_SCORE; // The starting player wins
+        } else if (status == Board.DRAW) {
+            return 0; // Draw
+        } else {
+            return -WIN_SCORE; // The starting player loses
+        }
     }
+
+
 
     /**
      * Backpropagates the result of the simulation up the tree, updating the statistics of the nodes.

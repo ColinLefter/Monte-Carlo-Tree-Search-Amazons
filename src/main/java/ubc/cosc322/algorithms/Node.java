@@ -19,6 +19,8 @@ public class Node {
     private double drawScore;
     private static final double WIN_SCORE = 1.0; // These are thresholds
     private static final double DRAW_SCORE = 0.5;
+    private static final double WIN_SCORE_VALUE = 10.0;
+    private static final double DRAW_SCORE_VALUE = 5.0;
 
     /**
      * Constructs a Node instance for the specified player.
@@ -27,10 +29,6 @@ public class Node {
      */
     public Node(int playerNo) {
         this.children = new ArrayList<>();
-        this.score = 0;
-        this.winScore = 10;   // We assume a win to be the best possible condition, hence receiving 10 points.
-        this.drawScore = 5;   // A draw is less valuable than a win, but still better than a loss.
-        this.state = null;
         this.playerNo = playerNo;
     }
 
@@ -43,27 +41,11 @@ public class Node {
         this.state = state;
     }
 
-    // Getters and setters
-    public double getWinScore() {
-        return winScore;
-    }
-
-    public double getDrawScore() {
-        return drawScore;
-    }
-
     /**
      * Adds the win score to the node's total score, indicating a favorable outcome.
      */
-    public void addWinScore() {
-        this.score += this.winScore;
-    }
-
-    /**
-     * Adds the draw score to the node's total score, indicating a neutral outcome.
-     */
-    public void addDrawScore() {
-        this.score += this.drawScore;
+    public void addScore(double scoreToAdd) {
+        this.score += scoreToAdd;
     }
 
     /**
@@ -131,8 +113,12 @@ public class Node {
      */
     public Node getChildWithMaxScore() {
         return children.stream()
-                .max(Comparator.comparingDouble(Node::getWinScore))
+                .max(Comparator.comparingDouble(Node::getScore))
                 .orElse(null);
+    }
+
+    public double getScore() {
+        return score;
     }
 
     /**
@@ -143,9 +129,9 @@ public class Node {
     public void updateScore(int result) {
         incrementVisit();
         if (result == WIN_SCORE) {
-            addWinScore();
+            addScore(WIN_SCORE_VALUE);
         } else if (result == DRAW_SCORE) {
-            addDrawScore();
+            addScore(DRAW_SCORE_VALUE);
         }
     }
 
