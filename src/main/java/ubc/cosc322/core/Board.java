@@ -13,7 +13,8 @@ import ubc.cosc322.algorithms.BFSAmazons;
  */
 public class Board {
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
-    int[][] boardValues;
+    public static int[][] boardValues;
+    public static int[][] mainBoardValues;
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
     public static final int DRAW = 0;
@@ -33,6 +34,49 @@ public class Board {
      */
     public Board() {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
+        initializePositions(); // We are now initializing positions in the Board class instead of in MCTS.
+    }
+
+    private void initializePositions() {
+        // Initial positions for black queens
+        player1Positions.add(new Position(0, 6));
+        player1Positions.add(new Position(3, 9));
+        player1Positions.add(new Position(6, 9));
+        player1Positions.add(new Position(9, 6));
+        for (Position pos : player1Positions) {
+            boardValues[pos.getX()][pos.getY()] = 1;
+        }
+
+        // Initial positions for white queens
+        player2Positions.add(new Position(0, 3));
+        player2Positions.add(new Position(3, 0));
+        player2Positions.add(new Position(6, 0));
+        player2Positions.add(new Position(9, 3));
+        for (Position pos : player2Positions) {
+            boardValues[pos.getX()][pos.getY()] = 2;
+        }
+    }
+
+    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
+        // Check if the gameBoardState size matches the expected size of the boardValues array
+        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
+        System.out.println(adjustedBoardState);
+
+        // Create a new 2D array to represent the board state
+        int[][] newBoardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+
+        // Fill the newBoardValues with the values from gameBoardState
+        for (int i = 0; i < adjustedBoardState.size(); i++) {
+            int row = i / DEFAULT_BOARD_SIZE;
+            int col = i % DEFAULT_BOARD_SIZE;
+            if(row > 9){
+                break;
+            }
+            newBoardValues[row][col] = adjustedBoardState.get(i);
+        }
+
+        // Update the boardValues with the new board state
+        mainBoardValues = newBoardValues;
     }
 
     /**
@@ -113,7 +157,7 @@ public class Board {
         // 2. If yes, can the queen find a queen of the opposite color?
         // 3a. If yes, the game is in progress, so return.
         // 3b. If no, count the available squares for each colour. Use the counts to determine the results.
-        
+
         BFSAmazons search = new BFSAmazons();
 
         int queenVal = 1; // Search for black queens first
@@ -141,7 +185,7 @@ public class Board {
             }
         }
         // Return result
-        if (search.totalBlackCount == search.totalWhiteCount) {
+        if (search.totalWhiteCount == search.totalBlackCount) {
             return DRAW;
         } else if(search.totalBlackCount > search.totalWhiteCount) {
             return P1;
@@ -172,7 +216,7 @@ public class Board {
      * @return The 2D array representing the board state.
      */
     // Method to return the current board state
-    public int[][] getBoard() { return boardValues; }
+    public static int[][] getBoard() { return boardValues; }
 
     /**
      * Sets the board state. Use with caution to avoid corrupting the game state.

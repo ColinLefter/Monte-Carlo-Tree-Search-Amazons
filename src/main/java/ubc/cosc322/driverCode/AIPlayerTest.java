@@ -116,6 +116,7 @@ public class AIPlayerTest extends GamePlayer {
     private void handleGameStateBoard(Map<String, Object> msgDetails) {
         ArrayList<Integer> gameBoardState = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE);
         gameGui.setGameState(gameBoardState);
+        Board.setMainBoard(gameBoardState);
     }
 
     /**
@@ -156,19 +157,17 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
-        Board board = new Board().clone();
+        System.out.println(Arrays.deepToString(Board.getBoard()));
         playerNo = Board.getPlayerNo(aiPlayerName,isAIPlayerWhite);
+        //Board bestMove = mcts.findNextMove(Board.getBoard(),playerNo);
+        //ArrayList<Integer> moveDetails = Board.extractMoveDetails(board,bestMove);
 
-        Board bestMove = mcts.findNextMove(board,playerNo);
-        ArrayList<Integer> moveDetails = Board.extractMoveDetails(board,bestMove);
+        //myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
+        //myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
+        //myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
 
-
-        myCurrentPosition.add(moveDetails.get(0), moveDetails.get(1));
-        myNextPosition.add(moveDetails.get(2), moveDetails.get(3));
-        myNextArrowPosition.add(moveDetails.get(4), moveDetails.get(5));
-
-        gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        //gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
+        //gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
     }
 
     /**

@@ -14,7 +14,7 @@ public class MonteCarloTreeSearchTest {
         int totalMoves = Board.DEFAULT_BOARD_SIZE * Board.DEFAULT_BOARD_SIZE;
 
         for (int i = 0; i < totalMoves; i++) {
-            board = MCTS.findNextMove(board, player);
+            board = MCTS.findNextMove(Board.getBoard(), player);
             if (board.checkStatus() != Board.IN_PROGRESS) {
                 break;
             }
