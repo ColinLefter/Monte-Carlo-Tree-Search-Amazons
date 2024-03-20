@@ -1,6 +1,8 @@
 package ubc.cosc322.algorithms;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import ubc.cosc322.core.Board;
 import ubc.cosc322.core.Position;
@@ -63,38 +65,45 @@ public class MonteCarloTreeSearch {
      */
     public Board findNextMove(Board board, int playerNo) {
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
-       // System.out.println("bug test 1");
-        Node rootNode = new Node(playerNo); // Create a root node with the current player number.
-        rootNode.setState(board); // Set the initial state of the game.
+        Node rootNode = new Node(playerNo);
+        rootNode.setState(board);
 
+        // Use a single threaded context to manage the overall time-bound loop.
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
-            //System.out.println("bug test 1.3");
+            System.out.println("bug test 1.3");
+
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
-                // When expanding, we use the opponent of the node's player because each level alternates.
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
-                //System.out.println("bug test 1.6");
+                System.out.println("bug test 1.6");
             }
-            Node nodeToExplore = promisingNode;
-            if (!promisingNode.getChildren().isEmpty()) {
-                //System.out.println("bug test 1.7");
-                nodeToExplore = promisingNode.getRandomChildNode();
+
+            // Check if time has expired before entering another potentially time-consuming operation.
+            if (!promisingNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
+                System.out.println("bug test 1.7");
+
+                // Execute child node processing in parallel, making sure each task is quick and checks time limit.
+                promisingNode.getChildren().parallelStream().forEach(childNode -> {
+                    if (System.currentTimeMillis() < end) {
+                        int playoutResult = simulateRandomPlayout(childNode);
+                        synchronized (rootNode) {
+                            backPropagation(childNode, playoutResult, playerNo);
+                        }
+                        System.out.println("bug test 1.8");
+                    }
+                });
             }
-            int playoutResult = simulateRandomPlayout(nodeToExplore);
-            //System.out.println("bug test 1.8");
-            backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
-            //System.out.println("bug test 1.9");
         }
-        System.out.println("Number of children: " + rootNode.getChildren().size()); // Debugging line
+
         Node winnerNode = rootNode.getChildWithMaxScore();
+        System.out.println("Number of children: " + rootNode.getChildren().size());
         if (winnerNode == null) {
-            System.out.println("No winner node found. Returning initial state or handling error."); // Handling case when no nodes are added
-            return board; // Or return an appropriate error state
+            System.out.println("No winner node found. Returning initial state or handling error.");
+            return board;
         }
         System.out.println("Winner node found.");
         return winnerNode.getState();
     }
-
 
     /**
      * Selects the most promising node to explore based on the UCT value.
@@ -216,24 +225,26 @@ public class MonteCarloTreeSearch {
     /**
      * Expands the node by creating new child nodes representing possible future game states.
      * Changed the type of list from state to board - Jared W.
+     * This method now implements parallel processing by concurrently processing the list of possible states
+     * and their associated queen positions and arrow shots
      *
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
-        List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);
-        for (Board state : possibleStates) {
+        node.getState().getAllPossibleStates(playerNo).parallelStream().forEach(state -> {
             List<Position> queenPositions = state.getQueenPositions(playerNo);
-
-            for (Position queenPos : queenPositions) {
-                List<Position> possibleArrowShots = state.getLegalMoves(queenPos.getX(), queenPos.getY());
-                for (Position arrowShot : possibleArrowShots) { // we are now considering all possible subsequent arrow shots with each expansion
+            queenPositions.forEach(queenPos -> {
+                state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(arrowShot -> {
                     Board newState = state.clone();
                     newState.shootArrow(arrowShot);
                     Node childNode = new Node(3 - playerNo);
                     childNode.setState(newState);
-                    node.addChild(childNode);
-                }
-            }
-        }
+                    synchronized (node) {
+                        node.addChild(childNode);
+                    }
+                });
+            });
+        });
     }
+
 }
