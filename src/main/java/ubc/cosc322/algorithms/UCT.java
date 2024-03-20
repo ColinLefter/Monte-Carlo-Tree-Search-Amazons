@@ -41,24 +41,4 @@ public class UCT {
         return Collections.max(node.getChildArray(),
                 Comparator.comparing(c -> uctValue(parentVisit, c.getWinScore(), c.getVisitCount())));
     }
-
-    private int simulateRandomPlayout(Node node, int opponent) {
-        Board tempState = node.getState().clone(); // Clone the board state.
-        int boardStatus = tempState.checkStatus();
-
-        if (boardStatus == opponent) {
-            // If immediate loss is detected, discourage this path.
-            node.getParent().addScore(Integer.MIN_VALUE);
-            return boardStatus;
-        }
-
-        while (boardStatus == Board.IN_PROGRESS) {
-            tempState.togglePlayer();
-            tempState.randomPlay();
-            boardStatus = tempState.checkStatus();
-        }
-
-        return boardStatus;
-    }
-
 }

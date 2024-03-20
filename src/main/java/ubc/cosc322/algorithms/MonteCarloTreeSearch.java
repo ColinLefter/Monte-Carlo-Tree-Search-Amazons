@@ -35,29 +35,29 @@ public class MonteCarloTreeSearch {
      * @param playerNo The player number.
      * @return The updated board after the best move is applied.
      */
-    public Board findNextMove(Board board, int playerNo) {
+    public Board findNextMove(Board board, int playerNo) { // This method now uses the Tree class
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
 
-        Node rootNode = new Node(playerNo); // Create a root node with the current player number.
-        rootNode.setState(board.clone()); // Use a cloned state for the root to avoid unintended modifications.
+        Node rootNode = new Node(playerNo);
+        rootNode.setState(board.clone());
+        Tree searchTree = new Tree(rootNode); // Instantiating Tree with the rootNode.
 
         while (System.currentTimeMillis() < end) {
-            Node promisingNode = selectPromisingNode(rootNode);
+            Node promisingNode = selectPromisingNode(searchTree.getRoot()); // Use Tree's root.
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
-                // When expanding, we use the opponent of the node's player because each level alternates.
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
             }
             Node nodeToExplore = promisingNode;
-            if (!promisingNode.getChildren().isEmpty()) {
-                nodeToExplore = promisingNode.getRandomChildNode();
+            if (!nodeToExplore.getChildren().isEmpty()) {
+                nodeToExplore = nodeToExplore.getRandomChildNode();
             }
             int playoutResult = simulateRandomPlayout(nodeToExplore);
-            backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
+            backPropagation(nodeToExplore, playoutResult, playerNo);
         }
 
-        Node winnerNode = rootNode.getChildWithMaxScore();
-        return winnerNode.getState();
+        return searchTree.getRoot().getChildWithMaxScore().getState(); // Accessing root from Tree.
     }
+
 
 
     /**
@@ -132,7 +132,7 @@ public class MonteCarloTreeSearch {
 
             for (Position queenPos : queenPositions) {
                 List<Position> possibleArrowShots = state.getLegalMoves(queenPos.getX(), queenPos.getY());
-                for (Position arrowShot : possibleArrowShots) {
+                for (Position arrowShot : possibleArrowShots) { // we are now considering all possible subsequent arrow shots with each expansion
                     Board newState = state.clone();
                     newState.shootArrow(queenPos, arrowShot);
                     Node childNode = new Node(3 - playerNo);

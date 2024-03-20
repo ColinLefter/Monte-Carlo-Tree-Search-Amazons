@@ -304,12 +304,20 @@ public class Board {
         Random random = new Random();
 
         if (!playerPositions.isEmpty()) {
-            Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
-            List<Position> legalMoves = getLegalMoves(piecePosition.getX(), piecePosition.getY());
+            // Select a random queen and move it to a random legal position.
+            Position queenPosition = playerPositions.get(random.nextInt(playerPositions.size()));
+            List<Position> legalQueenMoves = getLegalMoves(queenPosition.getX(), queenPosition.getY());
 
-            if (!legalMoves.isEmpty()) {
-                Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
-                performMove(currentPlayer, piecePosition, selectedMove);
+            if (!legalQueenMoves.isEmpty()) {
+                Position selectedQueenMove = legalQueenMoves.get(random.nextInt(legalQueenMoves.size()));
+                performMove(currentPlayer, queenPosition, selectedQueenMove);
+
+                // Now, select a random legal position for the arrow shot from the queen's new position.
+                List<Position> legalArrowShots = getLegalMoves(selectedQueenMove.getX(), selectedQueenMove.getY());
+                if (!legalArrowShots.isEmpty()) {
+                    Position selectedArrowShot = legalArrowShots.get(random.nextInt(legalArrowShots.size()));
+                    shootArrow(selectedQueenMove, selectedArrowShot); // Update the board with the arrow's position.
+                }
             }
         }
     }
