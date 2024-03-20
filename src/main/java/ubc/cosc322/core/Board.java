@@ -185,52 +185,20 @@ public class Board {
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
     public int checkStatus() {
-        // For each queen(of one side), check the following.
-        // 1. Can the queen move?
-        // 2. If yes, can the queen find a queen of the opposite color?
-        // 3a. If yes, the game is in progress, so return.
-        // 3b. If no, count the available squares for each colour. Use the counts to determine the results.
-        System.out.println("Debug: test11");
         BFSAmazons search = new BFSAmazons();
-        System.out.println("Debug: test12");
+
         int queenVal = 1; // Search for black queens first
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-
-                if (boardValues[i][j] == queenVal) {
-                    // Queen found. Increment, start searching rest of board (BFS).
-                    if (search.searchBoardPartition(boardValues, i, j, queenVal) == 0)
-                        System.out.println("Debug: test20");
-                        return IN_PROGRESS;
-
-                }
-            }
+        for (int i = 0; i < player1Positions.size(); i++) {
+            if (search.searchBoardPartition(boardValues, player1Positions.get(i).getX(), player1Positions.get(i).getY(), queenVal) == 0)
+                return IN_PROGRESS;
         }
-        System.out.println("Debug: test17");
-        // If this part is reached, the game is determined by score. Repeat with white queens.
+        // If this part is reached, the game is functionally over, and the winner is determined by score. Repeat with white queens.
         queenVal = 2;
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-                System.out.println("Debug: test18");
-                if (boardValues[i][j] == queenVal) {
-                    // Queen found. Increment, start searching rest of board (BFS). Don't bother checking return value.
-                    System.out.println("Debug: search board partition");
-                    search.searchBoardPartition(boardValues, i, j, queenVal);
-                }
-            }
+        for (int i = 0; i < player2Positions.size(); i++) {
+            search.searchBoardPartition(boardValues, player2Positions.get(i).getX(), player2Positions.get(i).getY(), queenVal);
         }
         // Return result
-        System.out.println("Debug: test13");
-        if (search.totalWhiteCount == search.totalBlackCount) {
-            System.out.println("Debug: test14");
-            return DRAW;
-        } else if(search.totalBlackCount > search.totalWhiteCount) {
-            System.out.println("Debug: test15");
-            return P1;
-        } else {
-            System.out.println("Debug: test16");
-            return P2;
-        }
+        return search.getOutcome();
     }
 
     /**
