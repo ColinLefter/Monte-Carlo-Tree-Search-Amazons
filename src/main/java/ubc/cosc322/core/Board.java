@@ -258,10 +258,10 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
-            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
+        if (playerName.equals("CKJJA2")) { // if we are the white player, we are 2
+            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P2; otherwise, P1
         } else {
-            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
+            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P1 for the opponent; otherwise, P2
         }
 
         return currentPlayer;
