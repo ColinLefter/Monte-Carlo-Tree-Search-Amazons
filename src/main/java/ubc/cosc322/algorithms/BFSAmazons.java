@@ -72,6 +72,16 @@ public class BFSAmazons {
         return 1;
     }
 
+    public int getOutcome() {
+        if (totalWhiteCount == totalBlackCount) {
+            return Board.DRAW;
+        } else if(totalBlackCount > totalWhiteCount) {
+            return Board.P1;
+        } else {
+            return Board.P2;
+        }
+    }
+
 }
 
 // Helper class

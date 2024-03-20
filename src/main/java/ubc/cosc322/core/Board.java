@@ -108,46 +108,20 @@ public class Board {
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
     public int checkStatus() {
-        // For each queen(of one side), check the following.
-        // 1. Can the queen move?
-        // 2. If yes, can the queen find a queen of the opposite color?
-        // 3a. If yes, the game is in progress, so return.
-        // 3b. If no, count the available squares for each colour. Use the counts to determine the results.
-        
         BFSAmazons search = new BFSAmazons();
 
         int queenVal = 1; // Search for black queens first
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-
-                if (boardValues[i][j] == queenVal) {
-                    // Queen found. Increment, start searching rest of board (BFS).
-                    if (search.searchBoardPartition(boardValues, i, j, queenVal) == 0)
-                        return IN_PROGRESS;
-
-                }
-            }
+        for (int i = 0; i < player1Positions.size(); i++) {
+            if (search.searchBoardPartition(boardValues, player1Positions.get(i).getX(), player1Positions.get(i).getY(), queenVal) == 0)
+                return IN_PROGRESS;
         }
-
-        // If this part is reached, the game is determined by score. Repeat with white queens.
+        // If this part is reached, the game is functionally over, and the winner is determined by score. Repeat with white queens.
         queenVal = 2;
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-
-                if (boardValues[i][j] == queenVal) {
-                    // Queen found. Increment, start searching rest of board (BFS). Don't bother checking return value.
-                    search.searchBoardPartition(boardValues, i, j, queenVal);
-                }
-            }
+        for (int i = 0; i < player2Positions.size(); i++) {
+            search.searchBoardPartition(boardValues, player2Positions.get(i).getX(), player2Positions.get(i).getY(), queenVal);
         }
         // Return result
-        if (search.totalWhiteCount == search.totalBlackCount) {
-            return DRAW;
-        } else if(search.totalBlackCount > search.totalWhiteCount) {
-            return P1;
-        } else {
-            return P2;
-        }
+        return search.getOutcome();
     }
 
     /**
