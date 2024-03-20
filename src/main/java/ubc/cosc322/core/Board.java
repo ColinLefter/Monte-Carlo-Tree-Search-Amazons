@@ -337,6 +337,7 @@ public class Board {
     public void togglePlayer() {
         // Assuming currentPlayer is an int that represents the player (1 or 2).
         currentPlayer = currentPlayer == 1 ? 2 : 1;
+        System.out.println("Player " + currentPlayer + "'s turn.");
     }
 
     public void randomPlay() {
@@ -364,6 +365,8 @@ public class Board {
                     System.out.println("before arrow shot"+Arrays.deepToString(boardValues));
                     shootArrow(arrowPosition);
                     System.out.println("after arrow shot"+Arrays.deepToString(boardValues));
+
+                    togglePlayer();
                 }
             }
         }
