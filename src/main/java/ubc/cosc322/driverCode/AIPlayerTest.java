@@ -2,6 +2,8 @@ package ubc.cosc322.driverCode;
 
 import java.util.*;
 
+import ubc.cosc322.core.Board;
+import ubc.cosc322.core.Position;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
@@ -27,6 +29,8 @@ public class AIPlayerTest extends GamePlayer {
     private String password = "playerPass";
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
+    private ArrayList<Integer> gameBoardState;
+    private int currentPlayer;
 
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>(Arrays.asList(1, 4));
 
@@ -108,6 +112,7 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void handleGameStateBoard(Map<String, Object> msgDetails) {
         ArrayList<Integer> gameBoardState = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE);
+        this.gameBoardState = gameBoardState;
         gameGui.setGameState(gameBoardState);
     }
 
@@ -120,10 +125,10 @@ public class AIPlayerTest extends GamePlayer {
     private void handleGameActionStart(Map<String, Object> msgDetails) {
         if (msgDetails.get("player-white").equals(this.userName)) {
             this.ourTeamColor = "White";
-            this.opponentTeamColor = "Black";
+            this.currentPlayer = Board.P2;
         } else {
             this.ourTeamColor = "Black";
-            this.opponentTeamColor = "White";
+            this.currentPlayer = Board.P1;
         }
         System.out.println("Our team: " + this.ourTeamColor + " | Opponent team: " + this.opponentTeamColor);
     }
@@ -148,13 +153,52 @@ public class AIPlayerTest extends GamePlayer {
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
     private void generateAndSendMove() {
-        Random random = new Random();
-        ArrayList<Integer> myNextPosition = generateRandomPosition(random);
-        ArrayList<Integer> myNextArrowPosition = generateRandomPosition(random);
+        Board currentBoard = convertGuiStateToBoard(gameBoardState);
 
-        gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        myCurrentPosition = myNextPosition;
+        List<Position> queenPositions = currentBoard.getQueenPositions(currentPlayer);
+
+        Random random = new Random();
+        // Choose a random queen
+        Position queenPosition = queenPositions.get(random.nextInt(queenPositions.size()));
+
+        // Get legal moves for the selected queen and choose one
+        List<Position> legalQueenMoves = currentBoard.getLegalMoves(queenPosition.getX(), queenPosition.getY());
+        Position myNextPosition = legalQueenMoves.get(random.nextInt(legalQueenMoves.size()));
+
+        // Now move the queen to the new position and get legal arrow shots
+        currentBoard.performMove(currentPlayer, queenPosition, myNextPosition);
+        List<Position> legalArrowShots = currentBoard.getLegalMoves(myNextPosition.getX(), myNextPosition.getY());
+        Position myNextArrowPosition = legalArrowShots.get(random.nextInt(legalArrowShots.size()));
+
+        // Shoot the arrow to finalize the board state
+        currentBoard.shootArrow(myNextPosition, myNextArrowPosition);
+
+        // Convert positions back to ArrayList<Integer> format
+        ArrayList<Integer> queenPosCurrent = positionToArrayList(queenPosition);
+        ArrayList<Integer> queenPosNew = positionToArrayList(myNextPosition);
+        ArrayList<Integer> arrowPos = positionToArrayList(myNextArrowPosition);
+
+        gameClient.sendMoveMessage(queenPosCurrent, queenPosNew, arrowPos);
+        gameGui.updateGameState(queenPosCurrent, queenPosNew, arrowPos);
+        myCurrentPosition = queenPosNew;
+    }
+
+    private ArrayList<Integer> positionToArrayList(Position position) {
+        return new ArrayList<>(Arrays.asList(position.getX() + 1, position.getY() + 1)); // our board uses 0-based indexing
+    }
+
+    private Board convertGuiStateToBoard(ArrayList<Integer> gameState) {
+        int size = 10; // The board is 10x10
+        int[][] boardArray = new int[size][size];
+
+        System.out.println(gameState.size() + " SIZE");
+        for (int i = 0; i < gameState.size(); i++) {
+            int row = i / size;  // Determine the row by dividing by 10
+            int col = i % size;  // Determine the column by taking the remainder
+            boardArray[row][col] = gameState.get(i);
+        }
+
+        return new Board(boardArray);
     }
 
     /**
@@ -164,7 +208,7 @@ public class AIPlayerTest extends GamePlayer {
      * @return A random board position.
      */
     private ArrayList<Integer> generateRandomPosition(Random random) {
-        return new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
+        return new ArrayList<>(Arrays.asList(random.nextInt(10), random.nextInt(10)));
     }
 
     @Override
