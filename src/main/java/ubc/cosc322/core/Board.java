@@ -32,6 +32,9 @@ public class Board {
     /**
      * Initializes a new Board instance with default size.
      */
+    public Board(int[][] boardValues) {
+        this.boardValues = boardValues;
+    }
     public Board() {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
         initializePositions(); // We are now initializing positions in the Board class instead of in MCTS.
