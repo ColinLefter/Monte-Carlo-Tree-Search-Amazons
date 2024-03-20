@@ -168,7 +168,7 @@ public class MonteCarloTreeSearch {
 
         int boardStatus = tempBoard.checkStatus();
         int iterations = 0;
-        int maxIterations = 2;
+        int maxIterations = 50;
         while (boardStatus == Board.IN_PROGRESS && iterations < maxIterations) {
             System.out.println("Debug: test8");
             currentPlayer = 3 - currentPlayer; // Toggle player
@@ -177,18 +177,18 @@ public class MonteCarloTreeSearch {
             boardStatus = tempBoard.checkStatus();
             iterations ++;
         }
-        System.out.println("Debug: test10");
+        System.out.println("Debug: test10 - Board Status: " + boardStatus + ", Iterations: " + iterations);
         // Update the score of the node based on the outcome
         if (boardStatus == toExplore.getPlayerNo()) {
+            System.out.println("Debug: test11");
             tempNode.updateScore((int) Node.WIN_SCORE_VALUE); // You need to cast because updateScore in Node accepts int.
         } else if (boardStatus == Board.DRAW) {
+            System.out.println("Debug: test12");
             tempNode.updateScore((int) Node.DRAW_SCORE_VALUE);
         }
-
+        System.out.println("Debug: test13 - Final Board Status: " + boardStatus);
         return boardStatus; // Returning the final board status after simulation
     }
-
-
 
 
     /**
