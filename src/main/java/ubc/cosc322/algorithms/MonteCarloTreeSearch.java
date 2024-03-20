@@ -51,7 +51,7 @@ public class MonteCarloTreeSearch {
             if (!promisingNode.getChildren().isEmpty()) {
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
-            int playoutResult = simulateRandomPlayout(nodeToExplore, 3 - nodeToExplore.getPlayerNo());
+            int playoutResult = simulateRandomPlayout(nodeToExplore);
             backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
         }
 
@@ -78,7 +78,7 @@ public class MonteCarloTreeSearch {
     /**
      * Simulates a random playout from the given node.
      *
-     * @param toExplore The node from which the simulation starts.
+     * @param node The node from which the simulation starts.
      * @return The result of the simulation indicating a win, loss, or draw.
      */
     private int simulateRandomPlayout(Node node) {
