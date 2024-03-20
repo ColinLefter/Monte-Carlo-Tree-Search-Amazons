@@ -16,6 +16,7 @@ public class Board {
     int[][] boardValues;
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
+    private static final int ARROW = 3;
     public static final int DRAW = 0;
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
@@ -33,7 +34,39 @@ public class Board {
      */
     public Board() {
         this.boardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE]; // 10 x 10 board
+        initializePositions(); // We are now initializing positions in the Board class instead of in MCTS.
     }
+
+    private void initializePositions() {
+        // Initial positions for black queens
+        player1Positions.add(new Position(1, 7));
+        player1Positions.add(new Position(4, 10));
+        player1Positions.add(new Position(7, 10));
+        player1Positions.add(new Position(10, 7));
+        for (Position pos : player1Positions) {
+            boardValues[pos.getX()][pos.getY()] = 1;
+        }
+
+        // Initial positions for white queens
+        player2Positions.add(new Position(1, 4));
+        player2Positions.add(new Position(4, 1));
+        player2Positions.add(new Position(7, 1));
+        player2Positions.add(new Position(10, 4));
+        for (Position pos : player2Positions) {
+            boardValues[pos.getX()][pos.getY()] = 2;
+        }
+    }
+
+    public List<Position> getQueenPositions(int playerNo) {
+        if (playerNo == P1) { // IMPORTANT: We are returning copies as otherwise we would be returning the original object that can be modified
+            return new ArrayList<>(player1Positions);  // Returns a copy of the player 1 queen positions
+        } else if (playerNo == P2) {
+            return new ArrayList<>(player2Positions);  // Returns a copy of the player 2 queen positions
+        } else {
+            throw new IllegalArgumentException("Invalid player number.");
+        }
+    }
+
 
     /**
      * Clones this Board instance, creating a new instance with the same board state.
@@ -45,6 +78,8 @@ public class Board {
         for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
             newBoard.boardValues[i] = this.boardValues[i].clone();
         }
+        newBoard.player1Positions = new ArrayList<>(this.player1Positions); // We are also resetting the player positions
+        newBoard.player2Positions = new ArrayList<>(this.player2Positions);
         return newBoard;
     }
 
@@ -83,23 +118,21 @@ public class Board {
      * Updates the board state to reflect a move made by a player.
      *
      * @param player The player number (1 or 2) making the move.
-     * @param p The position to which the player is moving.
+     * @param priorPos Where our queen used to be.
+     * @param newPos Where our queen is now.
      */
-    public void performMove(int player, Position currentPos, Position newPos) {
-        // Remove the piece from its current position.
-        boardValues[currentPos.getX()][currentPos.getY()] = 0;
 
-        // Place the piece at the new position.
+    public void performMove(int player, Position priorPos, Position newPos) {
+        boardValues[priorPos.getX()][priorPos.getY()] = 0;
         boardValues[newPos.getX()][newPos.getY()] = player;
 
-        // Update the position list.
-        if (player == P1) {
-            player1Positions.remove(currentPos);
-            player1Positions.add(newPos);
-        } else {
-            player2Positions.remove(currentPos);
-            player2Positions.add(newPos);
-        }
+        List<Position> positions = player == 1 ? player1Positions : player2Positions;
+        positions.remove(priorPos);
+        positions.add(newPos);
+    }
+
+    public void shootArrow(Position from, Position to) {
+        boardValues[to.getX()][to.getY()] = ARROW; // Using the 3 flag to denote an arrow
     }
 
     /**
@@ -260,6 +293,10 @@ public class Board {
     public void togglePlayer() {
         // Assuming currentPlayer is an int that represents the player (1 or 2).
         currentPlayer = currentPlayer == 1 ? 2 : 1;
+    }
+
+    public int getCurrentPlayer()  {
+        return currentPlayer;
     }
 
     public void randomPlay() {

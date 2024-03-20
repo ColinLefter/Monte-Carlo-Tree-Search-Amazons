@@ -3,6 +3,7 @@ package ubc.cosc322.algorithms;
 import java.util.*;
 
 import ubc.cosc322.core.Board;
+import ubc.cosc322.core.Position;
 
 /**
  * Implements the Monte Carlo Tree Search (MCTS) algorithm for the Game of the Amazons.
@@ -10,36 +11,10 @@ import ubc.cosc322.core.Board;
  */
 public class MonteCarloTreeSearch {
     // Lists to hold the positions of black and white queens on the board.
-    List<List<Integer>> blackPositions = new ArrayList<>();
-    List<List<Integer>> whitePositions = new ArrayList<>();
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
     final int UPPER_TIME_LIMIT = 29000;
-
-    /**
-     * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.
-     */
-    public MonteCarloTreeSearch() {
-        initializePositions();
-    }
-
-    /**
-     * Initializes the starting positions of the queens on the board for both players.
-     */
-    public void initializePositions() {
-        // Initialize black queen positions.
-        blackPositions.add(Arrays.asList(1, 7));
-        blackPositions.add(Arrays.asList(4, 10));
-        blackPositions.add(Arrays.asList(7, 10));
-        blackPositions.add(Arrays.asList(10, 7));
-
-        // Initialize white queen positions.
-        whitePositions.add(Arrays.asList(1, 4));
-        whitePositions.add(Arrays.asList(4, 1));
-        whitePositions.add(Arrays.asList(7, 1));
-        whitePositions.add(Arrays.asList(10, 4));
-    }
 
     /**
      * Sends a move message to the game server with the specified queen positions and the arrow position.
@@ -64,7 +39,7 @@ public class MonteCarloTreeSearch {
         long end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
 
         Node rootNode = new Node(playerNo); // Create a root node with the current player number.
-        rootNode.setState(board); // Set the initial state of the game.
+        rootNode.setState(board.clone()); // Use a cloned state for the root to avoid unintended modifications.
 
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
@@ -76,7 +51,7 @@ public class MonteCarloTreeSearch {
             if (!promisingNode.getChildren().isEmpty()) {
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
-            int playoutResult = simulateRandomPlayout(nodeToExplore);
+            int playoutResult = simulateRandomPlayout(nodeToExplore, 3 - nodeToExplore.getPlayerNo());
             backPropagation(nodeToExplore, playoutResult, playerNo); // Pass playerNo for correct score assignment.
         }
 
@@ -106,10 +81,25 @@ public class MonteCarloTreeSearch {
      * @param toExplore The node from which the simulation starts.
      * @return The result of the simulation indicating a win, loss, or draw.
      */
-    int simulateRandomPlayout(Node toExplore) {
-        // Implementation of the random playout simulation goes here.
-        return 0;
+    private int simulateRandomPlayout(Node node) {
+        Board tempState = node.getState().clone();
+        int boardStatus = tempState.checkStatus();
+
+        if (boardStatus == 3 - node.getPlayerNo()) {
+            // If the opponent wins directly, consider this a very unfavorable state
+            node.getParent().addScore(Integer.MIN_VALUE);
+            return boardStatus;
+        }
+
+        while (boardStatus == Board.IN_PROGRESS) {
+            tempState.togglePlayer(); // We update who is the current player each time
+            tempState.randomPlay();
+            boardStatus = tempState.checkStatus();
+        }
+
+        return boardStatus;
     }
+
 
     /**
      * Backpropagates the result of the simulation up the tree, updating the statistics of the nodes.
@@ -136,13 +126,21 @@ public class MonteCarloTreeSearch {
      * @param node The node to expand.
      */
     private void expandNode(Node node, int playerNo) {
-        int opponent = 3 - playerNo; // we need to determine the opponent first
-
         List<Board> possibleStates = node.getState().getAllPossibleStates(playerNo);
-        possibleStates.forEach(board -> {
-            Node newNode = new Node(opponent);  // The new node is from the perspective of the opponent.
-            newNode.setState(board);  // Set the board state for the new node.
-            node.addChild(newNode);  // Add the new node as a child of the current node.
-        });
+        for (Board state : possibleStates) {
+            List<Position> queenPositions = state.getQueenPositions(playerNo);
+
+            for (Position queenPos : queenPositions) {
+                List<Position> possibleArrowShots = state.getLegalMoves(queenPos.getX(), queenPos.getY());
+                for (Position arrowShot : possibleArrowShots) {
+                    Board newState = state.clone();
+                    newState.shootArrow(queenPos, arrowShot);
+                    Node childNode = new Node(3 - playerNo);
+                    childNode.setState(newState);
+                    node.addChild(childNode);
+                }
+            }
+        }
     }
+
 }
