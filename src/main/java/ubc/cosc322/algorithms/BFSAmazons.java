@@ -49,8 +49,9 @@ public class BFSAmazons {
                             }
                         } else {
                             // Check that we havent seen this node already
-                            if (!searchedNodes.contains(new BFSNode(currentNode.x+i, currentNode.y+j, color))) {
-                                queue.addLast(new BFSNode(currentNode.x+i, currentNode.y+j, color));
+                            BFSNode checkNode = new BFSNode(currentNode.x+i, currentNode.y+j, color);
+                            if (!searchedNodes.contains(checkNode) && !queue.contains(checkNode)) {
+                                queue.addLast(checkNode);
                                 temporaryCount++;
                             }
                         }
