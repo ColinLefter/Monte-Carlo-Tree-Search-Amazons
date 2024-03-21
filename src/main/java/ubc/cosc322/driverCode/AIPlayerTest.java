@@ -164,6 +164,8 @@ public class AIPlayerTest extends GamePlayer {
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
         //System.out.println("debug: before updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         updateMainBoard(currentPosition, nextPosition, arrowPosition);
+        System.out.println("Board After Opponent's Move");
+        printMainBoard();
         //System.out.println("debug: after updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         generateAndSendMove();
     }
@@ -203,6 +205,8 @@ public class AIPlayerTest extends GamePlayer {
         gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
         mainBoardValues = bestMove.getBoard();
         System.out.println("moves sent to server");
+        System.out.println("Board After Our Move");
+        printMainBoard();
     }
 
     /**
@@ -261,6 +265,16 @@ public class AIPlayerTest extends GamePlayer {
         Board board = new Board();
         board.setBoard(mainBoardValues);
         return board;
+    }
+
+    public void printMainBoard() {
+        int[][] board = getMainBoard().boardValues; // Retrieve the current board state
+        for (int i = 0; i < 10; i++) { // Iterate through each row
+            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
+                System.out.print(board[i][j] + " "); // Print the value at the current position
+            }
+            System.out.println(); // Move to the next line after printing each row
+        }
     }
 
     @Override

@@ -96,7 +96,7 @@ public class MonteCarloTreeSearch {
         }
 
         Node winnerNode = rootNode.getChildWithMaxScore();
-        System.out.println("Number of children: " + rootNode.getChildren().size());
+        System.out.println("Number of children nodes: " + rootNode.getChildren().size());
         if (winnerNode == null) {
             System.out.println("No winner node found. Returning initial state.");
             return board;
@@ -116,6 +116,7 @@ public class MonteCarloTreeSearch {
         //node with the highest amount of playouts is returned
         Node promisingNode = node;
         while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
+            //System.out.println("Promising Node Child Array: "+promisingNode.getChildArray());
             promisingNode = UCT.findBestNodeWithUCT(promisingNode);
         }
         return promisingNode;
