@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 5000;
+    final int UPPER_TIME_LIMIT = 500;
 
     /**
      * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.
@@ -82,7 +82,7 @@ public class MonteCarloTreeSearch {
             if (!promisingNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
                 //System.out.println("bug test 1.7");
 
-                // Execute child node processing in parallel, making sure each task is quick and checks time limit.
+                // Execute child node processing in parallel
                 promisingNode.getChildren().parallelStream().forEach(childNode -> {
                     if (System.currentTimeMillis() < end) {
                         int playoutResult = simulateRandomPlayout(childNode);
@@ -205,7 +205,7 @@ public class MonteCarloTreeSearch {
                 // For each queen position, consider all valid arrow shots after the move
                 state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(arrowShot -> {
                     Board newState = state.clone(); // Clone the board to apply the new move
-                    newState.shootArrow(arrowShot); // Apply the arrow shot to generate a new state
+                    //newState.shootArrow(arrowShot); this line was shooting the arrow a second time
 
                     Node childNode = new Node(3 - playerNo); // Create a new node for the resulting state
                     childNode.setState(newState);

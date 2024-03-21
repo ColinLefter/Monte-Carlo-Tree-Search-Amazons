@@ -346,16 +346,14 @@ public class Board {
                 if (!arrowShots.isEmpty()) {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
-                    //System.out.println("debug arrow"+arrowPosition.toString());
-                    //System.out.println("before arrow shot"+Arrays.deepToString(boardValues));
                     shootArrow(arrowPosition);
-                    //System.out.println("after arrow shot"+Arrays.deepToString(boardValues));
-
-                    togglePlayer();
                 }
             }
         }
+        // Toggle to the next player at the end of the current player's turn
+        togglePlayer();
     }
+
 
 
     public void shootArrow(Position arrowPosition) {
