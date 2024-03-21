@@ -17,7 +17,7 @@ import ygraph.ai.smartfox.games.GameClient;
  */
 public class Board {
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
-    public int[][] boardValues;
+    private int[][] boardValues;
     //public static int[][] mainBoardValues;
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
@@ -362,7 +362,7 @@ public class Board {
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
-            boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
+            this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
             //System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");

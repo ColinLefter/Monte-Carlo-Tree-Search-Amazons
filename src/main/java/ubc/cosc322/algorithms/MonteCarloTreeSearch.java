@@ -202,20 +202,29 @@ public class MonteCarloTreeSearch {
 
             // Iterate over all queen positions to evaluate potential moves
             queenPositions.forEach(queenPos -> {
-                // For each queen position, consider all valid arrow shots after the move
-                state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(arrowShot -> {
-                    Board newState = state.clone(); // Clone the board to apply the new move
-                    //newState.shootArrow(arrowShot); this line was shooting the arrow a second time
+                state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(move -> {
+                    // Perform the queen's move
+                    Board movedState = state.clone();
+                    movedState.performMove(playerNo, queenPos, move);
 
-                    Node childNode = new Node(3 - playerNo); // Create a new node for the resulting state
-                    childNode.setState(newState);
+                    // For the new queen's position, calculate all possible arrow shots
+                    movedState.getLegalMoves(move.getX(), move.getY()).forEach(arrowShot -> {
+                        // Apply the arrow shot to generate a new state
+                        Board newStateWithArrow = movedState.clone();
+                        newStateWithArrow.shootArrow(arrowShot);
 
-                    // Synchronize access to the parent node to safely add the new child
-                    synchronized (node) {
-                        node.addChild(childNode);
-                    }
+                        // Create a new node for the resulting state
+                        Node childNode = new Node(3 - playerNo);
+                        childNode.setState(newStateWithArrow);
+
+                        // Synchronize access to the parent node to safely add the new child
+                        synchronized (node) {
+                            node.addChild(childNode);
+                        }
+                    });
                 });
             });
         });
     }
+
 }
