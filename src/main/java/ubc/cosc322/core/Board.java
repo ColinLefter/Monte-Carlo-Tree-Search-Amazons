@@ -320,7 +320,7 @@ public class Board {
     public void togglePlayer() {
         // Assuming currentPlayer is an int that represents the player (1 or 2).
         currentPlayer = currentPlayer == 1 ? 2 : 1;
-        System.out.println("Player " + currentPlayer + "'s turn.");
+        //System.out.println("Player " + currentPlayer + "'s turn.");
     }
 
     public void randomPlay() {
@@ -345,9 +345,9 @@ public class Board {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
                     //System.out.println("debug arrow"+arrowPosition.toString());
-                    System.out.println("before arrow shot"+Arrays.deepToString(boardValues));
+                    //System.out.println("before arrow shot"+Arrays.deepToString(boardValues));
                     shootArrow(arrowPosition);
-                    System.out.println("after arrow shot"+Arrays.deepToString(boardValues));
+                    //System.out.println("after arrow shot"+Arrays.deepToString(boardValues));
 
                     togglePlayer();
                 }
@@ -357,13 +357,13 @@ public class Board {
 
 
     public void shootArrow(Position arrowPosition) {
-        System.out.println("activate shoot arrow");
+        //System.out.println("activate shoot arrow");
         // Check if the position is within the bounds of the board
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
             boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
-            System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
+            //System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");
         }
@@ -383,8 +383,8 @@ public class Board {
     }
 
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
-        System.out.println("current board" + Arrays.deepToString(currentBoard.getBoard()));
-        System.out.println("best move board" + Arrays.deepToString(bestMoveBoard.getBoard()));
+        //System.out.println("current board" + Arrays.deepToString(currentBoard.getBoard()));
+        //System.out.println("best move board" + Arrays.deepToString(bestMoveBoard.getBoard()));
         ArrayList<Integer> moveDetails = new ArrayList<>();
 
         // Initialize variables to track the positions found.
@@ -414,7 +414,6 @@ public class Board {
         // Compile and return the move details if all components are identified.
         if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {
             moveDetails.addAll(Arrays.asList(oldQueenX, oldQueenY, newQueenX, newQueenY, arrowX, arrowY));
-            System.out.println(moveDetails);
             return moveDetails;
         } else {
             // Log missing components for debugging purposes.

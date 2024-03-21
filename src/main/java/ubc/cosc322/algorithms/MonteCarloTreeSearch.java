@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 29000;
+    final int UPPER_TIME_LIMIT = 1000;
 
     /**
      * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.
@@ -71,16 +71,16 @@ public class MonteCarloTreeSearch {
         // Use a single threaded context to manage the overall time-bound loop.
         while (System.currentTimeMillis() < end) {
             Node promisingNode = selectPromisingNode(rootNode);
-            System.out.println("bug test 1.3");
+            //System.out.println("bug test 1.3");
 
             if (promisingNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 expandNode(promisingNode, 3 - promisingNode.getPlayerNo());
-                System.out.println("bug test 1.6");
+                //System.out.println("bug test 1.6");
             }
 
             // Check if time has expired before entering another potentially time-consuming operation.
             if (!promisingNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
-                System.out.println("bug test 1.7");
+                //System.out.println("bug test 1.7");
 
                 // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 promisingNode.getChildren().parallelStream().forEach(childNode -> {
@@ -89,7 +89,7 @@ public class MonteCarloTreeSearch {
                         synchronized (rootNode) {
                             backPropagation(childNode, playoutResult, playerNo);
                         }
-                        System.out.println("bug test 1.8");
+                        //System.out.println("bug test 1.8");
                     }
                 });
             }
@@ -97,8 +97,8 @@ public class MonteCarloTreeSearch {
 
         Node winnerNode = rootNode.getChildWithMaxScore();
         System.out.println("Number of children: " + rootNode.getChildren().size());
-        if (winnerNode == null) {
-            System.out.println("No winner node found. Returning initial state or handling error.");
+        if (winnerNode.getState() == Board.getMainBoard()) {
+            System.out.println("No winner node found. Returning initial state.");
             return board;
         }
         System.out.println("Winner node found.");
@@ -127,52 +127,11 @@ public class MonteCarloTreeSearch {
      * @param toExplore The node from which the simulation starts.
      * @return The result of the simulation indicating a win, loss, or draw.
      */
-//    int simulateRandomPlayout(Node toExplore) {
-//        System.out.println("bug test 3");
-//        Node tempNode = new Node(toExplore.getPlayerNo());
-//        tempNode.setState(toExplore.getState().clone()); // Assuming your Board class has a clone method that returns a deep copy of the board
-//        Board tempBoard = tempNode.getState();
-//        int currentPlayer = toExplore.getPlayerNo();
-//
-//        int iterationCount = 0;
-//        int maxIterations = 2;
-//
-//        System.out.println("bug test 3.5");
-//        while (tempBoard.checkStatus() == Board.IN_PROGRESS && iterationCount < maxIterations) {
-//            System.out.println("bug test 4");
-//            List<Board> possibleStates = tempBoard.getAllPossibleStates(currentPlayer);
-//            System.out.println("bug test 5");
-//            if (possibleStates.isEmpty()) {
-//                break; // No possible moves, so break the simulation
-//            }
-//            int randomIndex = new Random().nextInt(possibleStates.size());
-//            Board newState = possibleStates.get(randomIndex); // Choose a random next state
-//            tempNode.setState(newState); // Update the node with the new state
-//
-//            // Switch players
-//            currentPlayer = 3 - currentPlayer;
-//
-//            iterationCount ++;
-//        }
-//
-//        int status = tempBoard.checkStatus();
-//        // Evaluate the terminal state and return the result based on the player who started the playout
-//        if (status == toExplore.getPlayerNo()) {
-//            System.out.println("win");
-//            return WIN_SCORE; // The starting player wins
-//        } else if (status == Board.DRAW) {
-//            System.out.println("draw");
-//            return 0; // Draw
-//        } else {
-//            System.out.println("lose");
-//            return -WIN_SCORE; // The starting player loses
-//        }
-//    }
     int simulateRandomPlayout(Node toExplore) {
         Node tempNode = new Node(toExplore.getPlayerNo());
         tempNode.setState(toExplore.getState().clone());
         Board tempBoard = tempNode.getState();
-        int currentPlayer = toExplore.getPlayerNo();
+        //int currentPlayer = toExplore.getPlayerNo();
 
         Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
         int maxDepth = 2; // Limit simulation depth to prevent infinite loops

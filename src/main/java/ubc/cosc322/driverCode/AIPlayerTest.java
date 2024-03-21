@@ -92,7 +92,7 @@ public class AIPlayerTest extends GamePlayer {
      */
     @Override
     public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
-        System.out.println("debug messagetype" + messageType);
+        //System.out.println("debug messagetype" + messageType);
         switch (messageType) {
             case GameMessage.GAME_STATE_BOARD:
                 handleGameStateBoard(msgDetails);
@@ -157,10 +157,14 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> nextPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
         ArrayList<Integer> arrowPosition = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
+        System.out.println(String.format("Opponent's Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]",
+                currentPosition.get(0), currentPosition.get(1), nextPosition.get(0), nextPosition.get(1),
+                arrowPosition.get(0), arrowPosition.get(1)));
+
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
-        System.out.println("actionmove debug"+Arrays.deepToString(mainBoardValues));
+        //System.out.println("debug: before updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         updateMainBoard(currentPosition, nextPosition, arrowPosition);
-        System.out.println("actionmove debug"+Arrays.deepToString(mainBoardValues));
+        //System.out.println("debug: after updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         generateAndSendMove();
     }
 
@@ -170,21 +174,21 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         playerNo = Board.getPlayerNo(aiPlayerName, isAIPlayerWhite);
-        System.out.println("debug1: main board "+Arrays.deepToString(getMainBoard().getBoard()));
         Board bestMove = mcts.findNextMove(getMainBoard(),playerNo);
         if(bestMove != null){
             System.out.println("success");
         } else {
             System.out.println("fail");
         }
-        System.out.println("debug2: main board "+Arrays.deepToString(getMainBoard().getBoard()));
         ArrayList<Integer> moveDetails = Board.extractMoveDetails(getMainBoard(),bestMove);
 
         myCurrentPosition.clear();
         myNextPosition.clear();
         myNextArrowPosition.clear();
         System.out.println("moves successfully obtained");
-        System.out.println(moveDetails);
+        System.out.printf("Our Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]%n",
+                moveDetails.get(0), moveDetails.get(1), moveDetails.get(2),
+                moveDetails.get(3), moveDetails.get(4), moveDetails.get(5));
         myCurrentPosition.add(moveDetails.get(0)); // X coordinate
         myCurrentPosition.add(moveDetails.get(1)); // Y coordinate
 
