@@ -175,7 +175,7 @@ public class MonteCarloTreeSearch {
         int currentPlayer = toExplore.getPlayerNo();
 
         Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
-        int maxDepth = 50; // Limit simulation depth to prevent infinite loops
+        int maxDepth = 2; // Limit simulation depth to prevent infinite loops
 
         for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS; depth++) {
             if (!visitedStates.add(tempBoard.clone())) {

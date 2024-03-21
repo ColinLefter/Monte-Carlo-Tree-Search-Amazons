@@ -38,6 +38,7 @@ public class AIPlayerTest extends GamePlayer {
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>();
     private ArrayList<Integer> myNextPosition = new ArrayList<>();
     private ArrayList<Integer> myNextArrowPosition = new ArrayList<>();
+    MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
     /**
      * The entry point for the AI player. Initializes the player and sets up the GUI
      * if necessary.
@@ -168,7 +169,6 @@ public class AIPlayerTest extends GamePlayer {
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
     private void generateAndSendMove() {
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch();
         playerNo = Board.getPlayerNo(aiPlayerName, isAIPlayerWhite);
         System.out.println("debug1: main board "+Arrays.deepToString(getMainBoard().getBoard()));
         Board bestMove = mcts.findNextMove(getMainBoard(),playerNo);
