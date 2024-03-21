@@ -119,9 +119,7 @@ public class AIPlayerTest extends GamePlayer {
     private void handleGameStateBoard(Map<String, Object> msgDetails) {
         ArrayList<Integer> gameBoardState = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE);
         gameGui.setGameState(gameBoardState);
-        System.out.println("gamestate debug"+Arrays.deepToString(mainBoardValues));
         setMainBoard(gameBoardState);
-        System.out.println("gamestate debug"+Arrays.deepToString(mainBoardValues));
     }
 
     /**
@@ -162,11 +160,9 @@ public class AIPlayerTest extends GamePlayer {
                 arrowPosition.get(0), arrowPosition.get(1)));
 
         gameGui.updateGameState(currentPosition, nextPosition, arrowPosition);
-        //System.out.println("debug: before updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         updateMainBoard(currentPosition, nextPosition, arrowPosition);
         System.out.println("Board After Opponent's Move");
         printMainBoard();
-        //System.out.println("debug: after updating move from opponent: "+Arrays.deepToString(mainBoardValues));
         generateAndSendMove();
     }
 
@@ -187,7 +183,7 @@ public class AIPlayerTest extends GamePlayer {
         myCurrentPosition.clear();
         myNextPosition.clear();
         myNextArrowPosition.clear();
-        System.out.println("moves successfully obtained");
+        System.out.println("Best Move Board moves successfully obtained");
         System.out.printf("Our Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]%n",
                 moveDetails.get(0), moveDetails.get(1), moveDetails.get(2),
                 moveDetails.get(3), moveDetails.get(4), moveDetails.get(5));
@@ -220,11 +216,7 @@ public class AIPlayerTest extends GamePlayer {
     }
 
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
-        // Assuming the first 12 elements are metadata and the rest is the board state
-        System.out.println("game board state: " + gameBoardState);
         ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
-        System.out.println("adjusted board state: " + adjustedBoardState);
-
         // Initialize a new array to hold the updated board state
         int[][] array = new int[10][10];
         int getVariable = 0;
@@ -234,12 +226,8 @@ public class AIPlayerTest extends GamePlayer {
                 array[i-1][j-1] = gameBoardState.get(11*i + j);
             }
         }
-
         // Update mainBoardValues with the new 2D array
         mainBoardValues = array;
-
-        // Print the updated mainBoardValues for verification
-        System.out.println("mainBoardValues updated: " + Arrays.deepToString(mainBoardValues));
     }
 
     public static void updateMainBoard(ArrayList<Integer> currentPosition,
@@ -251,12 +239,16 @@ public class AIPlayerTest extends GamePlayer {
         int nextY = nextPosition.get(1) - 1;
         int arrowX = arrowPosition.get(0) - 1;
         int arrowY = arrowPosition.get(1) - 1;
-
+        System.out.println("Debug: printing mainBoardValues in updateMainBoard method:");
+        System.out.println(Arrays.deepToString(mainBoardValues));
         // Move piece to new position
+        System.out.println("Debug: print mainBoardValues at currentX: "+(currentX+1)+" and currentY: "+(currentY+1));
+        System.out.println("Debug: mainBoardValues at currentX & currentY: "+mainBoardValues[currentX][currentY]);
         int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
         mainBoardValues[currentX][currentY] = 0; // Set current position to empty
+        System.out.println("Debug: print mainBoardValues at nextX: "+(nextX+1)+" and nextY: "+(nextY+1));
         mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
-
+        System.out.println("Debug: print mainBoardValues at arrowX: "+(arrowX+1)+" and currentY: "+(arrowY+1));
         // Place the arrow
         mainBoardValues[arrowX][arrowY] = 3;
     }
@@ -268,8 +260,8 @@ public class AIPlayerTest extends GamePlayer {
     }
 
     public void printMainBoard() {
-        int[][] board = getMainBoard().boardValues; // Retrieve the current board state
-        for (int i = 0; i < 10; i++) { // Iterate through each row
+        int[][] board = mainBoardValues; // Retrieve the current board state
+        for (int i = 9; i > -1; i--) { // Iterate through each row
             for (int j = 0; j < 10; j++) { // Iterate through each column in the row
                 System.out.print(board[i][j] + " "); // Print the value at the current position
             }

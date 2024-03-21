@@ -18,7 +18,7 @@ import ygraph.ai.smartfox.games.GameClient;
 public class Board {
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
     public int[][] boardValues;
-    public static int[][] mainBoardValues;
+    //public static int[][] mainBoardValues;
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
     public static final int DRAW = 0;
@@ -77,53 +77,55 @@ public class Board {
         }
         return queenPositions;
     }
-
-    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
-        // Check if the gameBoardState size matches the expected size of the boardValues array
-        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
-        System.out.println(adjustedBoardState);
-
-        // Create a new 2D array to represent the board state
-        int[][] newBoardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
-
-        // Fill the newBoardValues with the values from gameBoardState
-        for (int i = 0; i < adjustedBoardState.size(); i++) {
-            int row = i / DEFAULT_BOARD_SIZE;
-            int col = i % DEFAULT_BOARD_SIZE;
-            if(row > 9){
-                break;
-            }
-            newBoardValues[row][col] = adjustedBoardState.get(i);
-        }
-
-        // Update the boardValues with the new board state
-        mainBoardValues = newBoardValues;
-    }
-
-    public static void updateMainBoard(ArrayList<Integer> currentPosition,
-                                       ArrayList<Integer> nextPosition,
-                                       ArrayList<Integer> arrowPosition) {
-        int currentX = currentPosition.get(0) - 1;
-        int currentY = currentPosition.get(1) - 1;
-        int nextX = nextPosition.get(0) - 1;
-        int nextY = nextPosition.get(1) - 1;
-        int arrowX = arrowPosition.get(0) - 1;
-        int arrowY = arrowPosition.get(1) - 1;
-
-        // Move piece to new position
-        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
-        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
-        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
-
-        // Place the arrow
-        mainBoardValues[arrowX][arrowY] = ARROW;
-    }
-
-    public static Board getMainBoard(){
-        Board board = new Board();
-        board.setBoard(mainBoardValues);
-        return board;
-    }
+//
+    //Following code was moved to aiplayerclass just to keep track of main board
+    //
+//    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
+//        // Check if the gameBoardState size matches the expected size of the boardValues array
+//        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
+//        System.out.println(adjustedBoardState);
+//
+//        // Create a new 2D array to represent the board state
+//        int[][] newBoardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+//
+//        // Fill the newBoardValues with the values from gameBoardState
+//        for (int i = 0; i < adjustedBoardState.size(); i++) {
+//            int row = i / DEFAULT_BOARD_SIZE;
+//            int col = i % DEFAULT_BOARD_SIZE;
+//            if(row > 9){
+//                break;
+//            }
+//            newBoardValues[row][col] = adjustedBoardState.get(i);
+//        }
+//
+//        // Update the boardValues with the new board state
+//        mainBoardValues = newBoardValues;
+//    }
+//
+//    public static void updateMainBoard(ArrayList<Integer> currentPosition,
+//                                       ArrayList<Integer> nextPosition,
+//                                       ArrayList<Integer> arrowPosition) {
+//        int currentX = currentPosition.get(0) - 1;
+//        int currentY = currentPosition.get(1) - 1;
+//        int nextX = nextPosition.get(0) - 1;
+//        int nextY = nextPosition.get(1) - 1;
+//        int arrowX = arrowPosition.get(0) - 1;
+//        int arrowY = arrowPosition.get(1) - 1;
+//
+//        // Move piece to new position
+//        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
+//        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
+//        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
+//
+//        // Place the arrow
+//        mainBoardValues[arrowX][arrowY] = ARROW;
+//    }
+//
+//    public static Board getMainBoard(){
+//        Board board = new Board();
+//        board.setBoard(mainBoardValues);
+//        return board;
+//    }
 
     /**
      * Clones this Board instance, creating a new instance with the same board state.
