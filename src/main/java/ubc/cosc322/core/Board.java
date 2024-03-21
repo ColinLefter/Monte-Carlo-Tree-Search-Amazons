@@ -394,7 +394,7 @@ public class Board {
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
-                    if (currentBoard.boardValues[x][y] != 0 && bestMoveBoard.boardValues[x][y] == 0) {
+                    if (currentBoard.boardValues[x][y] != 0) {
                         // The queen has moved from this position.
                         oldQueenX = x + 1;
                         oldQueenY = y + 1;
