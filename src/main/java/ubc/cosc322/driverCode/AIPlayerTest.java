@@ -180,29 +180,35 @@ public class AIPlayerTest extends GamePlayer {
         }
         ArrayList<Integer> moveDetails = Board.extractMoveDetails(getMainBoard(),bestMove);
 
-        myCurrentPosition.clear();
-        myNextPosition.clear();
-        myNextArrowPosition.clear();
-        System.out.println("Best Move Board moves successfully obtained");
-        System.out.printf("Our Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]%n",
-                moveDetails.get(0), moveDetails.get(1), moveDetails.get(2),
-                moveDetails.get(3), moveDetails.get(4), moveDetails.get(5));
-        myCurrentPosition.add(moveDetails.get(0)); // X coordinate
-        myCurrentPosition.add(moveDetails.get(1)); // Y coordinate
+        if(moveDetails.isEmpty()){
+            System.out.println("There are no moves for you to make. You lost.");
+        } else{
 
-        myNextPosition.add(moveDetails.get(2)); // X coordinate
-        myNextPosition.add(moveDetails.get(3)); // Y coordinate
+            myCurrentPosition.clear();
+            myNextPosition.clear();
+            myNextArrowPosition.clear();
+            System.out.println("Best Move Board moves successfully obtained");
+            System.out.printf("Our Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]%n",
+                    moveDetails.get(0), moveDetails.get(1), moveDetails.get(2),
+                    moveDetails.get(3), moveDetails.get(4), moveDetails.get(5));
+            myCurrentPosition.add(moveDetails.get(0)); // X coordinate
+            myCurrentPosition.add(moveDetails.get(1)); // Y coordinate
 
-        myNextArrowPosition.add(moveDetails.get(4)); // X coordinate
-        myNextArrowPosition.add(moveDetails.get(5)); // Y coordinate
-        System.out.println("moves added to positions");
+            myNextPosition.add(moveDetails.get(2)); // X coordinate
+            myNextPosition.add(moveDetails.get(3)); // Y coordinate
 
-        gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
-        mainBoardValues = bestMove.getBoard();
-        System.out.println("moves sent to server");
-        System.out.println("Board After Our Move");
-        printMainBoard();
+            myNextArrowPosition.add(moveDetails.get(4)); // X coordinate
+            myNextArrowPosition.add(moveDetails.get(5)); // Y coordinate
+            System.out.println("moves added to positions");
+
+            gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
+            gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+            mainBoardValues = bestMove.getBoard();
+            System.out.println("moves sent to server");
+            System.out.println("Board After Our Move");
+            printMainBoard();
+        }
+
     }
 
     /**
@@ -239,16 +245,16 @@ public class AIPlayerTest extends GamePlayer {
         int nextY = nextPosition.get(1) - 1;
         int arrowX = arrowPosition.get(0) - 1;
         int arrowY = arrowPosition.get(1) - 1;
-        System.out.println("Debug: printing mainBoardValues in updateMainBoard method:");
-        System.out.println(Arrays.deepToString(mainBoardValues));
+        //System.out.println("Debug: printing mainBoardValues in updateMainBoard method:");
+        //System.out.println(Arrays.deepToString(mainBoardValues));
         // Move piece to new position
-        System.out.println("Debug: print mainBoardValues at currentX: "+(currentX+1)+" and currentY: "+(currentY+1));
-        System.out.println("Debug: mainBoardValues at currentX & currentY: "+mainBoardValues[currentX][currentY]);
+        //System.out.println("Debug: print mainBoardValues at currentX: "+(currentX+1)+" and currentY: "+(currentY+1));
+        //System.out.println("Debug: mainBoardValues at currentX & currentY: "+mainBoardValues[currentX][currentY]);
         int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
         mainBoardValues[currentX][currentY] = 0; // Set current position to empty
-        System.out.println("Debug: print mainBoardValues at nextX: "+(nextX+1)+" and nextY: "+(nextY+1));
+        //System.out.println("Debug: print mainBoardValues at nextX: "+(nextX+1)+" and nextY: "+(nextY+1));
         mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
-        System.out.println("Debug: print mainBoardValues at arrowX: "+(arrowX+1)+" and currentY: "+(arrowY+1));
+        //System.out.println("Debug: print mainBoardValues at arrowX: "+(arrowX+1)+" and currentY: "+(arrowY+1));
         // Place the arrow
         mainBoardValues[arrowX][arrowY] = 3;
     }

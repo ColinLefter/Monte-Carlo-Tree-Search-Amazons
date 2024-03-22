@@ -82,7 +82,7 @@ public class MonteCarloTreeSearch {
             if (!promisingNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
                 //System.out.println("bug test 1.7");
 
-                // Execute child node processing in parallel
+                // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 promisingNode.getChildren().parallelStream().forEach(childNode -> {
                     if (System.currentTimeMillis() < end) {
                         int playoutResult = simulateRandomPlayout(childNode);
@@ -96,9 +96,9 @@ public class MonteCarloTreeSearch {
         }
 
         Node winnerNode = rootNode.getChildWithMaxScore();
-        System.out.println("Number of children nodes: " + rootNode.getChildren().size());
+        System.out.println("Number of children: " + rootNode.getChildren().size());
         if (winnerNode == null) {
-            System.out.println("No winner node found. Returning initial state.");
+            System.out.println("winnerNode = null");
             return board;
         }
         System.out.println("Winner node found.");
@@ -116,7 +116,6 @@ public class MonteCarloTreeSearch {
         //node with the highest amount of playouts is returned
         Node promisingNode = node;
         while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
-            //System.out.println("Promising Node Child Array: "+promisingNode.getChildArray());
             promisingNode = UCT.findBestNodeWithUCT(promisingNode);
         }
         return promisingNode;
@@ -128,14 +127,55 @@ public class MonteCarloTreeSearch {
      * @param toExplore The node from which the simulation starts.
      * @return The result of the simulation indicating a win, loss, or draw.
      */
+//    int simulateRandomPlayout(Node toExplore) {
+//        System.out.println("bug test 3");
+//        Node tempNode = new Node(toExplore.getPlayerNo());
+//        tempNode.setState(toExplore.getState().clone()); // Assuming your Board class has a clone method that returns a deep copy of the board
+//        Board tempBoard = tempNode.getState();
+//        int currentPlayer = toExplore.getPlayerNo();
+//
+//        int iterationCount = 0;
+//        int maxIterations = 2;
+//
+//        System.out.println("bug test 3.5");
+//        while (tempBoard.checkStatus() == Board.IN_PROGRESS && iterationCount < maxIterations) {
+//            System.out.println("bug test 4");
+//            List<Board> possibleStates = tempBoard.getAllPossibleStates(currentPlayer);
+//            System.out.println("bug test 5");
+//            if (possibleStates.isEmpty()) {
+//                break; // No possible moves, so break the simulation
+//            }
+//            int randomIndex = new Random().nextInt(possibleStates.size());
+//            Board newState = possibleStates.get(randomIndex); // Choose a random next state
+//            tempNode.setState(newState); // Update the node with the new state
+//
+//            // Switch players
+//            currentPlayer = 3 - currentPlayer;
+//
+//            iterationCount ++;
+//        }
+//
+//        int status = tempBoard.checkStatus();
+//        // Evaluate the terminal state and return the result based on the player who started the playout
+//        if (status == toExplore.getPlayerNo()) {
+//            System.out.println("win");
+//            return WIN_SCORE; // The starting player wins
+//        } else if (status == Board.DRAW) {
+//            System.out.println("draw");
+//            return 0; // Draw
+//        } else {
+//            System.out.println("lose");
+//            return -WIN_SCORE; // The starting player loses
+//        }
+//    }
     int simulateRandomPlayout(Node toExplore) {
         Node tempNode = new Node(toExplore.getPlayerNo());
         tempNode.setState(toExplore.getState().clone());
         Board tempBoard = tempNode.getState();
-        //int currentPlayer = toExplore.getPlayerNo();
+        int currentPlayer = toExplore.getPlayerNo();
 
         Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
-        int maxDepth = 2; // Limit simulation depth to prevent infinite loops
+        int maxDepth = 50; // Limit simulation depth to prevent infinite loops
 
         for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS; depth++) {
             if (!visitedStates.add(tempBoard.clone())) {
@@ -202,29 +242,20 @@ public class MonteCarloTreeSearch {
 
             // Iterate over all queen positions to evaluate potential moves
             queenPositions.forEach(queenPos -> {
-                state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(move -> {
-                    // Perform the queen's move
-                    Board movedState = state.clone();
-                    movedState.performMove(playerNo, queenPos, move);
+                // For each queen position, consider all valid arrow shots after the move
+                state.getLegalMoves(queenPos.getX(), queenPos.getY()).forEach(arrowShot -> {
+                    Board newState = state.clone(); // Clone the board to apply the new move
+                    newState.shootArrow(arrowShot); // Apply the arrow shot to generate a new state
 
-                    // For the new queen's position, calculate all possible arrow shots
-                    movedState.getLegalMoves(move.getX(), move.getY()).forEach(arrowShot -> {
-                        // Apply the arrow shot to generate a new state
-                        Board newStateWithArrow = movedState.clone();
-                        newStateWithArrow.shootArrow(arrowShot);
+                    Node childNode = new Node(3 - playerNo); // Create a new node for the resulting state
+                    childNode.setState(newState);
 
-                        // Create a new node for the resulting state
-                        Node childNode = new Node(3 - playerNo);
-                        childNode.setState(newStateWithArrow);
-
-                        // Synchronize access to the parent node to safely add the new child
-                        synchronized (node) {
-                            node.addChild(childNode);
-                        }
-                    });
+                    // Synchronize access to the parent node to safely add the new child
+                    synchronized (node) {
+                        node.addChild(childNode);
+                    }
                 });
             });
         });
     }
-
 }

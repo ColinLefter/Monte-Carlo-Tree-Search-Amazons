@@ -210,7 +210,7 @@ public class Board {
         // If this part is reached, the game is functionally over, and the winner is determined by score. Repeat with white queens.
         queenVal = 2;
         for (int i = 0; i < player2Positions.size(); i++) {
-            System.out.println("board values"+Arrays.deepToString(boardValues));
+            //System.out.println("board values"+Arrays.deepToString(boardValues));
             search.searchBoardPartition(boardValues, player2Positions.get(i).getX(), player2Positions.get(i).getY(), queenVal);
         }
         // Return result
@@ -260,10 +260,10 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA2")) { // if we are the white player, we are 2
-            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P2; otherwise, P1
+        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
+            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
         } else {
-            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P1 for the opponent; otherwise, P2
+            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
         }
 
         return currentPlayer;
@@ -414,6 +414,8 @@ public class Board {
         // Compile and return the move details if all components are identified.
         if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {
             moveDetails.addAll(Arrays.asList(oldQueenX, oldQueenY, newQueenX, newQueenY, arrowX, arrowY));
+            return moveDetails;
+        } else if (oldQueenX == null && oldQueenY == null && newQueenX == null && newQueenY == null && arrowX == null && arrowY == null) {
             return moveDetails;
         } else {
             // Log missing components for debugging purposes.
