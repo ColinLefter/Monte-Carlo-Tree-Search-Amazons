@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 500;
+    final int UPPER_TIME_LIMIT = 10;
 
     /**
      * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.

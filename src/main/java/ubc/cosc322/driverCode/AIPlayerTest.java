@@ -27,12 +27,11 @@ public class AIPlayerTest extends GamePlayer {
     private GameClient gameClient = null;
     private BaseGameGUI gameGui = null;
     public static int[][] mainBoardValues = new int[10][10]; // Assuming a 10x10 board
-    private String userName = "The player";
-    private String password = "playerPass";
+    private String userName;
+    private String password;
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
     private int playerNo;
-    private final String aiPlayerName = "CKJJA2";
     private boolean isAIPlayerWhite;
 
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>();
@@ -138,6 +137,8 @@ public class AIPlayerTest extends GamePlayer {
             ourTeamColor = "Black";
             opponentTeamColor = "White";
         }
+        System.out.println(ourTeamColor + " == " + "Black");
+        System.out.println("Are we white? " + isAIPlayerWhite);
         if (ourTeamColor.equals("Black")) {
             generateAndSendMove(); // we make the first move
         }
@@ -171,8 +172,9 @@ public class AIPlayerTest extends GamePlayer {
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
     private void generateAndSendMove() {
-        playerNo = Board.getPlayerNo(aiPlayerName, isAIPlayerWhite);
-        Board bestMove = mcts.findNextMove(getMainBoard(),playerNo);
+        System.out.println("I am white: " + isAIPlayerWhite);
+        playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
+        Board bestMove = mcts.findNextMove(getMainBoard(), playerNo);
         if(bestMove != null){
             System.out.println("success");
         } else {

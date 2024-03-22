@@ -29,7 +29,7 @@ public class Board {
     private BaseGameGUI gameGui;
 
     // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
-    private static int currentPlayer = P2; // P1 always starts the game (black). We just need to know who is P1.
+    private static int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
 
     // Lists to keep track of player positions.
     // Excellent optimization to avoid O(n^2) runtime complexity of a solution where we scan the board each time
@@ -255,18 +255,11 @@ public class Board {
      * The name 'CKJJA' corresponds to the AI player (our initials put together) and determines the player number based on the order of joining.
      * We need to know two things to determine who is who: the name of the white player, and whether that name is what we named our AI
      *
-     * @param playerName The name of the player being checked.
      * @param isPlayerWhite A boolean indicating whether the AI is playing as white.
      * @return The player number (1 for black, 2 for white).
      */
-    public static int getPlayerNo(String playerName, boolean isPlayerWhite) {
-        if (playerName.equals("CKJJA")) { // if we are the white player, we are 2
-            currentPlayer = isPlayerWhite ? P2 : P1; // If AI is white, return P2; otherwise, P1
-        } else {
-            currentPlayer = isPlayerWhite ? P1 : P2; // If AI is white, return P1 for the opponent; otherwise, P2
-        }
-
-        return currentPlayer;
+    public static int getBoardPlayerNo(boolean isPlayerWhite) {
+        return isPlayerWhite ? P1 : P2;
     }
 
     /**
@@ -362,7 +355,7 @@ public class Board {
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
-            this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
+            boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
             //System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");
