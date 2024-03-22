@@ -172,7 +172,6 @@ public class AIPlayerTest extends GamePlayer {
      * serves as a placeholder until a more sophisticated AI logic is implemented.
      */
     private void generateAndSendMove() {
-        System.out.println("I am white: " + isAIPlayerWhite);
         playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
         Board bestMove = mcts.findNextMove(getMainBoard(), playerNo);
         if(bestMove != null){
@@ -204,7 +203,11 @@ public class AIPlayerTest extends GamePlayer {
             System.out.println("moves added to positions");
 
             gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
+
+            // we always need to update the game GUI and our internal board at the same time
             gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
+            updateMainBoard(myCurrentPosition, myNextPosition, myNextArrowPosition);
+
             mainBoardValues = bestMove.getBoard();
             System.out.println("moves sent to server");
             System.out.println("Board After Our Move");
@@ -268,10 +271,9 @@ public class AIPlayerTest extends GamePlayer {
     }
 
     public void printMainBoard() {
-        int[][] board = mainBoardValues; // Retrieve the current board state
         for (int i = 9; i > -1; i--) { // Iterate through each row
             for (int j = 0; j < 10; j++) { // Iterate through each column in the row
-                System.out.print(board[i][j] + " "); // Print the value at the current position
+                System.out.print(mainBoardValues[i][j] + " "); // Print the value at the current position
             }
             System.out.println(); // Move to the next line after printing each row
         }
