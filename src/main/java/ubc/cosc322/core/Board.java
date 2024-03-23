@@ -16,6 +16,7 @@ import ygraph.ai.smartfox.games.GameClient;
  * including calculating legal moves, performing moves, and checking the game status.
  */
 public class Board {
+    public static int randomPlays = 0;
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
     private int[][] boardValues;
     //public static int[][] mainBoardValues;
@@ -317,6 +318,7 @@ public class Board {
     }
 
     public void randomPlay() {
+        randomPlays++;
         //System.out.println("Debug: Activate randomPlay & Print Board Values");
         //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();

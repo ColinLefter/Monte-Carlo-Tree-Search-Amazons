@@ -16,9 +16,10 @@ public class MonteCarloTreeSearch {
     List<List<Integer>> blackPositions = new ArrayList<>();
     List<List<Integer>> whitePositions = new ArrayList<>();
     final String OPPONENT = "white"; // Assumed opponent color.
-    static final int WIN_SCORE = 10000; // Score indicating a win in simulations.
+    static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 500;
+    final int UPPER_TIME_LIMIT = 10000;
+    public static int numberOfNodes = 0;
 
     /**
      * Initializes the MonteCarloTreeSearch object and sets up the initial positions of the queens on the board.
@@ -96,7 +97,8 @@ public class MonteCarloTreeSearch {
         }
 
         Node winnerNode = rootNode.getChildWithMaxScore();
-        System.out.println("Number of children: " + rootNode.getChildren().size());
+        System.out.println("Number of children for node: " + rootNode.getChildren().size());
+        numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
             System.out.println("winnerNode = null");
             return board;
