@@ -207,8 +207,6 @@ public class AIPlayerTest extends GamePlayer {
             // we always need to update the game GUI and our internal board at the same time
             gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
             updateMainBoard(myCurrentPosition, myNextPosition, myNextArrowPosition);
-
-            mainBoardValues = bestMove.getBoard();
             System.out.println("moves sent to server");
             System.out.println("Board After Our Move");
             printMainBoard();
@@ -227,7 +225,6 @@ public class AIPlayerTest extends GamePlayer {
     }
 
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
-        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
         // Initialize a new array to hold the updated board state
         int[][] array = new int[10][10];
         int getVariable = 0;
@@ -237,8 +234,10 @@ public class AIPlayerTest extends GamePlayer {
                 array[i-1][j-1] = gameBoardState.get(11*i + j);
             }
         }
+        System.out.println(Arrays.deepToString(mainBoardValues));
         // Update mainBoardValues with the new 2D array
         mainBoardValues = array;
+        System.out.println(Arrays.deepToString(mainBoardValues));
     }
 
     public static void updateMainBoard(ArrayList<Integer> currentPosition,

@@ -42,7 +42,7 @@ public class UCT {
                 Comparator.comparing(c -> uctValue(parentVisit, c.getScore(), c.getVisitCount())));
     }
 
-    private int simulateRandomPlayout(Node node, int opponent) {
+    public int simulateRandomPlayout(Node node, int opponent) {
         Board tempState = node.getState().clone(); // Clone the board state.
         int boardStatus = tempState.checkStatus();
 

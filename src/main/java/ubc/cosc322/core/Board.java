@@ -25,6 +25,7 @@ public class Board {
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
     public static final int ARROW = 3;
+    public static final int RANDOM_ARROW = 4;
     private GameClient gameClient;
     private BaseGameGUI gameGui;
 
@@ -279,20 +280,17 @@ public class Board {
      */
     public List<Board> getAllPossibleStates(int currentPlayer) {
         List<Board> possibleStates = new ArrayList<>();
-        // For each queen, get all legal moves.
+        // For each queen, generate states after moving the queen and shooting an arrow.
         for (Position queenPos : getQueenPositions(currentPlayer)) {
-            List<Position> legalMoves = getLegalMoves(queenPos.getX(), queenPos.getY());
-            // For each legal queen move, calculate legal arrow shots from the new position.
-            for (Position move : legalMoves) {
-                Board newState = this.clone();
-                newState.performMove(currentPlayer, queenPos, move);
-                // Get legal arrow shots from the new queen position.
-                List<Position> arrowShots = newState.getLegalMoves(move.getX(), move.getY());
-                // For each legal arrow shot, create a new state.
-                for (Position arrow : arrowShots) {
-                    Board newStateWithArrow = newState.clone();
-                    newStateWithArrow.shootArrow(arrow);
-                    possibleStates.add(newStateWithArrow);
+            List<Position> queenMoves = getLegalMoves(queenPos.getX(), queenPos.getY());
+            for (Position queenMove : queenMoves) {
+                Board stateAfterQueenMove = this.clone();
+                stateAfterQueenMove.performMove(currentPlayer, queenPos, queenMove);
+                List<Position> arrowShots = stateAfterQueenMove.getLegalMoves(queenMove.getX(), queenMove.getY());
+                for (Position arrowShot : arrowShots) {
+                    Board finalState = stateAfterQueenMove.clone();
+                    finalState.shootArrow(arrowShot);
+                    possibleStates.add(finalState);
                 }
             }
         }
@@ -319,6 +317,8 @@ public class Board {
     }
 
     public void randomPlay() {
+        //System.out.println("Debug: Activate randomPlay & Print Board Values");
+        //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();
         // Determine the current player's positions
         List<Position> playerPositions = currentPlayer == P1 ? new ArrayList<>(player1Positions) : new ArrayList<>(player2Positions);
@@ -332,14 +332,22 @@ public class Board {
             if (!legalMoves.isEmpty()) {
                 // Select one of the legal moves at random
                 Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
+                //System.out.println("Debug: Print Board Values before performMove");
+                //System.out.println(Arrays.deepToString(boardValues));
                 performMove(currentPlayer, piecePosition, selectedMove);
+                //System.out.println("Debug: Print Board Values after performMove");
+                //System.out.println(Arrays.deepToString(boardValues));
 
                 // After moving, find all possible positions to shoot the arrow
                 List<Position> arrowShots = getLegalMoves(selectedMove.getX(), selectedMove.getY());
                 if (!arrowShots.isEmpty()) {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
-                    shootArrow(arrowPosition);
+                    //System.out.println("Debug: Print Board Values before shootArrow");
+                    //System.out.println(Arrays.deepToString(boardValues));
+                    boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
+                    //System.out.println("Debug: Print Board Values after shootArrow");
+                    //System.out.println(Arrays.deepToString(boardValues));
                 }
             }
         }
@@ -388,9 +396,16 @@ public class Board {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
                     if (currentBoard.boardValues[x][y] != 0) {
-                        // The queen has moved from this position.
-                        oldQueenX = x + 1;
-                        oldQueenY = y + 1;
+                        if(bestMoveBoard.boardValues[x][y] == 3){
+                            oldQueenX = x + 1;
+                            oldQueenY = y + 1;
+                            arrowX = x + 1;
+                            arrowY = y + 1;
+                        } else{
+                            // The queen has moved from this position.
+                            oldQueenX = x + 1;
+                            oldQueenY = y + 1;
+                        }
                     } else if (currentBoard.boardValues[x][y] == 0 && bestMoveBoard.boardValues[x][y] != 0 && bestMoveBoard.boardValues[x][y] != ARROW) {
                         // The queen has moved to this position.
                         newQueenX = x + 1;
@@ -416,6 +431,16 @@ public class Board {
                     "), newQ=(" + newQueenX + "," + newQueenY +
                     "), arrow=(" + arrowX + "," + arrowY + ")");
             throw new IllegalStateException("Failed to extract move details. Missing components.");
+        }
+    }
+
+    public static void printBoard(Board board) {
+        int [][] printBoard = board.getBoard();
+        for (int i = 9; i > -1; i--) { // Iterate through each row
+            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
+                System.out.print(printBoard[i][j] + " "); // Print the value at the current position
+            }
+            System.out.println(); // Move to the next line after printing each row
         }
     }
 
