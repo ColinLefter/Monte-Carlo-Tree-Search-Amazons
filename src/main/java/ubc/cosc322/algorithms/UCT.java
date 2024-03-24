@@ -20,13 +20,35 @@ public class UCT {
      * @param nodeVisit The number of visits to the node being evaluated.
      * @return The calculated UCT value.
      */
-    public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
+    public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit, int nodeDepth) {
+        double explorationConstant = 1.41; // Initial exploration constant
+        // Dynamically adjust the exploration constant based on the node depth
+        explorationConstant = adjustExplorationConstant(explorationConstant, nodeDepth);
+
         if (nodeVisit == 0) {
-            return Integer.MAX_VALUE; // Encourage exploration of unvisited nodes.
+            return Integer.MAX_VALUE; // Encourage exploration of unvisited nodes
         }
-        // UCT formula: combines the win rate with a term that encourages exploration based on the number of visits.
+        // UCT formula with dynamically adjusted exploration constant
         return (nodeWinScore / (double) nodeVisit)
-                + 1.41 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
+                + explorationConstant * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
+    }
+
+    public static double adjustExplorationConstant(double explorationConstant, int nodeDepth) {
+        // Example adjustment strategy: linear decrease with depth
+        // Define a depth threshold beyond which we will adjust the exploration constant
+        int depthThreshold = 10; // This threshold can be adjusted based on experimentation
+        double decreaseFactor = 0.05; // How much we decrease the exploration constant per depth unit beyond the threshold
+
+        if (nodeDepth > depthThreshold) {
+            // Calculate the decrease amount based on how far we are beyond the threshold
+            double decreaseAmount = (nodeDepth - depthThreshold) * decreaseFactor;
+            // Apply the decrease but ensure the exploration constant does not go below a minimum value (e.g., 0.1)
+            double adjustedConstant = Math.max(explorationConstant - decreaseAmount, 0.1);
+            return adjustedConstant;
+        }
+
+        // If node depth is not beyond the threshold, return the original exploration constant
+        return explorationConstant;
     }
 
     /**
@@ -39,7 +61,7 @@ public class UCT {
         int parentVisit = node.getVisitCount();
         // Selects the child node with the maximum UCT value.
         return Collections.max(node.getChildArray(),
-                Comparator.comparing(c -> uctValue(parentVisit, c.getScore(), c.getVisitCount())));
+                Comparator.comparing(c -> uctValue(parentVisit, c.getScore(), c.getVisitCount(), c.getNodeDepth())));
     }
 
     public int simulateRandomPlayout(Node node, int opponent) {

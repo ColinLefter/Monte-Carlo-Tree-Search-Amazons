@@ -15,6 +15,7 @@ public class Node {
     private int visitCount;
     private Board state;
     private int playerNo;
+    private int nodeDepth;
     private double winScore; // We are accounting for wins, losses and draws
     private double drawScore;
     private static final double WIN_SCORE = 1.0; // These are thresholds
@@ -30,6 +31,7 @@ public class Node {
     public Node(int playerNo) {
         this.children = new ArrayList<>();
         this.playerNo = playerNo;
+        this.nodeDepth = 0;
     }
 
     /**
@@ -68,12 +70,14 @@ public class Node {
 
     /**
      * Adds a child node to this node.
+     * Increases depth counter of node by 1.
      *
      * @param child The child node to add.
      */
     public void addChild(Node child) {
         children.add(child);
         child.parent = this;
+        child.nodeDepth = this.nodeDepth + 1;
     }
     /**
      * Retrieves the game state associated with this node.
@@ -172,5 +176,9 @@ public class Node {
      */
     public void incrementVisit() {
         this.visitCount++;
+    }
+
+    public int getNodeDepth() {
+        return nodeDepth;
     }
 }
