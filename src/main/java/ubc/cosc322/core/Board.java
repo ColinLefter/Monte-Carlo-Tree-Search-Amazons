@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import ubc.cosc322.algorithms.BFSAmazons;
+import ubc.cosc322.driverCode.AIPlayerTest;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 
@@ -261,7 +262,16 @@ public class Board {
      * @return The player number (1 for black, 2 for white).
      */
     public static int getBoardPlayerNo(boolean isPlayerWhite) {
-        return isPlayerWhite ? P1 : P2;
+        currentPlayer = isPlayerWhite ? P2 : P1;
+        return currentPlayer;
+    }
+
+    public static void setBoardPlayerNo() {
+        if(AIPlayerTest.getPlayerWhite()) {
+            currentPlayer = P1;
+        } else {
+            currentPlayer = P2;
+        }
     }
 
     /**
@@ -311,7 +321,7 @@ public class Board {
         }
     }
 
-    public void togglePlayer() {
+    public static void togglePlayer() {
         // Assuming currentPlayer is an int that represents the player (1 or 2).
         currentPlayer = currentPlayer == 1 ? 2 : 1;
         //System.out.println("Player " + currentPlayer + "'s turn.");
@@ -353,8 +363,6 @@ public class Board {
                 }
             }
         }
-        // Toggle to the next player at the end of the current player's turn
-        togglePlayer();
     }
 
 
@@ -447,7 +455,7 @@ public class Board {
     }
 
 
-    private static int getCurrentPlayer() {
+    public static int getCurrentPlayer() {
         return currentPlayer;
     }
 

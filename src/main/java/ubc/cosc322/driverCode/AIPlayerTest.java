@@ -32,7 +32,7 @@ public class AIPlayerTest extends GamePlayer {
     private String ourTeamColor = "";
     private String opponentTeamColor = "";
     private int playerNo;
-    private boolean isAIPlayerWhite;
+    private static boolean isAIPlayerWhite;
 
     private ArrayList<Integer> myCurrentPosition = new ArrayList<>();
     private ArrayList<Integer> myNextPosition = new ArrayList<>();
@@ -145,6 +145,10 @@ public class AIPlayerTest extends GamePlayer {
         System.out.println("Our team: " + ourTeamColor + " | Opponent team: " + opponentTeamColor);
     }
 
+    public static boolean getPlayerWhite(){
+        return isAIPlayerWhite;
+    }
+
     /**
      * Handles the game action move message. Updates the game state with the opponent's
      * last move and calculates the AI's next move.
@@ -173,7 +177,9 @@ public class AIPlayerTest extends GamePlayer {
      */
     private void generateAndSendMove() {
         playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
+        System.out.println("PlayerNo: " + playerNo);
         Board bestMove = mcts.findNextMove(getMainBoard(), playerNo);
+        System.out.println("PlayerNo2: " + playerNo);
         if(bestMove != null){
             System.out.println("success");
         } else {
