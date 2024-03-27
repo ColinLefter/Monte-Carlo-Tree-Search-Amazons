@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 1000;
+    final int UPPER_TIME_LIMIT = 5000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -130,7 +130,7 @@ public class MonteCarloTreeSearch {
         Board tempBoard = tempNode.getState();
 
         Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
-        int maxDepth = 100000; // Limit simulation depth to prevent infinite loops
+        int maxDepth = 100; // Limit simulation depth to prevent infinite loops
 
         for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS && System.currentTimeMillis() < end ; depth++) {
             if (!visitedStates.add(tempBoard.clone())) {

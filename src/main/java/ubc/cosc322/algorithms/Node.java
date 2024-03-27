@@ -117,7 +117,7 @@ public class Node {
      */
     public Node getChildWithMaxScore() {
         return children.stream()
-                .max(Comparator.comparingDouble(Node::getScore))
+                .min(Comparator.comparingDouble(Node::getScore))
                 .orElse(null);
     }
 
