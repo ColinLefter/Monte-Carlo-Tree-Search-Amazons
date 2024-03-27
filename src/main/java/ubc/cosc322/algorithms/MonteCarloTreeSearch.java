@@ -88,16 +88,20 @@ public class MonteCarloTreeSearch {
                 promisingNode.getChildren().parallelStream().forEach(childNode -> {
                     if (System.currentTimeMillis() < end) {
                         int playoutResult = simulateRandomPlayout(childNode);
+                        System.out.println("Playout result: "+playoutResult);
                         synchronized (rootNode) {
                             backPropagation(childNode, playoutResult, playerNo);
                         }
                         //System.out.println("bug test 1.8");
                     }
                 });
+
             }
         }
 
+//        Node winnerNode = rootNode.getChildWithMaxScore();
         Node winnerNode = rootNode.getChildWithMaxScore();
+
         System.out.println("Number of children for node: " + rootNode.getChildren().size());
         numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
@@ -130,7 +134,7 @@ public class MonteCarloTreeSearch {
         Board tempBoard = tempNode.getState();
 
         Set<Board> visitedStates = new HashSet<>(); // Track visited states for cycle detection
-        int maxDepth = 100000; // Limit simulation depth to prevent infinite loops
+        int maxDepth = 10; // Limit simulation depth to prevent infinite loops
 
         for (int depth = 0; depth < maxDepth && tempBoard.checkStatus() == Board.IN_PROGRESS && System.currentTimeMillis() < end ; depth++) {
             if (!visitedStates.add(tempBoard.clone())) {
@@ -152,7 +156,7 @@ public class MonteCarloTreeSearch {
             return -WIN_SCORE;
         } else {
             // If the game is still in progress
-            return 0;
+            return -1;
         }
     }
 
@@ -165,14 +169,19 @@ public class MonteCarloTreeSearch {
      * @param playerNo The player number associated with each node
      */
     public void backPropagation(Node node, int playoutResult, int playerNo) {
-        //System.out.println("activate back propagation");
+//        System.out.println("activate back propagation");
         while (node != null) {
             node.incrementVisit();
+//            System.out.println("NODE AINT NULL");
             // Only add score if the playout result corresponds to the node's player winning
             if (node.getPlayerNo() == playerNo && playoutResult == WIN_SCORE) {
-                node.addScore(WIN_SCORE);
-            } else if (node.getPlayerNo() == playerNo && playoutResult != WIN_SCORE){
                 node.addScore(-WIN_SCORE);
+//                System.out.println("SCORE ADDED");
+            } else if (node.getPlayerNo() == playerNo && playoutResult != WIN_SCORE){
+                node.addScore(WIN_SCORE);
+//                System.out.println("SCORE REMOVED");
+                System.out.println(node.getScore());
+
             }
             node = node.getParent();
         }

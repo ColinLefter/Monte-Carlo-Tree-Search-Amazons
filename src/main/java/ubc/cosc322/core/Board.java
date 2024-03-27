@@ -347,7 +347,7 @@ public class Board {
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
                     //System.out.println("Debug: Print Board Values before shootArrow");
                     //System.out.println(Arrays.deepToString(boardValues));
-                    boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
+                    this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
                     //System.out.println("Debug: Print Board Values after shootArrow");
                     //System.out.println(Arrays.deepToString(boardValues));
                 }
