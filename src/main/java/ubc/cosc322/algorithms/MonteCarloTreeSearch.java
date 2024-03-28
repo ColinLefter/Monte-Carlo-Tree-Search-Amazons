@@ -145,7 +145,7 @@ public class MonteCarloTreeSearch {
     }
 
     int evaluatePlayoutResult(int status, int playerNo) {
-        System.out.println("temp board status " + status);
+        System.out.println("eval play status: status - "+status+" playerNo - "+playerNo);
         if (status == playerNo) {
             return WIN_SCORE;
         } else if (status == 3 - playerNo) {
