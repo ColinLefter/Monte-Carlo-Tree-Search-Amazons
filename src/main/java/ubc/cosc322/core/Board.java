@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import ubc.cosc322.algorithms.BFSAmazons;
-import ubc.cosc322.driverCode.AIPlayerTest;
+import ubc.cosc322.algorithms.Node;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 
@@ -80,55 +79,6 @@ public class Board {
         }
         return queenPositions;
     }
-//
-    //Following code was moved to aiplayerclass just to keep track of main board
-    //
-//    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
-//        // Check if the gameBoardState size matches the expected size of the boardValues array
-//        ArrayList<Integer> adjustedBoardState = new ArrayList<>(gameBoardState.subList(12, gameBoardState.size()));
-//        System.out.println(adjustedBoardState);
-//
-//        // Create a new 2D array to represent the board state
-//        int[][] newBoardValues = new int[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
-//
-//        // Fill the newBoardValues with the values from gameBoardState
-//        for (int i = 0; i < adjustedBoardState.size(); i++) {
-//            int row = i / DEFAULT_BOARD_SIZE;
-//            int col = i % DEFAULT_BOARD_SIZE;
-//            if(row > 9){
-//                break;
-//            }
-//            newBoardValues[row][col] = adjustedBoardState.get(i);
-//        }
-//
-//        // Update the boardValues with the new board state
-//        mainBoardValues = newBoardValues;
-//    }
-//
-//    public static void updateMainBoard(ArrayList<Integer> currentPosition,
-//                                       ArrayList<Integer> nextPosition,
-//                                       ArrayList<Integer> arrowPosition) {
-//        int currentX = currentPosition.get(0) - 1;
-//        int currentY = currentPosition.get(1) - 1;
-//        int nextX = nextPosition.get(0) - 1;
-//        int nextY = nextPosition.get(1) - 1;
-//        int arrowX = arrowPosition.get(0) - 1;
-//        int arrowY = arrowPosition.get(1) - 1;
-//
-//        // Move piece to new position
-//        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
-//        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
-//        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
-//
-//        // Place the arrow
-//        mainBoardValues[arrowX][arrowY] = ARROW;
-//    }
-//
-//    public static Board getMainBoard(){
-//        Board board = new Board();
-//        board.setBoard(mainBoardValues);
-//        return board;
-//    }
 
     /**
      * Clones this Board instance, creating a new instance with the same board state.
@@ -164,13 +114,12 @@ public class Board {
 
             // We need to keep moving in this direction until we hit the edge of the board or an occupied tile (either burned or an opponent is already there)
             // By checking if the next position is a 0, we check if it is unoccupied
-            while (currentX >= 0 && currentX < DEFAULT_BOARD_SIZE && currentY >= 0 && currentY < DEFAULT_BOARD_SIZE && boardValues[currentX][currentY] == 0) {
+            while (currentX >= 0 && currentX < DEFAULT_BOARD_SIZE && currentY >= 0 && currentY < DEFAULT_BOARD_SIZE && this.boardValues[currentX][currentY] == 0) {
                 legalMoves.add(new Position(currentX, currentY));
                 currentX += directionsX[i];
                 currentY += directionsY[i];
             }
         }
-
         return legalMoves;
     }
 
@@ -202,32 +151,39 @@ public class Board {
      *
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
+// Make sure checkStatus is an instance method if it's going to call other instance methods like getLegalMoves
     public int checkStatus() {
         boolean blackHasMoves = false;
         boolean whiteHasMoves = false;
 
+        // Use this to call instance methods
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
-                if (boardValues[x][y] == 1) { // Check for black piece
-                    if (!getLegalMoves(x, y).isEmpty()) {
-                        blackHasMoves = true;
-                    }
-                } else if (boardValues[x][y] == 2) { // Check for white piece
-                    if (!getLegalMoves(x, y).isEmpty()) {
-                        whiteHasMoves = true;
+                int piece = this.boardValues[x][y];
+                if (piece == P1 || piece == P2) {
+                    List<Position> legalMoves = this.getLegalMoves(x, y);
+                    System.out.println("Debug: queen " +piece+ "at position "+x+","+y+" has moves " + legalMoves);
+                    if (!legalMoves.isEmpty()) {
+                        if (piece == P1) blackHasMoves = true;
+                        else whiteHasMoves = true;
+                        // If either player has moves, there's no need to check further for them
+                        if (blackHasMoves && whiteHasMoves) return IN_PROGRESS;
                     }
                 }
             }
         }
 
         if (blackHasMoves && !whiteHasMoves) {
-            return 1; // Black won
-        } else if (!blackHasMoves && whiteHasMoves) {
-            return 2; // White won
-        } else {
-            return -1; // Game is still in progress or a draw
+            System.out.println("Debug: Black wins");
+            return P1; // Black wins
         }
+        else if (!blackHasMoves && whiteHasMoves) {
+            System.out.println("Debug: White wins");
+            return P2; // White wins
+        }
+        else return IN_PROGRESS; // Game is still in progress or it's a draw
     }
+
 
 
     /**
@@ -313,18 +269,13 @@ public class Board {
 //        //System.out.println("Player " + currentPlayer + "'s turn.");
 //    }
 
-    public void randomPlay() {
+    public void randomPlay(int playerNo) {
         randomPlays++;
         //System.out.println("Debug: Activate randomPlay & Print Board Values");
         //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();
         // Determine the current player's positions
-        List<Position> playerPositions = new ArrayList<>();
-        if(getCurrentPlayer() == 1){
-            playerPositions = new ArrayList<>(player1Positions);
-        } else {
-            playerPositions = new ArrayList<>(player2Positions);
-        }
+        List<Position> playerPositions = getQueenPositions(playerNo);
         if (!playerPositions.isEmpty()) {
             // Choose a random queen from the current player's positions
             Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
@@ -336,7 +287,7 @@ public class Board {
                 Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
                 //System.out.println("Debug: Print Board Values before performMove");
                 //System.out.println(Arrays.deepToString(boardValues));
-                performMove(currentPlayer, piecePosition, selectedMove);
+                performMove(playerNo, piecePosition, selectedMove);
                 //System.out.println("Debug: Print Board Values after performMove");
                 //System.out.println(Arrays.deepToString(boardValues));
 
@@ -347,7 +298,7 @@ public class Board {
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
                     //System.out.println("Debug: Print Board Values before shootArrow");
                     //System.out.println(Arrays.deepToString(boardValues));
-                    boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
+                    this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
                     //System.out.println("Debug: Print Board Values after shootArrow");
                     //System.out.println(Arrays.deepToString(boardValues));
                 }

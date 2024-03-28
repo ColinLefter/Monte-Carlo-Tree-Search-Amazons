@@ -21,7 +21,7 @@ public class UCT {
      * @return The calculated UCT value.
      */
     public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit, int nodeDepth) {
-        System.out.println("UCT Values- totalVisit: "+totalVisit+" nodeWinScore: "+nodeWinScore+" nodeVisit: "+nodeVisit+" nodeDepth: "+nodeDepth);
+        //System.out.println("UCT Values- totalVisit: "+totalVisit+" nodeWinScore: "+nodeWinScore+" nodeVisit: "+nodeVisit+" nodeDepth: "+nodeDepth);
         double explorationConstant = 1.41; // Initial exploration constant
         // Dynamically adjust the exploration constant based on the node depth
         explorationConstant = adjustExplorationConstant(explorationConstant, nodeDepth);

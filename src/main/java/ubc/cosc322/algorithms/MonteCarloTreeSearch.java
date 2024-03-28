@@ -1,11 +1,8 @@
 package ubc.cosc322.algorithms;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 
 import ubc.cosc322.core.Board;
-import ubc.cosc322.core.Position;
 
 /**
  * Implements the Monte Carlo Tree Search (MCTS) algorithm for the Game of the Amazons.
@@ -18,7 +15,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 1000;
+    final int UPPER_TIME_LIMIT = 5000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -66,27 +63,26 @@ public class MonteCarloTreeSearch {
      * @return The updated board after the best move is applied.
      */
     public Board findNextMove(Board board, int playerNo) {
-        System.out.println("Player NUmber Debug "+playerNo);
+        System.out.println("Player Number Debug "+playerNo);
         end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
 
         // Use a single threaded context to manage the overall time-bound loop.
         while (System.currentTimeMillis() < end) {
-
             if (rootNode.getState().checkStatus() == Board.IN_PROGRESS) {
                 //System.out.println("Debug: Player number " + rootNode.getPlayerNo());
                 expandNode(rootNode, rootNode.getPlayerNo());
             }
             //System.out.println("Debug: Child Array of Root Node");
             //System.out.println(rootNode.getChildArray());
-
             // Check if time has expired before entering another potentially time-consuming operation.
             if (!rootNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
                 // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 rootNode.getChildren().forEach(childNode -> {
                     int playoutResult = simulateRandomPlayout(childNode,playerNo);
                         backPropagation(childNode, playoutResult, playerNo);
+
                         //System.out.println("Debug: playout result " + playoutResult);
                 });
             }
@@ -103,6 +99,7 @@ public class MonteCarloTreeSearch {
             System.out.println("winnerNode = null");
             return board;
         }
+        System.out.println("Debug 1.5");
         System.out.println("Winner node found.");
         return winnerNode.getState();
     }
@@ -124,28 +121,31 @@ public class MonteCarloTreeSearch {
     }
 
     int simulateRandomPlayout(Node currentNode, int playerNo) {
-        if (currentNode.getState().checkStatus() != Board.IN_PROGRESS) {
-            int status = currentNode.getState().checkStatus();
-            return evaluatePlayoutResult(status, playerNo);
-        } else {
+        while (currentNode.getState().checkStatus() == Board.IN_PROGRESS && System.currentTimeMillis() < end) {
+            //System.out.println("Debug 1.2");
             // Perform a random move and create a new state
             Board nextBoardState = currentNode.getState().clone();
-            nextBoardState.randomPlay(); // Assuming this method updates the board state
+            System.out.println("Debug: Call RandomPlay");
+            nextBoardState.randomPlay(playerNo); // Assuming this method updates the board state
 
             // Create a new node for this state and link it
             Node childNode = new Node(playerNo);
             childNode.setState(nextBoardState);
             currentNode.addChild(childNode); // Assuming addChild method exists
+            childNode.addNodeDepth(currentNode.getNodeDepth());
 
-            int tempPlayerNo = 3 - playerNo; //Toggle Players
-
-            // Recursively simulate from this new node
-            return simulateRandomPlayout(childNode, tempPlayerNo);
+            // Prepare for the next iteration
+            currentNode = childNode; // Move the "focus" to the child node for the next iteration
+            playerNo = 3 - playerNo; // Toggle Players
+            //System.out.println("Debug: status of current node state - " + childNode.getState().checkStatus());
         }
+
+        int status = currentNode.getState().checkStatus();
+        return evaluatePlayoutResult(status, playerNo);
     }
 
     int evaluatePlayoutResult(int status, int playerNo) {
-        System.out.println("eval play status: status - "+status+" playerNo - "+playerNo);
+        //System.out.println("eval play status: status - "+status+" playerNo - "+playerNo);
         if (status == playerNo) {
             return WIN_SCORE;
         } else if (status == 3 - playerNo) {

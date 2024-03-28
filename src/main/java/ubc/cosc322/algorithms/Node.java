@@ -183,4 +183,7 @@ public class Node {
     public int getNodeDepth() {
         return nodeDepth;
     }
+    public void addNodeDepth(int nodeDepth) {
+        this.nodeDepth = this.nodeDepth + nodeDepth;
+    }
 }
