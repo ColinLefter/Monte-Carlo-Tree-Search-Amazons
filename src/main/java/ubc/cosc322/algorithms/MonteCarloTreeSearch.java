@@ -85,7 +85,7 @@ public class MonteCarloTreeSearch {
             if (!rootNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
                 // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 rootNode.getChildren().forEach(childNode -> {
-                    int playoutResult = simulateRandomPlayout(childNode);
+                    int playoutResult = simulateRandomPlayout(childNode,playerNo);
                         backPropagation(childNode, playoutResult, playerNo);
                         //System.out.println("Debug: playout result " + playoutResult);
                 });
@@ -123,24 +123,32 @@ public class MonteCarloTreeSearch {
         return promisingNode;
     }
 
-    int simulateRandomPlayout(Node toExplore) {
-        Node tempNode = new Node(toExplore.getPlayerNo());
-        tempNode.setState(toExplore.getState().clone());
-        Board tempBoard = tempNode.getState();
+    int simulateRandomPlayout(Node currentNode, int playerNo) {
+        if (currentNode.getState().checkStatus() != Board.IN_PROGRESS) {
+            int status = currentNode.getState().checkStatus();
+            return evaluatePlayoutResult(status, playerNo);
+        } else {
+            // Perform a random move and create a new state
+            Board nextBoardState = currentNode.getState().clone();
+            nextBoardState.randomPlay(); // Assuming this method updates the board state
 
-        while (tempBoard.checkStatus() == Board.IN_PROGRESS) {
-            tempBoard.randomPlay(); // A random play on a temporary board is valid as this is a simulation
-            Board.togglePlayer();
+            // Create a new node for this state and link it
+            Node childNode = new Node(playerNo);
+            childNode.setState(nextBoardState);
+            currentNode.addChild(childNode); // Assuming addChild method exists
+
+            int tempPlayerNo = 3 - playerNo; //Toggle Players
+
+            // Recursively simulate from this new node
+            return simulateRandomPlayout(childNode, tempPlayerNo);
         }
-        Board.setBoardPlayerNo();
-        //System.out.println("Debug: Current Player " + Board.getCurrentPlayer());
+    }
 
-        int status = tempBoard.checkStatus();
+    int evaluatePlayoutResult(int status, int playerNo) {
         System.out.println("temp board status " + status);
-        if (status == toExplore.getPlayerNo()) {
-            // The initiating player wins
+        if (status == playerNo) {
             return WIN_SCORE;
-        } else if (status == 3-(toExplore.getPlayerNo())) {
+        } else if (status == 3 - playerNo) {
             return -WIN_SCORE;
         } else {
             return -1;

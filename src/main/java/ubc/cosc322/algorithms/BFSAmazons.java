@@ -207,8 +207,6 @@ public class BFSAmazons {
             return Board.P1;
         } else if (totalWhiteCount != 0 && totalBlackCount == 0) {
             return Board.P2;
-        } else if (totalWhiteCount == 0 && totalBlackCount == 0){
-            return Board.DRAW;
         } else {
             return Board.IN_PROGRESS;
         }

@@ -203,22 +203,32 @@ public class Board {
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
     public int checkStatus() {
-        BFSAmazons search = new BFSAmazons();
+        boolean blackHasMoves = false;
+        boolean whiteHasMoves = false;
 
-        int queenVal = 1; // Search for black queens first
-        for (int i = 0; i < player1Positions.size(); i++) {
-            if (search.searchBoardPartition(boardValues, player1Positions.get(i).getX(), player1Positions.get(i).getY(), queenVal) == 0)
-                return IN_PROGRESS;
+        for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
+            for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
+                if (boardValues[x][y] == 1) { // Check for black piece
+                    if (!getLegalMoves(x, y).isEmpty()) {
+                        blackHasMoves = true;
+                    }
+                } else if (boardValues[x][y] == 2) { // Check for white piece
+                    if (!getLegalMoves(x, y).isEmpty()) {
+                        whiteHasMoves = true;
+                    }
+                }
+            }
         }
-        // If this part is reached, the game is functionally over, and the winner is determined by score. Repeat with white queens.
-        queenVal = 2;
-        for (int i = 0; i < player2Positions.size(); i++) {
-            //System.out.println("board values"+Arrays.deepToString(boardValues));
-            search.searchBoardPartition(boardValues, player2Positions.get(i).getX(), player2Positions.get(i).getY(), queenVal);
+
+        if (blackHasMoves && !whiteHasMoves) {
+            return 1; // Black won
+        } else if (!blackHasMoves && whiteHasMoves) {
+            return 2; // White won
+        } else {
+            return -1; // Game is still in progress or a draw
         }
-        // Return result
-        return search.evaluateBoardStatus();
     }
+
 
     /**
      * Retrieves the current state of the board.
@@ -248,14 +258,6 @@ public class Board {
     public static int getBoardPlayerNo(boolean isPlayerWhite) {
         currentPlayer = isPlayerWhite ? P2 : P1;
         return currentPlayer;
-    }
-
-    public static void setBoardPlayerNo() {
-        if(AIPlayerTest.getPlayerWhite()) {
-            currentPlayer = P1;
-        } else {
-            currentPlayer = P2;
-        }
     }
 
     /**
@@ -305,11 +307,11 @@ public class Board {
         }
     }
 
-    public static void togglePlayer() {
-        // Assuming currentPlayer is an int that represents the player (1 or 2).
-        currentPlayer = currentPlayer == 1 ? 2 : 1;
-        //System.out.println("Player " + currentPlayer + "'s turn.");
-    }
+//    public static void togglePlayer() {
+//        // Assuming currentPlayer is an int that represents the player (1 or 2).
+//        currentPlayer = currentPlayer == 1 ? 2 : 1;
+//        //System.out.println("Player " + currentPlayer + "'s turn.");
+//    }
 
     public void randomPlay() {
         randomPlays++;
