@@ -221,22 +221,6 @@ public class Board {
     }
 
     /**
-     * Retrieves all empty positions on the board.
-     *
-     * @return A list of Position objects representing all unoccupied spaces on the board.
-     */
-    public List<Position> getEmptyPositions() {
-        List<Position> emptyPositions = new ArrayList<>();
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-                if (boardValues[i][j] == 0)
-                    emptyPositions.add(new Position(i, j));
-            }
-        }
-        return emptyPositions;
-    }
-
-    /**
      * Retrieves the current state of the board.
      *
      * @return The 2D array representing the board state.
@@ -333,8 +317,12 @@ public class Board {
         //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();
         // Determine the current player's positions
-        List<Position> playerPositions = currentPlayer == P1 ? new ArrayList<>(player1Positions) : new ArrayList<>(player2Positions);
-
+        List<Position> playerPositions = new ArrayList<>();
+        if(getCurrentPlayer() == 1){
+            playerPositions = new ArrayList<>(player1Positions);
+        } else {
+            playerPositions = new ArrayList<>(player2Positions);
+        }
         if (!playerPositions.isEmpty()) {
             // Choose a random queen from the current player's positions
             Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
@@ -378,19 +366,6 @@ public class Board {
         } else {
             System.out.println("Arrow position is out of bounds.");
         }
-    }
-
-
-    private List<Position> getPlayerPositions(int player) {
-        List<Position> positions = new ArrayList<>();
-        for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
-            for (int j = 0; j < DEFAULT_BOARD_SIZE; j++) {
-                if (boardValues[i][j] == player) { // We need to know who is where
-                    positions.add(new Position(i, j));
-                }
-            }
-        }
-        return positions;
     }
 
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
@@ -443,17 +418,6 @@ public class Board {
             throw new IllegalStateException("Failed to extract move details. Missing components.");
         }
     }
-
-    public static void printBoard(Board board) {
-        int [][] printBoard = board.getBoard();
-        for (int i = 9; i > -1; i--) { // Iterate through each row
-            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
-                System.out.print(printBoard[i][j] + " "); // Print the value at the current position
-            }
-            System.out.println(); // Move to the next line after printing each row
-        }
-    }
-
 
     public static int getCurrentPlayer() {
         return currentPlayer;

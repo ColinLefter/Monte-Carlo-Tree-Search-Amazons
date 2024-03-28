@@ -32,6 +32,8 @@ public class Node {
         this.children = new ArrayList<>();
         this.playerNo = playerNo;
         this.nodeDepth = 0;
+        this.visitCount = 0;
+        this.score = 0;
     }
 
     /**

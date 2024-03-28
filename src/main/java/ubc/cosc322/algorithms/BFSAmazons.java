@@ -199,6 +199,7 @@ public class BFSAmazons {
         return 1;
     }
 
+
     public int evaluateBoardStatus() {
         // Assuming you have a method to evaluate board status based on the current state of counts
         // This method should return DRAW, P1, or P2 based on the territories controlled by each player
@@ -206,8 +207,10 @@ public class BFSAmazons {
             return Board.P1;
         } else if (totalWhiteCount != 0 && totalBlackCount == 0) {
             return Board.P2;
-        } else {
+        } else if (totalWhiteCount == 0 && totalBlackCount == 0){
             return Board.DRAW;
+        } else {
+            return Board.IN_PROGRESS;
         }
     }
 

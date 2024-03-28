@@ -21,6 +21,7 @@ public class UCT {
      * @return The calculated UCT value.
      */
     public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit, int nodeDepth) {
+        System.out.println("UCT Values- totalVisit: "+totalVisit+" nodeWinScore: "+nodeWinScore+" nodeVisit: "+nodeVisit+" nodeDepth: "+nodeDepth);
         double explorationConstant = 1.41; // Initial exploration constant
         // Dynamically adjust the exploration constant based on the node depth
         explorationConstant = adjustExplorationConstant(explorationConstant, nodeDepth);
@@ -58,29 +59,8 @@ public class UCT {
      * @return The child node with the highest UCT value.
      */
     public static Node findBestNodeWithUCT(Node node) {
-        int parentVisit = node.getVisitCount();
         // Selects the child node with the maximum UCT value.
         return Collections.max(node.getChildArray(),
-                Comparator.comparing(c -> uctValue(parentVisit, c.getScore(), c.getVisitCount(), c.getNodeDepth())));
+                Comparator.comparing(c -> uctValue(c.getVisitCount(), c.getScore(), c.getVisitCount(), c.getNodeDepth())));
     }
-
-    public static int simulateRandomPlayout(Node node, int opponent) {
-        Board tempState = node.getState().clone(); // Clone the board state.
-        int boardStatus = tempState.checkStatus();
-
-        if (boardStatus == opponent) {
-            // If immediate loss is detected, discourage this path.
-            node.getParent().addScore(Integer.MIN_VALUE);
-            return boardStatus;
-        }
-
-        while (boardStatus == Board.IN_PROGRESS) {
-            tempState.togglePlayer();
-            tempState.randomPlay();
-            boardStatus = tempState.checkStatus();
-        }
-
-        return boardStatus;
-    }
-
 }

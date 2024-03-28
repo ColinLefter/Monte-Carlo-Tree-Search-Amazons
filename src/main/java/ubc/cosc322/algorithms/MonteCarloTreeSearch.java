@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 7000;
+    final int UPPER_TIME_LIMIT = 1000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -66,6 +66,7 @@ public class MonteCarloTreeSearch {
      * @return The updated board after the best move is applied.
      */
     public Board findNextMove(Board board, int playerNo) {
+        System.out.println("Player NUmber Debug "+playerNo);
         end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
@@ -84,17 +85,16 @@ public class MonteCarloTreeSearch {
             if (!rootNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
                 // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 rootNode.getChildren().forEach(childNode -> {
-
                     int playoutResult = simulateRandomPlayout(childNode);
                         backPropagation(childNode, playoutResult, playerNo);
                         //System.out.println("Debug: playout result " + playoutResult);
                 });
             }
         }
-
+        System.out.println("Score of root node " + rootNode.getScore());
         Node winnerNode = selectPromisingNode(rootNode);
 
-        //Node winnerNode = promisingNode.getChildWithMaxScore();
+        //Node winnerNode = rootNode.getChildWithMaxScore();
         System.out.println("Debug: Winner node child with highest score");
         System.out.println(winnerNode.getScore());
         System.out.println("Number of children for node: " + rootNode.getChildren().size());
@@ -136,11 +136,14 @@ public class MonteCarloTreeSearch {
         //System.out.println("Debug: Current Player " + Board.getCurrentPlayer());
 
         int status = tempBoard.checkStatus();
+        System.out.println("temp board status " + status);
         if (status == toExplore.getPlayerNo()) {
             // The initiating player wins
             return WIN_SCORE;
-        } else {
+        } else if (status == 3-(toExplore.getPlayerNo())) {
             return -WIN_SCORE;
+        } else {
+            return -1;
         }
     }
 
@@ -153,17 +156,21 @@ public class MonteCarloTreeSearch {
      */
     public void backPropagation(Node node, int playoutResult, int playerNo) {
         //System.out.println("activate back propagation");
-        while (node != null) {
+        //while (node != null) {
             node.incrementVisit();
             // Only add score if the playout result corresponds to the node's player winning
             if (node.getPlayerNo() == playerNo && playoutResult == WIN_SCORE) {
+                System.out.println("node before add score "+node.getScore());
                 node.addScore(WIN_SCORE);
+                System.out.println("node after add score "+node.getScore());
                 //System.out.println("Debug: Node WINSCORE");
-            } else if (node.getPlayerNo() == playerNo && playoutResult != WIN_SCORE){
+            } else if (node.getPlayerNo() == playerNo && playoutResult == -WIN_SCORE){
+                System.out.println("node before minus score "+node.getScore());
                 node.addScore(-WIN_SCORE);
+                System.out.println("node after minus score "+node.getScore());
                 //System.out.println("Debug: Node -WINSCORE");
-            }
-            node = node.getParent();
+         //   }
+            //node = node.getParent();
         }
     }
 
