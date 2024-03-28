@@ -15,7 +15,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 5000;
+    final int UPPER_TIME_LIMIT = 10000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -63,30 +63,22 @@ public class MonteCarloTreeSearch {
      * @return The updated board after the best move is applied.
      */
     public Board findNextMove(Board board, int playerNo) {
-        System.out.println("Player Number Debug "+playerNo);
         end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
-
+        expandNode(rootNode, rootNode.getPlayerNo());
+        System.out.println("Size of child array from root node: "+rootNode.getChildArray().size());
         // Use a single threaded context to manage the overall time-bound loop.
         while (System.currentTimeMillis() < end) {
-            if (rootNode.getState().checkStatus() == Board.IN_PROGRESS) {
-                //System.out.println("Debug: Player number " + rootNode.getPlayerNo());
-                expandNode(rootNode, rootNode.getPlayerNo());
-            }
-            //System.out.println("Debug: Child Array of Root Node");
-            //System.out.println(rootNode.getChildArray());
             // Check if time has expired before entering another potentially time-consuming operation.
-            if (!rootNode.getChildren().isEmpty() && System.currentTimeMillis() < end) {
+            if (!rootNode.getChildren().isEmpty()) {
                 // Execute child node processing in parallel, making sure each task is quick and checks time limit.
                 rootNode.getChildren().forEach(childNode -> {
-                    int playoutResult = simulateRandomPlayout(childNode,playerNo);
-                        backPropagation(childNode, playoutResult, playerNo);
-
-                        //System.out.println("Debug: playout result " + playoutResult);
+                    simulateRandomPlayout(childNode, playerNo);
                 });
             }
         }
+        System.out.println("Games played "+Board.gamesPlayed);
         System.out.println("Score of root node " + rootNode.getScore());
         Node winnerNode = selectPromisingNode(rootNode);
 
@@ -99,8 +91,8 @@ public class MonteCarloTreeSearch {
             System.out.println("winnerNode = null");
             return board;
         }
-        System.out.println("Debug 1.5");
         System.out.println("Winner node found.");
+        Board.printBoard(winnerNode.getState().getBoard());
         return winnerNode.getState();
     }
 
@@ -110,75 +102,62 @@ public class MonteCarloTreeSearch {
      * @param node The node from which to select the promising node.
      * @return The selected promising node.
      */
-    public Node selectPromisingNode(Node node) {
+    public Node selectPromisingNode(Node rootNode) {
         //System.out.println("selectpromisingnode activated");
         //node with the highest amount of playouts is returned
-        Node promisingNode = node;
-        while (!promisingNode.getChildArray().isEmpty()) {     //while there are still children left to explore
-            promisingNode = UCT.findBestNodeWithUCT(promisingNode);
-        }
-        return promisingNode;
+        Node node;
+        node = UCT.findBestNodeWithUCT(rootNode);
+        return node;
     }
 
-    int simulateRandomPlayout(Node currentNode, int playerNo) {
+    private void simulateRandomPlayout(Node currentNode, int playerNo) {
+        int counter = 0;
         while (currentNode.getState().checkStatus() == Board.IN_PROGRESS && System.currentTimeMillis() < end) {
             //System.out.println("Debug 1.2");
             // Perform a random move and create a new state
             Board nextBoardState = currentNode.getState().clone();
-            System.out.println("Debug: Call RandomPlay");
             nextBoardState.randomPlay(playerNo); // Assuming this method updates the board state
 
             // Create a new node for this state and link it
             Node childNode = new Node(playerNo);
             childNode.setState(nextBoardState);
             currentNode.addChild(childNode); // Assuming addChild method exists
-            childNode.addNodeDepth(currentNode.getNodeDepth());
+            childNode.setNodeDepth(currentNode.getNodeDepth()+1);
 
             // Prepare for the next iteration
             currentNode = childNode; // Move the "focus" to the child node for the next iteration
             playerNo = 3 - playerNo; // Toggle Players
+            counter++;
             //System.out.println("Debug: status of current node state - " + childNode.getState().checkStatus());
         }
-
         int status = currentNode.getState().checkStatus();
-        return evaluatePlayoutResult(status, playerNo);
-    }
-
-    int evaluatePlayoutResult(int status, int playerNo) {
-        //System.out.println("eval play status: status - "+status+" playerNo - "+playerNo);
-        if (status == playerNo) {
-            return WIN_SCORE;
-        } else if (status == 3 - playerNo) {
-            return -WIN_SCORE;
-        } else {
-            return -1;
-        }
+//        int result = evaluatePlayoutResult(status);
+        backPropagation(currentNode, status);
     }
 
     /**
      * Backpropagates the result of the simulation up the tree, updating the statistics of the nodes.
      *
      * @param node The node from which to start backpropagation.
-     * @param playoutResult The result of the playout to be backpropagated.
-     * @param playerNo The player number associated with each node
+     * @param status The result of the playout to be backpropagated.
      */
-    public void backPropagation(Node node, int playoutResult, int playerNo) {
+    public void backPropagation(Node node, int status) {
         //System.out.println("activate back propagation");
-        //while (node != null) {
+        final int finalDepth = 0;
+        while (node != null && node.getNodeDepth() != finalDepth) {
             node.incrementVisit();
             // Only add score if the playout result corresponds to the node's player winning
-            if (node.getPlayerNo() == playerNo && playoutResult == WIN_SCORE) {
-                System.out.println("node before add score "+node.getScore());
+            if (status == Board.getCurrentPlayer()) {
+                //System.out.println("node before add score " + node.getScore());
                 node.addScore(WIN_SCORE);
-                System.out.println("node after add score "+node.getScore());
                 //System.out.println("Debug: Node WINSCORE");
-            } else if (node.getPlayerNo() == playerNo && playoutResult == -WIN_SCORE){
-                System.out.println("node before minus score "+node.getScore());
+            } else if (status == (3 - (Board.getCurrentPlayer()))) {
+                //System.out.println("node before minus score " + node.getScore());
                 node.addScore(-WIN_SCORE);
-                System.out.println("node after minus score "+node.getScore());
-                //System.out.println("Debug: Node -WINSCORE");
-         //   }
-            //node = node.getParent();
+            } else if (status == 0) {
+                node.addScore(-WIN_SCORE/2);
+            }
+            node = node.getParent();
         }
     }
 

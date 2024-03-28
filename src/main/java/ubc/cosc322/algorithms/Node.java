@@ -36,6 +36,7 @@ public class Node {
         this.score = 0;
     }
 
+
     /**
      * Sets the initial state of the board.
      *
@@ -183,7 +184,7 @@ public class Node {
     public int getNodeDepth() {
         return nodeDepth;
     }
-    public void addNodeDepth(int nodeDepth) {
-        this.nodeDepth = this.nodeDepth + nodeDepth;
+    public void setNodeDepth(int nodeDepth) {
+        this.nodeDepth = nodeDepth;
     }
 }

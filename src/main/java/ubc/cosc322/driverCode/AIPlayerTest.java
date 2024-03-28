@@ -179,7 +179,6 @@ public class AIPlayerTest extends GamePlayer {
         playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
         System.out.println("PlayerNo: " + playerNo);
         Board bestMove = mcts.findNextMove(getMainBoard(), playerNo);
-        System.out.println("PlayerNo2: " + playerNo);
         if(bestMove != null){
             System.out.println("success");
         } else {

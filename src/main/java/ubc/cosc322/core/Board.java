@@ -17,6 +17,7 @@ import ygraph.ai.smartfox.games.GameClient;
  */
 public class Board {
     public static int randomPlays = 0;
+    public static int gamesPlayed = 0;
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
     private int[][] boardValues;
     //public static int[][] mainBoardValues;
@@ -162,24 +163,30 @@ public class Board {
                 int piece = this.boardValues[x][y];
                 if (piece == P1 || piece == P2) {
                     List<Position> legalMoves = this.getLegalMoves(x, y);
-                    System.out.println("Debug: queen " +piece+ "at position "+x+","+y+" has moves " + legalMoves);
+                    //System.out.println("Debug: queen " +piece+ "at position "+x+","+y+" has moves " + legalMoves);
                     if (!legalMoves.isEmpty()) {
                         if (piece == P1) blackHasMoves = true;
                         else whiteHasMoves = true;
-                        // If either player has moves, there's no need to check further for them
-                        if (blackHasMoves && whiteHasMoves) return IN_PROGRESS;
                     }
                 }
             }
         }
 
         if (blackHasMoves && !whiteHasMoves) {
-            System.out.println("Debug: Black wins");
+            //System.out.println("Debug: Black wins");
+            //printBoard(this.getBoard());
+            gamesPlayed++;
             return P1; // Black wins
         }
         else if (!blackHasMoves && whiteHasMoves) {
-            System.out.println("Debug: White wins");
+            ///System.out.println("Debug: White wins");
+            //printBoard(this.getBoard());
+            gamesPlayed++;
             return P2; // White wins
+        } else if(!blackHasMoves && !whiteHasMoves){
+            //System.out.println("Debug: White & Black don't have moves");
+            gamesPlayed++;
+            return DRAW;
         }
         else return IN_PROGRESS; // Game is still in progress or it's a draw
     }
@@ -263,14 +270,19 @@ public class Board {
         }
     }
 
-//    public static void togglePlayer() {
-//        // Assuming currentPlayer is an int that represents the player (1 or 2).
-//        currentPlayer = currentPlayer == 1 ? 2 : 1;
-//        //System.out.println("Player " + currentPlayer + "'s turn.");
-//    }
+    public static void printBoard(int [][] printBoard) {
+        System.out.println();
+        for (int i = 9; i > -1; i--) { // Iterate through each row
+            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
+                System.out.print(printBoard[i][j] + " "); // Print the value at the current position
+            }
+            System.out.println(); // Move to the next line after printing each row
+        }
+        System.out.println();
+    }
 
     public void randomPlay(int playerNo) {
-        randomPlays++;
+        //randomPlays++;
         //System.out.println("Debug: Activate randomPlay & Print Board Values");
         //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();
@@ -375,5 +387,4 @@ public class Board {
     public static int getCurrentPlayer() {
         return currentPlayer;
     }
-
 }
