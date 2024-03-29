@@ -280,6 +280,10 @@ public class Board {
         }
         System.out.println();
     }
+    public static synchronized void printSynchronizedBoard(Board board) {
+        System.out.println("Next Board State:");
+        Board.printBoard(board.getBoard());
+    }
 
     public void randomPlay(int playerNo) {
         //randomPlays++;

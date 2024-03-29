@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 25000;
+    final int UPPER_TIME_LIMIT = 5000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -133,12 +133,13 @@ public class MonteCarloTreeSearch {
             // Perform a random move and create a new state
             Board nextBoardState = currentNode.getState().clone();
             nextBoardState.randomPlay(playerNo); // Assuming this method updates the board state
-            System.out.println("Next Board State: ");
-            Board.printBoard(nextBoardState.getBoard());
+
             // Create a new node for this state and link it
             Node childNode = new Node(playerNo);
             childNode.setState(nextBoardState);
             synchronized (currentNode) {
+                //Following line prints out boards synchronized so we can see the states
+                //Board.printSynchronizedBoard(childNode.getState());
                 currentNode.addChild(childNode);
             }
             childNode.setNodeDepth(currentNode.getNodeDepth()+1);

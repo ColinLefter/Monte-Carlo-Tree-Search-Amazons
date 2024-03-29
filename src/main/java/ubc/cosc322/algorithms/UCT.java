@@ -40,7 +40,7 @@ public class UCT {
 
         // Proceed as before if there are children.
         for (Node child : node.getChildren()) {
-            System.out.println("Child UCT Values: Score - " + child.getScore() + " Visit Count - "+ child.getVisitCount());
+            //System.out.println("Child UCT Values: Score - " + child.getScore() + " Visit Count - "+ child.getVisitCount());
         }
 
         return Collections.max(node.getChildren(),
