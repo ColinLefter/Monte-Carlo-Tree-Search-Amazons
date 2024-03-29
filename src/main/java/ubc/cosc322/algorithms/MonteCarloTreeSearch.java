@@ -18,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 5000;
+    final int UPPER_TIME_LIMIT = 25000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -90,17 +90,12 @@ public class MonteCarloTreeSearch {
             }
         }
         executor.shutdown();
-        System.out.println("Games played "+Board.gamesPlayed);
-        System.out.println("Score of root node " + rootNode.getScore());
+        System.out.println("Games played: "+Board.gamesPlayed);
+        //System.out.println("Score of root node " + rootNode.getScore());
         Node winnerNode = selectPromisingNode(rootNode);
 
         //Node winnerNode = rootNode.getChildWithMaxScore();
-        System.out.println("Debug: Winner node child with highest score");
-        if (winnerNode == null) {
-            System.out.println("No score available. Game over.");
-        } else {
-            System.out.println(winnerNode.getScore());
-        }
+        System.out.println("Winner node child with highest score: "+winnerNode.getScore());
         System.out.println("Number of children for node: " + rootNode.getChildren().size());
         numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
@@ -108,7 +103,7 @@ public class MonteCarloTreeSearch {
             return board;
         }
         System.out.println("Winner node found.");
-        Board.printBoard(winnerNode.getState().getBoard());
+        //Board.printBoard(winnerNode.getState().getBoard());
         return winnerNode.getState();
     }
 
