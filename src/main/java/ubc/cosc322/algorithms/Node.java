@@ -3,6 +3,7 @@ package ubc.cosc322.algorithms;
 import ubc.cosc322.core.Board;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a node in the Monte Carlo Tree Search algorithm, encapsulating the game state, player details, and
@@ -11,8 +12,8 @@ import java.util.*;
 public class Node {
     private Node parent;
     private List<Node> children;
-    private double score;
-    private int visitCount;
+    //private double score;
+    //private int visitCount;
     private Board state;
     private int playerNo;
     private int nodeDepth;
@@ -22,6 +23,8 @@ public class Node {
     private static final double DRAW_SCORE = 0.5;
     public static final double WIN_SCORE_VALUE = 10.0;
     public static final double DRAW_SCORE_VALUE = 5.0;
+    private AtomicInteger visitCount = new AtomicInteger(0);
+    private AtomicInteger score = new AtomicInteger(0);
 
     /**
      * Constructs a Node instance for the specified player.
@@ -32,8 +35,6 @@ public class Node {
         this.children = new ArrayList<>();
         this.playerNo = playerNo;
         this.nodeDepth = 0;
-        this.visitCount = 0;
-        this.score = 0;
     }
 
 
@@ -49,8 +50,8 @@ public class Node {
     /**
      * Adds the win score to the node's total score, indicating a favorable outcome.
      */
-    public void addScore(double scoreToAdd) {
-        this.score += scoreToAdd;
+    public void addScore(int scoreToAdd) {
+        this.score.addAndGet(scoreToAdd);
     }
 
     /**
@@ -59,7 +60,7 @@ public class Node {
      * @return The number of times this node has been visited during the simulation.
      */
     public int getVisitCount() {
-        return visitCount;
+        return visitCount.get();
     }
 
     /**
@@ -125,7 +126,7 @@ public class Node {
     }
 
     public double getScore() {
-        return score;
+        return score.get();
     }
 
     /**
@@ -133,19 +134,19 @@ public class Node {
      *
      * @param result The result from the simulation to update the score accordingly.
      */
-    public void updateScore(int result) {
-        incrementVisit();
-        if (result == playerNo) {
-            // The player associated with this node wins
-            addScore(WIN_SCORE_VALUE);
-        } else if (result == 3 - playerNo) {
-            // The opponent wins
-            addScore(-WIN_SCORE_VALUE);
-        } else if (result == Board.DRAW) {
-            // The game ends in a draw
-            addScore(DRAW_SCORE_VALUE);
-        }
-    }
+//    public void updateScore(int result) {
+//        incrementVisit();
+//        if (result == playerNo) {
+//            // The player associated with this node wins
+//            addScore(WIN_SCORE_VALUE);
+//        } else if (result == 3 - playerNo) {
+//            // The opponent wins
+//            addScore(-WIN_SCORE_VALUE);
+//        } else if (result == Board.DRAW) {
+//            // The game ends in a draw
+//            addScore(DRAW_SCORE_VALUE);
+//        }
+//    }
 
     /**
      * Sets the parent node for this node.
@@ -161,9 +162,9 @@ public class Node {
      *
      * @param score The score to add.
      */
-    public void addScore(int score) {
-        this.score += score;
-    }
+//    public void addScore(int score) {
+//        this.score += score;
+//    }
 
     /**
      * Retrieves the player number associated with this node.
@@ -178,7 +179,7 @@ public class Node {
      * Increments the visit count for this node by one.
      */
     public void incrementVisit() {
-        this.visitCount++;
+        this.visitCount.incrementAndGet();
     }
 
     public int getNodeDepth() {

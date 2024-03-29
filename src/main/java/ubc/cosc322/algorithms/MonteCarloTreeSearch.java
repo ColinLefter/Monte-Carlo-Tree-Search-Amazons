@@ -1,6 +1,9 @@
 package ubc.cosc322.algorithms;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ubc.cosc322.core.Board;
 
@@ -15,7 +18,7 @@ public class MonteCarloTreeSearch {
     final String OPPONENT = "white"; // Assumed opponent color.
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
     int level; // Represents the current level in the tree.
-    final int UPPER_TIME_LIMIT = 500;
+    final int UPPER_TIME_LIMIT = 25000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -69,26 +72,30 @@ public class MonteCarloTreeSearch {
         expandNode(rootNode, rootNode.getPlayerNo());
         System.out.println("Size of child array from root node: "+rootNode.getChildArray().size());
         // Use a single threaded context to manage the overall time-bound loop.
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
         while (System.currentTimeMillis() < end) {
-            // Check if time has expired before entering another potentially time-consuming operation.
-            if (!rootNode.getChildren().isEmpty()) {
-                // Execute child node processing in parallel, making sure each task is quick and checks time limit.
-                rootNode.getChildren().forEach(childNode -> {
+            List<Callable<Void>> tasks = new ArrayList<>();
+            for (Node childNode : rootNode.getChildren()) {
+                Callable<Void> task = () -> {
                     simulateRandomPlayout(childNode, playerNo);
-                });
+                    return null;
+                };
+                tasks.add(task);
+            }
+            try {
+                executor.invokeAll(tasks); // Executes in parallel
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
-        System.out.println("Games played "+Board.gamesPlayed);
-        System.out.println("Score of root node " + rootNode.getScore());
+        executor.shutdown();
+        System.out.println("Games played: "+Board.gamesPlayed);
+        //System.out.println("Score of root node " + rootNode.getScore());
         Node winnerNode = selectPromisingNode(rootNode);
 
         //Node winnerNode = rootNode.getChildWithMaxScore();
-        System.out.println("Debug: Winner node child with highest score");
-        if (winnerNode == null) {
-            System.out.println("No score available. Game over.");
-        } else {
-            System.out.println(winnerNode.getScore());
-        }
+        System.out.println("Winner node child with highest score: "+winnerNode.getScore());
         System.out.println("Number of children for node: " + rootNode.getChildren().size());
         numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
@@ -96,7 +103,7 @@ public class MonteCarloTreeSearch {
             return board;
         }
         System.out.println("Winner node found.");
-        Board.printBoard(winnerNode.getState().getBoard());
+        //Board.printBoard(winnerNode.getState().getBoard());
         return winnerNode.getState();
     }
 
@@ -125,7 +132,11 @@ public class MonteCarloTreeSearch {
             // Create a new node for this state and link it
             Node childNode = new Node(playerNo);
             childNode.setState(nextBoardState);
-            currentNode.addChild(childNode); // Assuming addChild method exists
+            synchronized (currentNode) {
+                //Following line prints out boards synchronized so we can see the states
+                //Board.printSynchronizedBoard(childNode.getState());
+                currentNode.addChild(childNode);
+            }
             childNode.setNodeDepth(currentNode.getNodeDepth()+1);
 
             // Prepare for the next iteration
@@ -159,7 +170,7 @@ public class MonteCarloTreeSearch {
                 //System.out.println("node before minus score " + node.getScore());
                 node.addScore(-WIN_SCORE);
             } else if (status == 0) {
-                node.addScore(-WIN_SCORE/2);
+                node.addScore(-WIN_SCORE);
             }
             node = node.getParent();
         }
