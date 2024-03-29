@@ -179,19 +179,17 @@ public class AIPlayerTest extends GamePlayer {
         playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
         System.out.println("PlayerNo: " + playerNo);
         Board bestMove = mcts.findNextMove(getMainBoard(), playerNo);
-        if(bestMove != null){
+        if (bestMove != null){
             System.out.println("success");
         } else {
             System.out.println("fail");
         }
-        ArrayList<Integer> moveDetails = Board.extractMoveDetails(getMainBoard(),bestMove);
-
-        if(moveDetails.isEmpty()){
+        ArrayList<Integer> moveDetails = Board.extractMoveDetails(getMainBoard(), bestMove);
+        if (moveDetails.isEmpty()) {
             System.out.println("There are no moves for you to make. You lost.");
-            System.out.println("Number of times randomPlays was called: "+Board.randomPlays);
-            System.out.println("Number of nodes created: "+ MonteCarloTreeSearch.numberOfNodes);
-        } else{
-
+            System.out.println("Number of times randomPlays was called: " + Board.randomPlays);
+            System.out.println("Number of nodes created: " + MonteCarloTreeSearch.numberOfNodes);
+        } else {
             myCurrentPosition.clear();
             myNextPosition.clear();
             myNextArrowPosition.clear();

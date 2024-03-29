@@ -27,17 +27,23 @@ public class UCT {
 
     /**
      * Finds and returns the best node to explore next based on the UCT values of its children.
+     * If the node has no children, returns null.
      *
      * @param node The node whose children are to be evaluated.
-     * @return The child node with the highest UCT value.
+     * @return The child node with the highest UCT value, or null if there are no children.
      */
     public static Node findBestNodeWithUCT(Node node) {
-        // Selects the child node with the maximum UCT value.
+        if (node.getChildren() == null || node.getChildren().isEmpty()) {
+            System.out.println("No children available for this node.");
+            return null; // No children, so no move can be made.
+        }
+
+        // Proceed as before if there are children.
         for (Node child : node.getChildren()) {
             System.out.println("Child UCT Values: Score - " + child.getScore() + " Visit Count - "+ child.getVisitCount());
         }
+
         return Collections.max(node.getChildren(),
-                Comparator.comparing(c -> uctValue(c.getScore(), c.getVisitCount())
-                ));
+                Comparator.comparing(c -> uctValue(c.getScore(), c.getVisitCount())));
     }
 }
