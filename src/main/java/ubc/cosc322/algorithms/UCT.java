@@ -34,7 +34,7 @@ public class UCT {
      */
     public static Node findBestNodeWithUCT(Node node) {
         if (node.getChildren() == null || node.getChildren().isEmpty()) {
-            System.out.println("No children available for this node.");
+            //System.out.println("No children available for this node.");
             return null; // No children, so no move can be made.
         }
 
