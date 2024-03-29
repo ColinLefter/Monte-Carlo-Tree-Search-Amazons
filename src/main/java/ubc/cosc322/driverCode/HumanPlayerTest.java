@@ -131,19 +131,16 @@ public class HumanPlayerTest extends GamePlayer {
 
     @Override
     public GameClient getGameClient() {
-        // TODO Auto-generated method stub
         return this.gameClient;
     }
 
     @Override
     public BaseGameGUI getGameGUI() {
-        // TODO Auto-generated method stub
         return  gamegui;
     }
 
     @Override
     public void connect() {
-        // TODO Auto-generated method stub
         gameClient = new GameClient(userName, passwd, this);
     }
 

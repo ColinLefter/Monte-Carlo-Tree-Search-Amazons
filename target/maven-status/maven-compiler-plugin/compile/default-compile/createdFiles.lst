@@ -1,8 +1,6 @@
-ubc\cosc322\AIPlayerTest$1.class
-ubc\cosc322\GameState.class
-ubc\cosc322\HumanPlayerTest.class
-ubc\cosc322\Action.class
-ubc\cosc322\MonteCarloTreeSearch.class
-ubc\cosc322\HumanPlayerTest$1.class
-ubc\cosc322\ActionFactory.class
-ubc\cosc322\AIPlayerTest.class
+ubc/cosc322/algorithms/BFSAmazons.class
+ubc/cosc322/algorithms/MonteCarloTreeSearch.class
+ubc/cosc322/algorithms/Node.class
+ubc/cosc322/algorithms/UCT.class
+ubc/cosc322/algorithms/Tree.class
+ubc/cosc322/algorithms/BFSAmazons$BFSNode.class
