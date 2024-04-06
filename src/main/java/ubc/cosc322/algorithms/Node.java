@@ -12,17 +12,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Node {
     private Node parent;
     private List<Node> children;
-    //private double score;
-    //private int visitCount;
     private Board state;
     private int playerNo;
     private int nodeDepth;
-    private double winScore; // We are accounting for wins, losses and draws
-    private double drawScore;
-    private static final double WIN_SCORE = 1.0; // These are thresholds
-    private static final double DRAW_SCORE = 0.5;
-    public static final double WIN_SCORE_VALUE = 10.0;
-    public static final double DRAW_SCORE_VALUE = 5.0;
     private AtomicInteger visitCount = new AtomicInteger(0);
     private AtomicInteger score = new AtomicInteger(0);
 
@@ -109,25 +101,6 @@ public class Node {
     public double getScore() {
         return score.get();
     }
-
-
-    /**
-     * Sets the parent node for this node.
-     *
-     * @param node The parent node to set.
-     */
-    public void setParent(Node node) {
-        this.parent = node;
-    }
-
-    /**
-     * Adds a specified score to this node's total score.
-     *
-     * @param score The score to add.
-     */
-//    public void addScore(int score) {
-//        this.score += score;
-//    }
 
     /**
      * Retrieves the player number associated with this node.

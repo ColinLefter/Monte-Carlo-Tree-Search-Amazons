@@ -5,10 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import ygraph.ai.smartfox.games.BaseGameGUI;
-import ygraph.ai.smartfox.games.GameClient;
-
-
 /**
  * Represents the game board for the Game of the Amazons.
  * Provides functionality to track and update the board state,
@@ -26,9 +22,6 @@ public class Board {
     public static final int P1 = 1; // this is subject to who joins first. 1 represents black
     public static final int P2 = 2;
     public static final int ARROW = 3;
-    public static final int RANDOM_ARROW = 4;
-    private GameClient gameClient;
-    private BaseGameGUI gameGui;
 
     // By introducing a currentPlayer variable at the board level, we can keep track of who is currently playing on the board. Must be updated throughout the game's progression.
     private static int currentPlayer = P1; // P1 always starts the game (black). We just need to know who is P1.
@@ -190,16 +183,6 @@ public class Board {
         else return IN_PROGRESS; // Game is still in progress or it's a draw
     }
 
-
-
-    /**
-     * Retrieves the current state of the board.
-     *
-     * @return The 2D array representing the board state.
-     */
-    // Method to return the current board state
-    public int[][] getBoard() { return this.boardValues; }
-
     /**
      * Sets the board state. Use with caution to avoid corrupting the game state.
      *
@@ -257,10 +240,6 @@ public class Board {
         }
         System.out.println();
     }
-    public static synchronized void printSynchronizedBoard(Board board) {
-        System.out.println("Next Board State:");
-        Board.printBoard(board.getBoard());
-    }
 
     public void randomPlay(int playerNo) {
         Random random = new Random();
@@ -286,8 +265,6 @@ public class Board {
             }
         }
     }
-
-
 
     public void shootArrow(Position arrowPosition) {
         // Check if the position is within the bounds of the board
