@@ -16,7 +16,7 @@ public class MonteCarloTreeSearch {
     List<List<Integer>> blackPositions = new ArrayList<>();
     List<List<Integer>> whitePositions = new ArrayList<>();
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
-    final int UPPER_TIME_LIMIT = 2000;
+    final int UPPER_TIME_LIMIT = 1000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -45,18 +45,6 @@ public class MonteCarloTreeSearch {
     }
 
     /**
-     * Sends a move message to the game server with the specified queen positions and the arrow position.
-     *
-     * @param queenPosCurrent The current position of the queen.
-     * @param queenPosNew The new position of the queen.
-     * @param arrowPos The position where the arrow is shot.
-     */
-    public void sendMoveMessage(java.util.ArrayList<java.lang.Integer> queenPosCurrent,
-                                java.util.ArrayList<java.lang.Integer> queenPosNew,
-                                java.util.ArrayList<java.lang.Integer> arrowPos) {
-    }
-
-    /**
      * Finds the next best move using the MCTS algorithm.
      *
      * @param board The current game board.
@@ -68,6 +56,9 @@ public class MonteCarloTreeSearch {
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
         expandNode(rootNode, rootNode.getPlayerNo());
+        if(rootNode.getChildArray().isEmpty()){
+            return board;
+        }
         // Use a single threaded context to manage the overall time-bound loop.
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -88,10 +79,8 @@ public class MonteCarloTreeSearch {
         }
         executor.shutdown();
         System.out.println("Games played: "+Board.gamesPlayed);
-        //System.out.println("Score of root node " + rootNode.getScore());
         Node winnerNode = selectPromisingNode(rootNode);
 
-        //Node winnerNode = rootNode.getChildWithMaxScore();
         System.out.println("Winner node child with highest score: "+winnerNode.getScore());
         numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
@@ -99,7 +88,6 @@ public class MonteCarloTreeSearch {
             return board;
         }
         System.out.println("Winner node found.");
-        //Board.printBoard(winnerNode.getState().getBoard());
         return winnerNode.getState();
     }
 

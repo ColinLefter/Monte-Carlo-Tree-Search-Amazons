@@ -173,8 +173,6 @@ public class AIPlayerTest extends GamePlayer {
         ArrayList<Integer> moveDetails = Board.extractMoveDetails(Board.getMainBoard(), bestMove);
         if (moveDetails.isEmpty()) {
             System.out.println("There are no moves for you to make. You lost.");
-            System.out.println("Number of times randomPlays was called: " + Board.randomPlays);
-            System.out.println("Number of nodes created: " + MonteCarloTreeSearch.numberOfNodes);
         } else {
             myCurrentPosition.clear();
             myNextPosition.clear();
