@@ -19,7 +19,7 @@ public class Board {
     public static int gamesPlayed = 0;
     // The 2D array representing the board state; 0 for empty, 1 for player 1, and 2 for player 2.
     private int[][] boardValues;
-    //public static int[][] mainBoardValues;
+    private static int[][] mainBoardValues = new int[10][10];
     public static final int DEFAULT_BOARD_SIZE = 10;
     public static final int IN_PROGRESS = -1;
     public static final int DRAW = 0;
@@ -351,5 +351,48 @@ public class Board {
 
     public static int getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    public void printMainBoard() {
+        for (int i = 9; i > -1; i--) { // Iterate through each row
+            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
+                System.out.print(mainBoardValues[i][j] + " "); // Print the value at the current position
+            }
+            System.out.println(); // Move to the next line after printing each row
+        }
+    }
+
+    public static void updateMainBoard(ArrayList<Integer> currentPosition,
+                                       ArrayList<Integer> nextPosition,
+                                       ArrayList<Integer> arrowPosition) {
+        int currentX = currentPosition.get(0) - 1;
+        int currentY = currentPosition.get(1) - 1;
+        int nextX = nextPosition.get(0) - 1;
+        int nextY = nextPosition.get(1) - 1;
+        int arrowX = arrowPosition.get(0) - 1;
+        int arrowY = arrowPosition.get(1) - 1;
+        int player = mainBoardValues[currentX][currentY];
+        mainBoardValues[currentX][currentY] = 0;
+        mainBoardValues[nextX][nextY] = player;
+        mainBoardValues[arrowX][arrowY] = 3;
+    }
+
+    public static void setMainBoard(ArrayList<Integer> gameBoardState) {
+        int[][] array = new int[10][10];
+        for(int i = 1; i < 11; i++){
+            for(int j = 1; j < 11; j++){
+                array[i-1][j-1] = gameBoardState.get(11*i + j);
+            }
+        }
+        System.out.println(Arrays.deepToString(mainBoardValues));
+        // Update mainBoardValues with the new 2D array
+        mainBoardValues = array;
+        System.out.println(Arrays.deepToString(mainBoardValues));
+    }
+
+    public static Board getMainBoard(){
+        Board board = new Board();
+        board.setBoard(mainBoardValues);
+        return board;
     }
 }

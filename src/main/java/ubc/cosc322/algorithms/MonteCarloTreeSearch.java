@@ -110,7 +110,7 @@ public class MonteCarloTreeSearch {
     /**
      * Selects the most promising node to explore based on the UCT value.
      *
-     * @param node The node from which to select the promising node.
+     * @param rootNode The node from which to select the promising node.
      * @return The selected promising node.
      */
     public Node selectPromisingNode(Node rootNode) {
