@@ -219,21 +219,8 @@ public class AIPlayerTest extends GamePlayer {
 
     }
 
-    /**
-     * Generates a random position on the board.
-     *
-     * @param random Random generator to use for position generation.
-     * @return A random board position.
-     */
-    private ArrayList<Integer> generateRandomPosition(Random random) {
-        return new ArrayList<>(Arrays.asList(random.nextInt(10) + 1, random.nextInt(10) + 1));
-    }
-
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
-        // Initialize a new array to hold the updated board state
         int[][] array = new int[10][10];
-        int getVariable = 0;
-        // Iterate over the adjusted board state to populate the new 2D array
         for(int i = 1; i < 11; i++){
             for(int j = 1; j < 11; j++){
                 array[i-1][j-1] = gameBoardState.get(11*i + j);
@@ -254,17 +241,9 @@ public class AIPlayerTest extends GamePlayer {
         int nextY = nextPosition.get(1) - 1;
         int arrowX = arrowPosition.get(0) - 1;
         int arrowY = arrowPosition.get(1) - 1;
-        //System.out.println("Debug: printing mainBoardValues in updateMainBoard method:");
-        //System.out.println(Arrays.deepToString(mainBoardValues));
-        // Move piece to new position
-        //System.out.println("Debug: print mainBoardValues at currentX: "+(currentX+1)+" and currentY: "+(currentY+1));
-        //System.out.println("Debug: mainBoardValues at currentX & currentY: "+mainBoardValues[currentX][currentY]);
-        int player = mainBoardValues[currentX][currentY]; // Get the player number from the current position
-        mainBoardValues[currentX][currentY] = 0; // Set current position to empty
-        //System.out.println("Debug: print mainBoardValues at nextX: "+(nextX+1)+" and nextY: "+(nextY+1));
-        mainBoardValues[nextX][nextY] = player; // Move the player piece to the next position
-        //System.out.println("Debug: print mainBoardValues at arrowX: "+(arrowX+1)+" and currentY: "+(arrowY+1));
-        // Place the arrow
+        int player = mainBoardValues[currentX][currentY];
+        mainBoardValues[currentX][currentY] = 0;
+        mainBoardValues[nextX][nextY] = player;
         mainBoardValues[arrowX][arrowY] = 3;
     }
 
