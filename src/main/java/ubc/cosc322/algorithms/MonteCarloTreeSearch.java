@@ -55,6 +55,7 @@ public class MonteCarloTreeSearch {
         end = System.currentTimeMillis() + UPPER_TIME_LIMIT;
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
+        Tree searchTree = new Tree(rootNode);
         expandNode(rootNode, rootNode.getPlayerNo());
         if(rootNode.getChildArray().isEmpty()){
             return board;
@@ -141,17 +142,12 @@ public class MonteCarloTreeSearch {
      * @param status The result of the playout to be backpropagated.
      */
     public void backPropagation(Node node, int status) {
-        //System.out.println("activate back propagation");
-        final int finalDepth = 0;
-        while (node != null && node.getNodeDepth() != finalDepth) {
+        while (node != null) {
             node.incrementVisit();
             // Only add score if the playout result corresponds to the node's player winning
             if (status == Board.getCurrentPlayer()) {
-                //System.out.println("node before add score " + node.getScore());
                 node.addScore(WIN_SCORE);
-                //System.out.println("Debug: Node WINSCORE");
             } else if (status == (3 - (Board.getCurrentPlayer()))) {
-                //System.out.println("node before minus score " + node.getScore());
                 node.addScore(-WIN_SCORE);
             } else if (status == 0) {
                 node.addScore(-WIN_SCORE);
