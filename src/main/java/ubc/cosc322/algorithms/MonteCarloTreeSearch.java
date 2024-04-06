@@ -16,7 +16,7 @@ public class MonteCarloTreeSearch {
     List<List<Integer>> blackPositions = new ArrayList<>();
     List<List<Integer>> whitePositions = new ArrayList<>();
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
-    final int UPPER_TIME_LIMIT = 25000;
+    final int UPPER_TIME_LIMIT = 2000;
     public static int numberOfNodes = 0;
     long end;
 
@@ -68,7 +68,6 @@ public class MonteCarloTreeSearch {
         Node rootNode = new Node(playerNo);
         rootNode.setState(board);
         expandNode(rootNode, rootNode.getPlayerNo());
-        System.out.println("Size of child array from root node: "+rootNode.getChildArray().size());
         // Use a single threaded context to manage the overall time-bound loop.
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -94,7 +93,6 @@ public class MonteCarloTreeSearch {
 
         //Node winnerNode = rootNode.getChildWithMaxScore();
         System.out.println("Winner node child with highest score: "+winnerNode.getScore());
-        System.out.println("Number of children for node: " + rootNode.getChildren().size());
         numberOfNodes = numberOfNodes + (rootNode.getChildren().size());
         if (winnerNode == null) {
             System.out.println("winnerNode = null");

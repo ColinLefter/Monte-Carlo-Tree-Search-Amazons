@@ -361,10 +361,8 @@ public class Board {
                 array[i-1][j-1] = gameBoardState.get(11*i + j);
             }
         }
-        System.out.println(Arrays.deepToString(mainBoardValues));
         // Update mainBoardValues with the new 2D array
         mainBoardValues = array;
-        System.out.println(Arrays.deepToString(mainBoardValues));
     }
 
     public static Board getMainBoard(){

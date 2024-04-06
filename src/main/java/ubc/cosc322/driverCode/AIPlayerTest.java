@@ -133,7 +133,6 @@ public class AIPlayerTest extends GamePlayer {
             ourTeamColor = "Black";
             opponentTeamColor = "White";
         }
-        System.out.println(ourTeamColor + " == " + "Black");
         System.out.println("Are we white? " + isAIPlayerWhite);
         if (ourTeamColor.equals("Black")) {
             generateAndSendMove(); // we make the first move
@@ -171,11 +170,6 @@ public class AIPlayerTest extends GamePlayer {
         playerNo = Board.getBoardPlayerNo(isAIPlayerWhite);
         System.out.println("PlayerNo: " + playerNo);
         Board bestMove = mcts.findNextMove(Board.getMainBoard(), playerNo);
-        if (bestMove != null){
-            System.out.println("success");
-        } else {
-            System.out.println("fail");
-        }
         ArrayList<Integer> moveDetails = Board.extractMoveDetails(Board.getMainBoard(), bestMove);
         if (moveDetails.isEmpty()) {
             System.out.println("There are no moves for you to make. You lost.");
@@ -185,7 +179,6 @@ public class AIPlayerTest extends GamePlayer {
             myCurrentPosition.clear();
             myNextPosition.clear();
             myNextArrowPosition.clear();
-            System.out.println("Best Move Board moves successfully obtained");
             System.out.printf("Our Move: Queen from [%d, %d] to [%d, %d], Arrow shot to [%d, %d]%n",
                     moveDetails.get(0), moveDetails.get(1), moveDetails.get(2),
                     moveDetails.get(3), moveDetails.get(4), moveDetails.get(5));
@@ -197,18 +190,15 @@ public class AIPlayerTest extends GamePlayer {
 
             myNextArrowPosition.add(moveDetails.get(4)); // X coordinate
             myNextArrowPosition.add(moveDetails.get(5)); // Y coordinate
-            System.out.println("moves added to positions");
 
             gameClient.sendMoveMessage(myCurrentPosition, myNextPosition, myNextArrowPosition);
 
             // we always need to update the game GUI and our internal board at the same time
             gameGui.updateGameState(myCurrentPosition, myNextPosition, myNextArrowPosition);
             Board.updateMainBoard(myCurrentPosition, myNextPosition, myNextArrowPosition);
-            System.out.println("moves sent to server");
             System.out.println("Board After Our Move");
             gameBoard.printMainBoard();
         }
-
     }
 
     @Override
