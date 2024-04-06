@@ -105,48 +105,11 @@ public class Node {
         return new ArrayList<>(children);
     }
 
-    /**
-     * Selects a random child node from this node's children.
-     *
-     * @return A randomly selected child node.
-     */
-    public Node getRandomChildNode() {
-        int randomChild = new Random().nextInt(children.size());
-        return children.get(randomChild);
-    }
-    /**
-     * Retrieves the child node with the maximum score.
-     *
-     * @return The child node with the highest score.
-     */
-    public Node getChildWithMaxScore() {
-        return children.stream()
-                .max(Comparator.comparingDouble(Node::getScore))
-                .orElse(null);
-    }
 
     public double getScore() {
         return score.get();
     }
 
-    /**
-     * Updates the score based on the simulation result.
-     *
-     * @param result The result from the simulation to update the score accordingly.
-     */
-//    public void updateScore(int result) {
-//        incrementVisit();
-//        if (result == playerNo) {
-//            // The player associated with this node wins
-//            addScore(WIN_SCORE_VALUE);
-//        } else if (result == 3 - playerNo) {
-//            // The opponent wins
-//            addScore(-WIN_SCORE_VALUE);
-//        } else if (result == Board.DRAW) {
-//            // The game ends in a draw
-//            addScore(DRAW_SCORE_VALUE);
-//        }
-//    }
 
     /**
      * Sets the parent node for this node.

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import ubc.cosc322.algorithms.Node;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 
@@ -224,15 +223,6 @@ public class Board {
     }
 
     /**
-     * @param currentPlayer The player number of the current player.
-     * @return The opponent's player number.
-     */
-    public int getOpponent(int currentPlayer) {
-        // Assuming only two players, this returns the opponent's number.
-        return (currentPlayer == P1) ? P2 : P1; // If we are player 1, then the opponent must be player 2
-    }
-
-    /**
      * Generates all possible next states of the board from the current player's perspective.
      *
      * @param currentPlayer The player number (P1 or P2) for whom to generate possible states.
@@ -257,19 +247,6 @@ public class Board {
         return possibleStates;
     }
 
-
-    /**
-     * Copies the board state from one 2D array to another.
-     *
-     * @param source The source 2D array.
-     * @param destination The destination 2D array.
-     */
-    private void copyBoardState(int[][] source, int[][] destination) {
-        for (int i = 0; i < source.length; i++) {
-            System.arraycopy(source[i], 0, destination[i], 0, source[i].length);
-        }
-    }
-
     public static void printBoard(int [][] printBoard) {
         System.out.println();
         for (int i = 9; i > -1; i--) { // Iterate through each row
@@ -286,9 +263,6 @@ public class Board {
     }
 
     public void randomPlay(int playerNo) {
-        //randomPlays++;
-        //System.out.println("Debug: Activate randomPlay & Print Board Values");
-        //System.out.println(Arrays.deepToString(boardValues));
         Random random = new Random();
         // Determine the current player's positions
         List<Position> playerPositions = getQueenPositions(playerNo);
@@ -301,22 +275,13 @@ public class Board {
             if (!legalMoves.isEmpty()) {
                 // Select one of the legal moves at random
                 Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
-                //System.out.println("Debug: Print Board Values before performMove");
-                //System.out.println(Arrays.deepToString(boardValues));
                 performMove(playerNo, piecePosition, selectedMove);
-                //System.out.println("Debug: Print Board Values after performMove");
-                //System.out.println(Arrays.deepToString(boardValues));
-
                 // After moving, find all possible positions to shoot the arrow
                 List<Position> arrowShots = getLegalMoves(selectedMove.getX(), selectedMove.getY());
                 if (!arrowShots.isEmpty()) {
                     // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
-                    //System.out.println("Debug: Print Board Values before shootArrow");
-                    //System.out.println(Arrays.deepToString(boardValues));
                     this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
-                    //System.out.println("Debug: Print Board Values after shootArrow");
-                    //System.out.println(Arrays.deepToString(boardValues));
                 }
             }
         }
@@ -325,21 +290,17 @@ public class Board {
 
 
     public void shootArrow(Position arrowPosition) {
-        //System.out.println("activate shoot arrow");
         // Check if the position is within the bounds of the board
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
             // Mark the position with a 3 to indicate an arrow
             boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
-            //System.out.println("arrow shot at " + arrowPosition.getX() + " and " + arrowPosition.getY());
         } else {
             System.out.println("Arrow position is out of bounds.");
         }
     }
 
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
-        //System.out.println("current board" + Arrays.deepToString(currentBoard.getBoard()));
-        //System.out.println("best move board" + Arrays.deepToString(bestMoveBoard.getBoard()));
         ArrayList<Integer> moveDetails = new ArrayList<>();
 
         // Initialize variables to track the positions found.

@@ -1,6 +1,5 @@
 package ubc.cosc322.algorithms;
 
-import ubc.cosc322.core.Board;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -37,12 +36,6 @@ public class UCT {
             //System.out.println("No children available for this node.");
             return null; // No children, so no move can be made.
         }
-
-//        // Proceed as before if there are children.
-//        for (Node child : node.getChildren()) {
-//            //System.out.println("Child UCT Values: Score - " + child.getScore() + " Visit Count - "+ child.getVisitCount());
-//        }
-
         return Collections.max(node.getChildren(),
                 Comparator.comparing(c -> uctValue(c.getScore(), c.getVisitCount())));
     }
