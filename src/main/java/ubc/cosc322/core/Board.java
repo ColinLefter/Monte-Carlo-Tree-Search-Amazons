@@ -58,7 +58,12 @@ public class Board {
             boardValues[pos.getX()][pos.getY()] = 2;
         }
     }
-    // Initialize the board from an ArrayList<Integer>
+
+    /**
+     * Gets all queen positions and returns them in a List.
+     *
+     * @return List of queen positions.
+     */
 
     public List<Position> getQueenPositions(int playerNo) {
         List<Position> queenPositions = new ArrayList<>();
@@ -78,6 +83,7 @@ public class Board {
      *
      * @return A new Board instance with the same state as this board.
      */
+
     public Board clone() {
         Board newBoard = new Board();
         for (int i = 0; i < DEFAULT_BOARD_SIZE; i++) {
@@ -122,6 +128,7 @@ public class Board {
      * @param player The player number (1 or 2) making the move.
      * @param newPos The position to which the player is moving.
      */
+
     public void performMove(int player, Position currentPos, Position newPos) {
         // Remove the piece from its current position.
         this.boardValues[currentPos.getX()][currentPos.getY()] = 0;
@@ -144,12 +151,11 @@ public class Board {
      *
      * @return An integer representing the game status (IN_PROGRESS, DRAW, P1 win, or P2 win).
      */
-// Make sure checkStatus is an instance method if it's going to call other instance methods like getLegalMoves
+
     public int checkStatus() {
         boolean blackHasMoves = false;
         boolean whiteHasMoves = false;
 
-        // Use this to call instance methods
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
                 int piece = this.boardValues[x][y];
@@ -230,35 +236,23 @@ public class Board {
         return possibleStates;
     }
 
-    public static void printBoard(int [][] printBoard) {
-        System.out.println();
-        for (int i = 9; i > -1; i--) { // Iterate through each row
-            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
-                System.out.print(printBoard[i][j] + " "); // Print the value at the current position
-            }
-            System.out.println(); // Move to the next line after printing each row
-        }
-        System.out.println();
-    }
+    /**
+     * Randomly plays out a queen move and an arrow shot.
+     *
+     * @param playerNo The player number (P1 or P2).
+     */
 
     public void randomPlay(int playerNo) {
         Random random = new Random();
-        // Determine the current player's positions
         List<Position> playerPositions = getQueenPositions(playerNo);
         if (!playerPositions.isEmpty()) {
-            // Choose a random queen from the current player's positions
             Position piecePosition = playerPositions.get(random.nextInt(playerPositions.size()));
-            // Find all legal moves for that queen
             List<Position> legalMoves = getLegalMoves(piecePosition.getX(), piecePosition.getY());
-
             if (!legalMoves.isEmpty()) {
-                // Select one of the legal moves at random
                 Position selectedMove = legalMoves.get(random.nextInt(legalMoves.size()));
                 performMove(playerNo, piecePosition, selectedMove);
-                // After moving, find all possible positions to shoot the arrow
                 List<Position> arrowShots = getLegalMoves(selectedMove.getX(), selectedMove.getY());
                 if (!arrowShots.isEmpty()) {
-                    // Select a random position for the arrow
                     Position arrowPosition = arrowShots.get(random.nextInt(arrowShots.size()));
                     this.boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
                 }
@@ -266,24 +260,36 @@ public class Board {
         }
     }
 
+    /**
+     * Shoots an arrow from the queen position to desired placement on board.
+     *
+     * @param arrowPosition The position of the arrow being shot.
+     */
+
     public void shootArrow(Position arrowPosition) {
-        // Check if the position is within the bounds of the board
         if(arrowPosition.getX() >= 0 && arrowPosition.getX() < DEFAULT_BOARD_SIZE &&
                 arrowPosition.getY() >= 0 && arrowPosition.getY() < DEFAULT_BOARD_SIZE) {
-            // Mark the position with a 3 to indicate an arrow
             boardValues[arrowPosition.getX()][arrowPosition.getY()] = ARROW;
         } else {
             System.out.println("Arrow position is out of bounds.");
         }
     }
 
+    /**
+     * Extract the move details from the currentBoard. We do this by taking in the currentBoard
+     * along with the bestMoveBoard that has our next move on it. We pull the move from that board
+     * and return those move details.
+     *
+     * @param currentBoard The current board in play.
+     * @param bestMoveBoard The board returned with our best move.
+     *
+     * @return Move details of what queen we are going to move and where we are
+     * going to shoot the arrow.
+     */
+
     public static ArrayList<Integer> extractMoveDetails(Board currentBoard, Board bestMoveBoard) {
         ArrayList<Integer> moveDetails = new ArrayList<>();
-
-        // Initialize variables to track the positions found.
         Integer oldQueenX = null, oldQueenY = null, newQueenX = null, newQueenY = null, arrowX = null, arrowY = null;
-
-        // Loop over the board to identify the old queen position, new queen position, and arrow position.
         for (int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < DEFAULT_BOARD_SIZE; y++) {
                 if (currentBoard.boardValues[x][y] != bestMoveBoard.boardValues[x][y]) {
@@ -294,16 +300,13 @@ public class Board {
                             arrowX = x + 1;
                             arrowY = y + 1;
                         } else{
-                            // The queen has moved from this position.
                             oldQueenX = x + 1;
                             oldQueenY = y + 1;
                         }
                     } else if (currentBoard.boardValues[x][y] == 0 && bestMoveBoard.boardValues[x][y] != 0 && bestMoveBoard.boardValues[x][y] != ARROW) {
-                        // The queen has moved to this position.
                         newQueenX = x + 1;
                         newQueenY = y + 1;
                     } else if (bestMoveBoard.boardValues[x][y] == ARROW) {
-                        // The arrow has been shot to this position.
                         arrowX = x + 1;
                         arrowY = y + 1;
                     }
@@ -311,14 +314,12 @@ public class Board {
             }
         }
 
-        // Compile and return the move details if all components are identified.
         if (oldQueenX != null && oldQueenY != null && newQueenX != null && newQueenY != null && arrowX != null && arrowY != null) {
             moveDetails.addAll(Arrays.asList(oldQueenX, oldQueenY, newQueenX, newQueenY, arrowX, arrowY));
             return moveDetails;
         } else if (oldQueenX == null && oldQueenY == null && newQueenX == null && newQueenY == null && arrowX == null && arrowY == null) {
             return moveDetails;
         } else {
-            // Log missing components for debugging purposes.
             System.err.println("Missing move components: oldQ=(" + oldQueenX + "," + oldQueenY +
                     "), newQ=(" + newQueenX + "," + newQueenY +
                     "), arrow=(" + arrowX + "," + arrowY + ")");
@@ -326,18 +327,37 @@ public class Board {
         }
     }
 
+    /**
+     * Gets current player.
+     *
+     * @return returns the currentPlayer
+     */
+
     public static int getCurrentPlayer() {
         return currentPlayer;
     }
 
+    /**
+     * Prints out the main board using a loop and print line.
+     *
+     */
+
     public void printMainBoard() {
-        for (int i = 9; i > -1; i--) { // Iterate through each row
-            for (int j = 0; j < 10; j++) { // Iterate through each column in the row
-                System.out.print(mainBoardValues[i][j] + " "); // Print the value at the current position
+        for (int i = 9; i > -1; i--) {
+            for (int j = 0; j < 10; j++) {
+                System.out.print(mainBoardValues[i][j] + " ");
             }
-            System.out.println(); // Move to the next line after printing each row
+            System.out.println();
         }
     }
+
+    /**
+     * Updates the main board values based on the positions taken from the move received.
+     *
+     * @param currentPosition The current position of the queen being moved.
+     * @param nextPosition The position where the queen is moving to.
+     * @param arrowPosition The position of the arrow being shot.
+     */
 
     public static void updateMainBoard(ArrayList<Integer> currentPosition,
                                        ArrayList<Integer> nextPosition,
@@ -354,6 +374,12 @@ public class Board {
         mainBoardValues[arrowX][arrowY] = 3;
     }
 
+    /**
+     * Sets the values of the main board from the inputted gameBoardState.
+     *
+     * @param gameBoardState The state of the board that we want to set our mainBoardValues to.
+     */
+
     public static void setMainBoard(ArrayList<Integer> gameBoardState) {
         int[][] array = new int[10][10];
         for(int i = 1; i < 11; i++){
@@ -361,9 +387,14 @@ public class Board {
                 array[i-1][j-1] = gameBoardState.get(11*i + j);
             }
         }
-        // Update mainBoardValues with the new 2D array
         mainBoardValues = array;
     }
+
+    /**
+     * Gets the mainBoard from the board values as a board object.
+     *
+     * @return The board with the main board values as a board object.
+     */
 
     public static Board getMainBoard(){
         Board board = new Board();
