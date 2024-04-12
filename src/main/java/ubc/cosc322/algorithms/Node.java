@@ -12,17 +12,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Node {
     private Node parent;
     private List<Node> children;
-    //private double score;
-    //private int visitCount;
     private Board state;
     private int playerNo;
     private int nodeDepth;
-    private double winScore; // We are accounting for wins, losses and draws
-    private double drawScore;
-    private static final double WIN_SCORE = 1.0; // These are thresholds
-    private static final double DRAW_SCORE = 0.5;
-    public static final double WIN_SCORE_VALUE = 10.0;
-    public static final double DRAW_SCORE_VALUE = 5.0;
     private AtomicInteger visitCount = new AtomicInteger(0);
     private AtomicInteger score = new AtomicInteger(0);
 
@@ -105,66 +97,10 @@ public class Node {
         return new ArrayList<>(children);
     }
 
-    /**
-     * Selects a random child node from this node's children.
-     *
-     * @return A randomly selected child node.
-     */
-    public Node getRandomChildNode() {
-        int randomChild = new Random().nextInt(children.size());
-        return children.get(randomChild);
-    }
-    /**
-     * Retrieves the child node with the maximum score.
-     *
-     * @return The child node with the highest score.
-     */
-    public Node getChildWithMaxScore() {
-        return children.stream()
-                .max(Comparator.comparingDouble(Node::getScore))
-                .orElse(null);
-    }
 
     public double getScore() {
         return score.get();
     }
-
-    /**
-     * Updates the score based on the simulation result.
-     *
-     * @param result The result from the simulation to update the score accordingly.
-     */
-//    public void updateScore(int result) {
-//        incrementVisit();
-//        if (result == playerNo) {
-//            // The player associated with this node wins
-//            addScore(WIN_SCORE_VALUE);
-//        } else if (result == 3 - playerNo) {
-//            // The opponent wins
-//            addScore(-WIN_SCORE_VALUE);
-//        } else if (result == Board.DRAW) {
-//            // The game ends in a draw
-//            addScore(DRAW_SCORE_VALUE);
-//        }
-//    }
-
-    /**
-     * Sets the parent node for this node.
-     *
-     * @param node The parent node to set.
-     */
-    public void setParent(Node node) {
-        this.parent = node;
-    }
-
-    /**
-     * Adds a specified score to this node's total score.
-     *
-     * @param score The score to add.
-     */
-//    public void addScore(int score) {
-//        this.score += score;
-//    }
 
     /**
      * Retrieves the player number associated with this node.
