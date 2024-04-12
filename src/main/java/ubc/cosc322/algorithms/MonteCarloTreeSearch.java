@@ -16,7 +16,7 @@ public class MonteCarloTreeSearch {
     List<List<Integer>> blackPositions = new ArrayList<>();
     List<List<Integer>> whitePositions = new ArrayList<>();
     static final int WIN_SCORE = 10; // Score indicating a win in simulations.
-    final int UPPER_TIME_LIMIT = 1000;
+    final int UPPER_TIME_LIMIT = 25000;
     public static int numberOfNodes = 0;
     long end;
 
